@@ -1,4 +1,3 @@
-console.log("[3D Visualization] module loaded");
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "./three-lite";
 
@@ -127,10 +126,6 @@ function buildLeg(scene, partsRef) {
 }
 
 function applyPoseToScene(pose, partsRef) {
-  if (!pose) {
-    console.error("[3D Visualization] pose missing during transform", pose);
-    return;
-  }
   const { wrist, leg } = pose;
   if (partsRef.current.wristPivot) {
     partsRef.current.wristPivot.rotation.z = THREE.MathUtils.degToRad(wrist.flexion || 0);
@@ -160,193 +155,89 @@ export default function VisualizationPane({
   onToggleDemo,
   onInjectPose,
 }) {
-  console.log("[3D Visualization] component render start", {
-    latestProvided: !!latest,
-    layoutPointsCount: layoutPoints?.length,
-    sensorsKeys: Object.keys(sensors || {}),
-    running,
-    demoActive,
-  });
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const partsRef = useRef({ fingers: [] });
-  const cubeRef = useRef(null);
   const [model, setModel] = useState("wrist");
   const [manualPose, setManualPose] = useState(defaultPose);
-  const [rendererInitFailed, setRendererInitFailed] = useState(false);
-
-  console.log("Canvas ref =", containerRef.current);
-
-  const phaseRef = useRef({
-    mounted: false,
-    canvasReady: false,
-    rendererReady: false,
-    modelsReady: false,
-    animationLoop: false,
-    sensorStream: false,
-  });
-
-  useEffect(() => {
-    console.log("[3D Visualization] mount effect start");
-    console.log("[3D Visualization] Component mounted");
-    phaseRef.current.mounted = true;
-    console.log("Canvas ref:", containerRef.current);
-  }, []);
 
   const livePose = useMemo(() => latest?.pose || defaultPose, [latest?.pose]);
   const lerpedPose = useLerpedPose(livePose);
   const poseRef = useRef(lerpedPose);
 
   useEffect(() => {
-    console.log("[3D Visualization] poseRef sync effect start");
     poseRef.current = lerpedPose;
   }, [lerpedPose]);
 
   useEffect(() => {
-    console.log("[3D Visualization] manual pose sync effect start", livePose);
     setManualPose(livePose);
   }, [livePose]);
 
   useEffect(() => {
-    console.log("[3D Visualization] init effect start");
-    try {
-      console.log("[3D Visualization] initializing scene...");
-      console.log("[3D Visualization] THREE import keys", Object.keys(THREE || {}));
-      const width = containerRef.current?.clientWidth || 600;
-      const height = 420;
+    const width = containerRef.current?.clientWidth || 600;
+    const height = 420;
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#f8fafc");
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(1.2, 1.3, 4.8);
+    camera.lookAt(0, 0.4, 0);
 
-      if (!containerRef.current) {
-        console.error("[3D Visualization] container ref missing");
-      }
-      if (width === 0 || height === 0) {
-        console.warn("[3D Visualization] canvas size is 0×0", { width, height });
-      } else {
-        console.log("[3D Visualization] canvas size", { width, height });
-      }
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    containerRef.current?.appendChild(renderer.domElement);
 
-      console.log("[3D Visualization] creating scene...");
-      const scene = new THREE.Scene();
-      console.log("[3D Visualization] scene created", scene);
-      scene.background = new THREE.Color("#f8fafc");
-      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(1.2, 1.3, 4.8);
-      camera.lookAt(0, 0.4, 0);
+    const ambient = new THREE.AmbientLight(0xffffff, 1.1);
+    const key = new THREE.DirectionalLight(0xffffff, 0.8);
+    key.position.set(2, 3, 3);
+    scene.add(ambient, key);
 
-      console.log("[3D Visualization] initializing renderer...");
-      let renderer;
-      try {
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      } catch (err) {
-        console.error("3D INIT ERROR: renderer constructor failed", err);
-        setRendererInitFailed(true);
-        throw err;
-      }
-      if (!renderer || !renderer.domElement) {
-        console.error("[3D Visualization] renderer failed to initialize", renderer);
-      }
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      containerRef.current?.appendChild(renderer.domElement);
-      console.log("[3D Visualization] renderer initialized", renderer);
-      console.log("[3D Visualization] renderer DOM element", renderer?.domElement);
-      phaseRef.current.canvasReady = true;
-      phaseRef.current.rendererReady = true;
+    const grid = new THREE.GridHelper(12, 12, 0xcbd5e1, 0xe2e8f0);
+    grid.position.y = -0.7;
+    scene.add(grid);
 
-      const ambient = new THREE.AmbientLight(0xffffff, 1.1);
-      const key = new THREE.DirectionalLight(0xffffff, 0.8);
-      key.position.set(2, 3, 3);
-      scene.add(ambient, key);
+    const wrist = buildWrist(scene, partsRef);
+    const leg = buildLeg(scene, partsRef);
+    leg.visible = false;
+    scene.add(wrist);
+    scene.add(leg);
 
-      const grid = new THREE.GridHelper(12, 12, 0xcbd5e1, 0xe2e8f0);
-      grid.position.y = -0.7;
-      scene.add(grid);
+    sceneRef.current = scene;
+    rendererRef.current = renderer;
+    cameraRef.current = camera;
 
-      console.log("[3D Visualization] building models...");
-      const wrist = buildWrist(scene, partsRef);
-      const leg = buildLeg(scene, partsRef);
-      leg.visible = false;
-      scene.add(wrist);
-      scene.add(leg);
-      console.log("[3D Visualization] models added", { wrist, leg });
-      phaseRef.current.modelsReady = true;
+    const animate = () => {
+      applyPoseToScene(poseRef.current, partsRef);
+      renderer.render(scene, camera);
+    };
+    renderer.setAnimationLoop(animate);
 
-      const debugCube = new THREE.Mesh(
-        new THREE.BoxGeometry(0.4, 0.4, 0.4),
-        new THREE.MeshStandardMaterial({ color: 0xeb5f5f })
-      );
-      debugCube.position.set(-1, 0.8, 0);
-      scene.add(debugCube);
-      cubeRef.current = debugCube;
-      console.log("[3D Visualization] debug cube added", debugCube);
+    const onResize = () => {
+      const w = containerRef.current?.clientWidth || width;
+      const h = height;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    window.addEventListener("resize", onResize);
 
-      sceneRef.current = scene;
-      rendererRef.current = renderer;
-      cameraRef.current = camera;
-
-      let frameCount = 0;
-      const animate = () => {
-        try {
-          frameCount += 1;
-          console.log("[3D Visualization] frame start", frameCount);
-          if (cubeRef.current) {
-            cubeRef.current.rotation.x += 0.01;
-            cubeRef.current.rotation.y += 0.015;
-          }
-          applyPoseToScene(poseRef.current, partsRef);
-          if (frameCount % 60 === 0) {
-            console.log("[3D Visualization] applying transforms", poseRef.current);
-          }
-          console.log("[3D Visualization] frame render call", { frameCount });
-          renderer.render(scene, camera);
-        } catch (err) {
-          console.error("3D FRAME ERROR:", err);
-        }
-      };
-      renderer.setAnimationLoop(animate);
-      phaseRef.current.animationLoop = true;
-      console.log("[3D Visualization] animation loop started");
-
-      const onResize = () => {
-        try {
-          const w = containerRef.current?.clientWidth || width;
-          const h = height;
-          renderer.setSize(w, h);
-          camera.aspect = w / h;
-          camera.updateProjectionMatrix();
-          console.log("[3D Visualization] resize", { w, h });
-        } catch (err) {
-          console.error("[3D Visualization] resize error", err);
-        }
-      };
-      window.addEventListener("resize", onResize);
-
-      console.log("[3D Visualization] Phase summary", phaseRef.current);
-
-      return () => {
-        console.log("[3D Visualization] cleanup start");
-        renderer.setAnimationLoop(null);
-        renderer.dispose();
-        containerRef.current?.removeChild(renderer.domElement);
-        window.removeEventListener("resize", onResize);
-      };
-    } catch (err) {
-      console.error("3D INIT ERROR:", err);
-      setRendererInitFailed(true);
-      console.log("[3D Visualization] Phase summary", phaseRef.current);
-    }
+    return () => {
+      renderer.setAnimationLoop(null);
+      renderer.dispose();
+      containerRef.current?.removeChild(renderer.domElement);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   useEffect(() => {
-    console.log("[3D Visualization] model toggle effect start", { model });
     if (!sceneRef.current) return;
     const [wrist, leg] = sceneRef.current.children.filter((c) => c.type === "Group");
     if (wrist && leg) {
       wrist.visible = model === "wrist";
       leg.visible = model === "leg";
     }
-    console.log("[3D Visualization] model visibility set", { model });
   }, [model]);
 
   const updateManual = (next) => {
@@ -372,7 +263,6 @@ export default function VisualizationPane({
   );
 
   const latestSensors = useMemo(() => {
-    console.log("[3D Visualization] latestSensors memo compute");
     if (!latest)
       return { strain: ["—", "—", "—"], fsr: ["—", "—", "—"], resp: "—" };
     return {
@@ -381,83 +271,6 @@ export default function VisualizationPane({
       resp: latest.resp?.toFixed(2) ?? "—",
     };
   }, [latest]);
-
-  useEffect(() => {
-    console.log("[3D Visualization] sensor stream effect start");
-    if (!latest) return;
-    phaseRef.current.sensorStream = true;
-    console.log("[3D Visualization] sensor data received", latest);
-    console.log("[3D Visualization] Phase summary", phaseRef.current);
-  }, [latest]);
-
-  useEffect(() => {
-    console.log("[3D Visualization] unmount effect start");
-    return () => {
-      console.log("[3D Visualization] unmount summary", phaseRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log("[3D Visualization] props change effect", {
-      latestProvided: !!latest,
-      layoutPointsCount: layoutPoints?.length,
-      sensorsKeys: Object.keys(sensors || {}),
-      running,
-      demoActive,
-    });
-  }, [latest, layoutPoints, sensors, running, demoActive]);
-
-  useEffect(() => {
-    console.log("[3D Visualization] fallback cube effect start", {
-      rendererInitFailed,
-      hasRenderer: !!rendererRef.current,
-    });
-    if (!rendererInitFailed || !containerRef.current) return;
-    try {
-      console.log("[3D Visualization] initializing fallback scene...");
-      const width = containerRef.current?.clientWidth || 400;
-      const height = 320;
-      const fallbackScene = new THREE.Scene();
-      fallbackScene.background = new THREE.Color("#eef2ff");
-      const fallbackCamera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
-      fallbackCamera.position.set(1.5, 1.5, 3.5);
-      fallbackCamera.lookAt(0, 0, 0);
-
-      let fallbackRenderer = rendererRef.current;
-      if (!fallbackRenderer) {
-        fallbackRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        containerRef.current.appendChild(fallbackRenderer.domElement);
-      }
-      fallbackRenderer.setSize(width, height);
-      fallbackRenderer.setPixelRatio(window.devicePixelRatio);
-
-      const ambient = new THREE.AmbientLight(0xffffff, 1.2);
-      fallbackScene.add(ambient);
-
-      const fallbackCube = new THREE.Mesh(
-        new THREE.BoxGeometry(0.8, 0.8, 0.8),
-        new THREE.MeshStandardMaterial({ color: 0x2563eb })
-      );
-      fallbackScene.add(fallbackCube);
-      console.log("[3D Visualization] fallback cube created", fallbackCube);
-
-      let frame = 0;
-      const tick = () => {
-        try {
-          frame += 1;
-          fallbackCube.rotation.x += 0.02;
-          fallbackCube.rotation.y += 0.025;
-          console.log("[3D Visualization] fallback frame", frame);
-          fallbackRenderer.render(fallbackScene, fallbackCamera);
-        } catch (err) {
-          console.error("3D FRAME ERROR:", err);
-        }
-      };
-      fallbackRenderer.setAnimationLoop(tick);
-    } catch (err) {
-      console.error("3D INIT ERROR:", err);
-    }
-  }, [rendererInitFailed]);
 
   const layoutSvg = (
     <svg viewBox="0 0 360 180" className="w-full h-[160px]">
@@ -473,134 +286,129 @@ export default function VisualizationPane({
     </svg>
   );
 
-  try {
-    return (
-      <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <h2 className="text-lg font-semibold">3D Visualization</h2>
-            <p className="text-sm text-slate-600">
-              Live articulated wrist/leg driven by the shared simulated signals.
-            </p>
+  return (
+    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-lg font-semibold">3D Visualization</h2>
+          <p className="text-sm text-slate-600">
+            Live articulated wrist/leg driven by the shared simulated signals.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Mode</label>
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className="border rounded-lg px-2 py-1"
+          >
+            <option value="wrist">Wrist visualization</option>
+            <option value="leg">Leg visualization</option>
+          </select>
+          <button
+            onClick={onToggleDemo}
+            className={`px-3 py-1.5 rounded-xl text-white ${
+              demoActive ? "bg-emerald-600" : "bg-slate-900"
+            }`}
+          >
+            {demoActive ? "Stop Randomized Demo" : "Run Randomized Demonstration"}
+          </button>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="border border-slate-200 rounded-xl p-2 bg-slate-50">
+          <div ref={containerRef} className="w-full" />
+        </div>
+        <div className="space-y-4">
+          <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm">Manual articulation</h3>
+              <span className="text-xs text-slate-500">
+                Injects values into the shared stream
+              </span>
+            </div>
+            {model === "wrist" && (
+              <div className="space-y-3">
+                {slider(
+                  "Flexion/Extension",
+                  manualPose.wrist.flexion,
+                  (v) =>
+                    updateManual({
+                      ...manualPose,
+                      wrist: { ...manualPose.wrist, flexion: v },
+                    }),
+                  -70,
+                  90
+                )}
+                {slider(
+                  "Pronation/Supination",
+                  manualPose.wrist.rotation,
+                  (v) =>
+                    updateManual({
+                      ...manualPose,
+                      wrist: { ...manualPose.wrist, rotation: v },
+                    }),
+                  -80,
+                  80
+                )}
+                {slider(
+                  "Finger curl",
+                  manualPose.wrist.fingers[0],
+                  (v) =>
+                    updateManual({
+                      ...manualPose,
+                      wrist: { ...manualPose.wrist, fingers: [v, v - 5, v - 10] },
+                      leg: manualPose.leg,
+                    }),
+                  0,
+                  95
+                )}
+              </div>
+            )}
+            {model === "leg" && (
+              <div className="space-y-3">
+                {slider(
+                  "Knee flexion",
+                  manualPose.leg.knee,
+                  (v) => updateManual({ ...manualPose, leg: { ...manualPose.leg, knee: v } }),
+                  -10,
+                  120
+                )}
+                {slider(
+                  "Ankle flexion",
+                  manualPose.leg.ankle,
+                  (v) => updateManual({ ...manualPose, leg: { ...manualPose.leg, ankle: v } }),
+                  -40,
+                  60
+                )}
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Mode</label>
-            <select
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className="border rounded-lg px-2 py-1"
-            >
-              <option value="wrist">Wrist visualization</option>
-              <option value="leg">Leg visualization</option>
-            </select>
-            <button
-              onClick={onToggleDemo}
-              className={`px-3 py-1.5 rounded-xl text-white ${
-                demoActive ? "bg-emerald-600" : "bg-slate-900"
-              }`}
-            >
-              {demoActive ? "Stop Randomized Demo" : "Run Randomized Demonstration"}
-            </button>
+
+          <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
+            <div className="font-semibold text-sm">Live telemetry</div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <Telemetry label="Strain" value={latestSensors.strain.join(", ")} />
+              <Telemetry label="FSR" value={latestSensors.fsr.join(", ")} />
+              <Telemetry label="Resp" value={latestSensors.resp} />
+              <Telemetry label="Sensors" value={Object.keys(sensors).filter((k) => sensors[k]).join(", ") || "none"} />
+              <Telemetry label="Stream state" value={running ? "Running" : "Paused"} />
+              <Telemetry label="Pose source" value={demoActive ? "Random demo" : "Live/Manual"} />
+            </div>
+          </div>
+
+          <div className="border border-slate-200 rounded-xl p-3 bg-slate-50">
+            <div className="font-semibold text-sm mb-1">Sensor anchors (from layout)</div>
+            <div className="text-xs text-slate-600 mb-2">
+              Markers mirror the editable layout tab so placement matches the rendered model.
+            </div>
+            {layoutSvg}
           </div>
         </div>
-
-        <div className="grid lg:grid-cols-2 gap-4">
-          <div className="border border-slate-200 rounded-xl p-2 bg-slate-50">
-            <div ref={containerRef} className="w-full" />
-          </div>
-          <div className="space-y-4">
-            <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Manual articulation</h3>
-                <span className="text-xs text-slate-500">
-                  Injects values into the shared stream
-                </span>
-              </div>
-              {model === "wrist" && (
-                <div className="space-y-3">
-                  {slider(
-                    "Flexion/Extension",
-                    manualPose.wrist.flexion,
-                    (v) =>
-                      updateManual({
-                        ...manualPose,
-                        wrist: { ...manualPose.wrist, flexion: v },
-                      }),
-                    -70,
-                    90
-                  )}
-                  {slider(
-                    "Pronation/Supination",
-                    manualPose.wrist.rotation,
-                    (v) =>
-                      updateManual({
-                        ...manualPose,
-                        wrist: { ...manualPose.wrist, rotation: v },
-                      }),
-                    -80,
-                    80
-                  )}
-                  {slider(
-                    "Finger curl",
-                    manualPose.wrist.fingers[0],
-                    (v) =>
-                      updateManual({
-                        ...manualPose,
-                        wrist: { ...manualPose.wrist, fingers: [v, v - 5, v - 10] },
-                        leg: manualPose.leg,
-                      }),
-                    0,
-                    95
-                  )}
-                </div>
-              )}
-              {model === "leg" && (
-                <div className="space-y-3">
-                  {slider(
-                    "Knee flexion",
-                    manualPose.leg.knee,
-                    (v) => updateManual({ ...manualPose, leg: { ...manualPose.leg, knee: v } }),
-                    -10,
-                    120
-                  )}
-                  {slider(
-                    "Ankle flexion",
-                    manualPose.leg.ankle,
-                    (v) => updateManual({ ...manualPose, leg: { ...manualPose.leg, ankle: v } }),
-                    -40,
-                    60
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
-              <div className="font-semibold text-sm">Live telemetry</div>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <Telemetry label="Strain" value={latestSensors.strain.join(", ")} />
-                <Telemetry label="FSR" value={latestSensors.fsr.join(", ")} />
-                <Telemetry label="Resp" value={latestSensors.resp} />
-                <Telemetry label="Sensors" value={Object.keys(sensors).filter((k) => sensors[k]).join(", ") || "none"} />
-                <Telemetry label="Stream state" value={running ? "Running" : "Paused"} />
-                <Telemetry label="Pose source" value={demoActive ? "Random demo" : "Live/Manual"} />
-              </div>
-            </div>
-
-            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50">
-              <div className="font-semibold text-sm mb-1">Sensor anchors (from layout)</div>
-              <div className="text-xs text-slate-600 mb-2">
-                Markers mirror the editable layout tab so placement matches the rendered model.
-              </div>
-              {layoutSvg}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  } catch (err) {
-    console.error("[3D Visualization] render error", err);
-    return <div className="text-red-600">3D Visualization failed to render.</div>;
-  }
+      </div>
+    </section>
+  );
 }
 
 function Telemetry({ label, value }) {
