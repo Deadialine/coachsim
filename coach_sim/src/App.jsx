@@ -75,6 +75,7 @@ export default function App() {
   const [sensors, setSensors] = useState({
     tpuForearm: true,
     tpuBicep: true,
+    tpuShoulder: true,
     forcePads: true,
     imu: true,
     ppg: true,
@@ -114,6 +115,12 @@ export default function App() {
           1
         );
         const tremor = clamp(rnd(user.tremorBase, 0.2) * (1.15 - smooth), 0, 1);
+        const strain = [
+          clamp(rnd(0.46, 0.08), 0, 1), // wrist bridge
+          clamp(rnd(0.52, 0.08), 0, 1), // elbow bridge
+          clamp(rnd(0.58, 0.08), 0, 1), // shoulder bridge
+        ];
+        const emgEnv = clamp(rnd(0.35, 0.12) * (smooth < 0.55 ? 1.2 : 0.9), 0, 1);
         const grip = clamp(
           rnd(params.gripTarget, 6) *
             (sensors.forcePads ? 1 : 0) *
@@ -121,6 +128,11 @@ export default function App() {
           0,
           user.gripMax
         );
+        const fsr = [
+          clamp(grip * 0.45 + rnd(4, 2), 0, user.gripMax / 2),
+          clamp(grip * 0.35 + rnd(3, 2), 0, user.gripMax / 2),
+          clamp(rnd(16, 6), 0, 45),
+        ];
         const hr = clamp(
           rnd(
             user.hrRest + params.difficulty * 25 * (smooth < 0.55 ? 1 : 0.6),
@@ -134,7 +146,8 @@ export default function App() {
           6,
           35
         );
-        const rec = { t, smooth, tremor, grip, hr, rr };
+        const resp = clamp(rnd(0.55, 0.1) * (rr / 18), 0, 1.2);
+        const rec = { t, smooth, tremor, strain, emgEnv, fsr, resp, grip, hr, rr };
         return [...arr.slice(-180), rec]; // keep ~3 minutes @ 1 Hz
       });
     }, 1000);
@@ -354,6 +367,7 @@ export default function App() {
           {active === "log" && (
             <LogPane
               notes={notes}
+              latest={stream[stream.length - 1]}
               onExport={() => notes.length && exportCSV(notes)}
             />
           )}
@@ -434,10 +448,13 @@ function OverviewPane() {
 // ---------- Sensor Layout (SVG) ----------
 function LayoutPane() {
   const [points, setPoints] = useState([
-    { id: "bicep", x: 160, y: 80 },
-    { id: "forearm", x: 270, y: 160 },
-    { id: "wrist", x: 330, y: 210 },
+    { id: "shoulder", x: 110, y: 70 },
+    { id: "bicep", x: 170, y: 90 },
+    { id: "forearm", x: 260, y: 150 },
+    { id: "wrist", x: 330, y: 200 },
+    { id: "imu", x: 210, y: 120 },
     { id: "ppg", x: 140, y: 130 },
+    { id: "resp", x: 80, y: 110 },
   ]);
   const dragging = useRef(null);
 
@@ -464,52 +481,107 @@ function LayoutPane() {
       window.removeEventListener("mouseup", onUp);
     };
   }, []);
-
   return (
     <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-semibold">Sensor Layout (drag points)</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">Sensor Layout & Bus Plan</h2>
         <div className="text-xs text-slate-500">
-          Move markers to plan traces & pad placement
+          Drag markers, channels map to the shared SPI backbone
         </div>
       </div>
-      <div className="w-full rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
-        <svg viewBox="0 0 560 260" className="w-full h-[260px]">
-          {/* Arm silhouette */}
-          <defs>
-            <linearGradient id="arm" x1="0" x2="1">
-              <stop offset="0%" stopColor="#e5e7eb" />
-              <stop offset="100%" stopColor="#cbd5e1" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M60,80 C120,40 180,40 220,60 C260,80 290,120 330,140 C360,150 410,160 500,180 C520,190 520,210 500,215 C420,230 340,220 300,210 C240,195 220,170 190,150 C160,130 110,120 60,140 C40,130 40,90 60,80 Z"
-            fill="url(#arm)"
-            stroke="#94a3b8"
-          />
-          {/* TPU conductive traces between points */}
-          <TPUTrace points={points} />
-          {/* Draggable markers */}
-          {points.map((p) => (
-            <g key={p.id} onMouseDown={onDown(p.id)} className="cursor-grab">
-              <circle cx={p.x} cy={p.y} r={10} fill="#0ea5e9" opacity={0.9} />
-              <text x={p.x + 12} y={p.y + 4} fontSize={12} fill="#0f172a">
-                {p.id}
-              </text>
-            </g>
-          ))}
-        </svg>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="w-full rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
+          <svg viewBox="0 0 560 260" className="w-full h-[260px]">
+            {/* Arm silhouette */}
+            <defs>
+              <linearGradient id="arm" x1="0" x2="1">
+                <stop offset="0%" stopColor="#e5e7eb" />
+                <stop offset="100%" stopColor="#cbd5e1" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M60,80 C120,40 180,40 220,60 C260,80 290,120 330,140 C360,150 410,160 500,180 C520,190 520,210 500,215 C420,230 340,220 300,210 C240,195 220,170 190,150 C160,130 110,120 60,140 C40,130 40,90 60,80 Z"
+              fill="url(#arm)"
+              stroke="#94a3b8"
+            />
+            {/* TPU conductive traces between points */}
+            <TPUTrace points={points} />
+            {/* Draggable markers */}
+            {points.map((p) => (
+              <g key={p.id} onMouseDown={onDown(p.id)} className="cursor-grab">
+                <circle cx={p.x} cy={p.y} r={10} fill="#0ea5e9" opacity={0.9} />
+                <text x={p.x + 12} y={p.y + 4} fontSize={12} fill="#0f172a">
+                  {p.id}
+                </text>
+              </g>
+            ))}
+          </svg>
+          <div className="px-4 py-3 text-xs text-slate-600 border-t bg-white flex flex-wrap gap-3">
+            <span className="px-2 py-1 rounded-full bg-slate-100 border">Blue: TPU strain traces</span>
+            <span className="px-2 py-1 rounded-full bg-slate-100 border">Green: FSR pads (MCP3208)</span>
+            <span className="px-2 py-1 rounded-full bg-slate-100 border">Gold: PPG / Resp band</span>
+            <span className="px-2 py-1 rounded-full bg-slate-100 border">Purple: IMU on SPI</span>
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div className="border border-slate-200 rounded-2xl p-4 bg-white">
+            <h3 className="font-semibold mb-1">Shared SPI backbone</h3>
+            <p className="text-sm text-slate-600 mb-2">
+              ESP32-S3 is master; SCK/MOSI/MISO are common. Only one chip-select is
+              asserted at a time so MISO stays clean.
+            </p>
+            <ul className="text-sm text-slate-700 list-disc list-inside space-y-1">
+              <li>CS_IMU → ICM-42688-P (200 Hz accel/gyro)</li>
+              <li>CS_MCP3564 → 24-bit ADC for bridges & EMG envelope</li>
+              <li>CS_MCP3208 → 12-bit ADC for FSR + respiration divider</li>
+            </ul>
+          </div>
+          <div className="border border-slate-200 rounded-2xl p-4 bg-white">
+            <h3 className="font-semibold mb-1">Analog front-end map</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div className="bg-slate-50 rounded-xl p-3 border">
+                <div className="font-semibold text-slate-800 mb-1">MCP3564R (24-bit)</div>
+                <ul className="list-disc list-inside space-y-1 text-slate-700">
+                  <li>CH0: Wrist strain (INA333)</li>
+                  <li>CH1: Elbow strain (INA333)</li>
+                  <li>CH2: Shoulder strain (INA333)</li>
+                  <li>CH4: EMG envelope (MyoWare SIG)</li>
+                  <li>CH3, CH5-CH7: Spares</li>
+                </ul>
+              </div>
+              <div className="bg-slate-50 rounded-xl p-3 border">
+                <div className="font-semibold text-slate-800 mb-1">MCP3208 (12-bit)</div>
+                <ul className="list-disc list-inside space-y-1 text-slate-700">
+                  <li>CH0: Grip FSR 1 (thumb)</li>
+                  <li>CH1: Grip FSR 2 (palm)</li>
+                  <li>CH2: Stance FSR</li>
+                  <li>CH3: Respiration band</li>
+                  <li>CH4-CH7: Spare I/O</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="border border-slate-200 rounded-2xl p-4 bg-white">
+            <h3 className="font-semibold mb-1">Power, timing, framing</h3>
+            <ul className="text-sm text-slate-700 list-disc list-inside space-y-1">
+              <li>Single 3.3 V rail + common ground across IMU/ADCs/amps/FSRs.</li>
+              <li>1 kHz MCU timer drives synchronized reads; IMU + ADCs sampled at 200 Hz.</li>
+              <li>Samples packed into a unified frame and streamed via BLE or USB.</li>
+            </ul>
+          </div>
+        </div>
       </div>
+
       <p className="text-sm text-slate-600 mt-3">
-        Use this as a quick storyboard for trace routing and patch placement
-        before sewing the pocket for the MCU/battery.
+        Use this storyboard to keep the digital bus, analog front-end, and pad placement
+        coherent with the printed sleeve and the ESP32-S3 feather pocket.
       </p>
     </section>
   );
 }
 
 function TPUTrace({ points }) {
-  const order = ["bicep", "forearm", "wrist"]; // simple polyline
+  const order = ["shoulder", "bicep", "forearm", "wrist"]; // simple polyline
   const coords = order
     .map((id) => points.find((p) => p.id === id))
     .filter(Boolean)
@@ -524,6 +596,16 @@ function TPUTrace({ points }) {
         fill="none"
         opacity={0.8}
       />
+      {/* IMU puck anchored near elbow for shared SPI */}
+      <rect
+        x={(points.find((p) => p.id === "imu")?.x || 210) - 12}
+        y={(points.find((p) => p.id === "imu")?.y || 120) - 12}
+        width={24}
+        height={24}
+        rx={6}
+        fill="#a855f7"
+        opacity={0.9}
+      />
       {/* Force pads near wrist */}
       <circle
         cx={points.find((p) => p.id === "wrist")?.x || 330}
@@ -531,6 +613,14 @@ function TPUTrace({ points }) {
         r={14}
         fill="#22c55e"
         opacity={0.8}
+      />
+      {/* Stance pad toward forearm underside */}
+      <circle
+        cx={(points.find((p) => p.id === "forearm")?.x || 260) - 30}
+        cy={(points.find((p) => p.id === "forearm")?.y || 150) + 30}
+        r={12}
+        fill="#16a34a"
+        opacity={0.75}
       />
       {/* PPG patch */}
       <rect
@@ -791,11 +881,33 @@ function StateCard({ title, active, children }) {
 }
 
 // ---------- Data Log ----------
-function LogPane({ notes, onExport }) {
+function LogPane({ notes, latest, onExport }) {
+  const unifiedFrame = useMemo(() => {
+    if (!latest)
+      return {
+        t_us: "—",
+        imu_acc: ["—", "—", "—"],
+        imu_gyro: ["—", "—", "—"],
+        strain: ["—", "—", "—"],
+        emg_env: "—",
+        fsr: ["—", "—", "—"],
+        resp: "—",
+      };
+    return {
+      t_us: latest.t * 1000000,
+      imu_acc: [rnd(0, 0.08).toFixed(2), rnd(0, 0.08).toFixed(2), rnd(1, 0.08).toFixed(2)],
+      imu_gyro: [rnd(0, 4).toFixed(1), rnd(0, 4).toFixed(1), rnd(0, 4).toFixed(1)],
+      strain: latest.strain.map((v) => v.toFixed(2)),
+      emg_env: latest.emgEnv.toFixed(2),
+      fsr: latest.fsr.map((v) => v.toFixed(1)),
+      resp: latest.resp.toFixed(2),
+    };
+  }, [latest]);
+
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-semibold">Coaching Events Log</h2>
+    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Coaching Events & Unified Frame</h2>
         <button
           onClick={onExport}
           className="px-3 py-1.5 rounded-xl bg-slate-900 text-white disabled:opacity-40"
@@ -803,6 +915,42 @@ function LogPane({ notes, onExport }) {
         >
           Export CSV
         </button>
+      </div>
+      <div className="grid md:grid-cols-2 gap-3">
+        <div className="border border-slate-200 rounded-xl p-3 bg-slate-50">
+          <div className="font-semibold text-sm mb-1">ESP32-S3 unified data frame</div>
+          <pre className="bg-white border rounded-lg p-3 text-xs overflow-auto whitespace-pre-wrap">{`
+typedef struct {
+  uint32_t t_us;
+  float    imu_acc[3];
+  float    imu_gyro[3];
+  float    strain[3];
+  float    emg_env;
+  float    fsr[3];
+  float    resp;
+} sample_t;`}</pre>
+          <ul className="text-xs text-slate-700 list-disc list-inside mt-2 space-y-1">
+            <li>1 kHz timer aligns IMU (CS_IMU) + MCP3564R + MCP3208 reads at 200 Hz.</li>
+            <li>Frames buffered then streamed in BLE packets or USB/serial bursts.</li>
+            <li>Great for CSV export or binary logging during sleeve bring-up.</li>
+          </ul>
+        </div>
+        <div className="border border-slate-200 rounded-xl p-3 bg-white">
+          <div className="font-semibold text-sm mb-2">Latest simulated frame</div>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <LabelValue label="t_us" value={unifiedFrame.t_us} />
+            <LabelValue label="imu_acc" value={unifiedFrame.imu_acc.join(", ")} />
+            <LabelValue label="imu_gyro" value={unifiedFrame.imu_gyro.join(", ")} />
+            <LabelValue label="strain" value={unifiedFrame.strain.join(", ")} />
+            <LabelValue label="emg_env" value={unifiedFrame.emg_env} />
+            <LabelValue label="fsr" value={unifiedFrame.fsr.join(", ")} />
+            <LabelValue label="resp" value={unifiedFrame.resp} />
+            <LabelValue label="notes" value={notes.length ? `${notes.length} events` : "no events yet"} />
+          </div>
+          <div className="mt-2 text-xs text-slate-600">
+            Flow: ICM-42688-P → SPI → ESP32, strain/EMG bridges → MCP3564R → SPI, FSR/resp → MCP3208 → SPI → frame → BLE/USB.
+          </div>
+        </div>
       </div>
       <div className="overflow-auto border rounded-xl max-h-[380px]">
         <table className="min-w-full text-sm">
@@ -837,5 +985,14 @@ function LogPane({ notes, onExport }) {
         </div>
       )}
     </section>
+  );
+}
+
+function LabelValue({ label, value }) {
+  return (
+    <div className="p-2 bg-slate-50 rounded-lg border">
+      <div className="text-[11px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="font-mono text-sm text-slate-800 break-words">{value}</div>
+    </div>
   );
 }
