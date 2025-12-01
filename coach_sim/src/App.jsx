@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LineChart,
   Line,
@@ -13,6 +13,7 @@ import {
   BarChart,
   Bar,
 } from "recharts";
+import VisualizationPane from "./Visualization3D";
 
 /**
  * Interactive Bi‑Directional Coaching System — Concept Simulator
@@ -30,6 +31,47 @@ import {
 // ---------- Utilities ----------
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const rnd = (m = 1, v = 0.2) => m + (Math.random() - 0.5) * 2 * v; // mean +/‑ variance
+
+const defaultPose = {
+  wrist: { flexion: 0, rotation: 0, fingers: [0, 0, 0] },
+  leg: { knee: 0, ankle: 0 },
+};
+
+function poseToSensors(pose, userMaxGrip = 60) {
+  const wristFlex = pose?.wrist?.flexion ?? 0;
+  const knee = pose?.leg?.knee ?? 0;
+  const ankle = pose?.leg?.ankle ?? 0;
+  const fingers = pose?.wrist?.fingers ?? [0, 0, 0];
+
+  const strain = [
+    clamp(0.5 + (wristFlex / 110) * 0.35, 0, 1),
+    clamp(0.5 + (knee / 130) * 0.35, 0, 1),
+    clamp(0.5 + (ankle / 80) * 0.35, 0, 1),
+  ];
+  const fsr = fingers.map((f) =>
+    clamp(((fingers.length ? f : 0) / 90) * (userMaxGrip / 2), 0, userMaxGrip / 2)
+  );
+  const grip = clamp(
+    fsr.reduce((acc, v) => acc + v, 0) * 0.6,
+    0,
+    userMaxGrip
+  );
+  return { strain, fsr, grip };
+}
+
+function derivePoseFromSensors(strain, fsr, emgEnv, resp) {
+  return {
+    wrist: {
+      flexion: ((strain?.[0] ?? 0.5) - 0.5) * 120,
+      rotation: ((emgEnv ?? 0.35) - 0.35) * 120,
+      fingers: (fsr || []).map((v) => clamp((v / 30) * 90, 0, 95)),
+    },
+    leg: {
+      knee: ((strain?.[1] ?? 0.5) - 0.5) * 140,
+      ankle: ((strain?.[2] ?? 0.5) - 0.5) * 90 + ((resp ?? 0.6) - 0.6) * 40,
+    },
+  };
+}
 
 // Simple CSV exporter
 function exportCSV(rows, filename = "coaching_log.csv") {
@@ -62,6 +104,7 @@ const tabs = [
   { id: "signals", label: "Signals" },
   { id: "logic", label: "Coaching Logic" },
   { id: "log", label: "Data Log" },
+  { id: "viz", label: "3D Visualization" },
 ];
 
 // ---------- Main Component ----------
@@ -70,6 +113,15 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [user] = useState(defaultUserModel);
+  const [layoutPoints, setLayoutPoints] = useState([
+    { id: "shoulder", x: 110, y: 70 },
+    { id: "bicep", x: 170, y: 90 },
+    { id: "forearm", x: 260, y: 150 },
+    { id: "wrist", x: 330, y: 200 },
+    { id: "imu", x: 210, y: 120 },
+    { id: "ppg", x: 140, y: 130 },
+    { id: "resp", x: 80, y: 110 },
+  ]);
 
   // Enabled sensors
   const [sensors, setSensors] = useState({
@@ -99,60 +151,110 @@ export default function App() {
   const [message, setMessage] = useState("Coach idle. Press Start.");
   const [mode, setMode] = useState("IDLE"); // IDLE | COACHING | REST
   const [notes, setNotes] = useState([]); // log lines
+  const [demoActive, setDemoActive] = useState(false);
 
   const tickRef = useRef(null);
+
+  const pushFrame = useCallback(
+    (overrides = {}) => {
+      setStream((arr) => {
+        const prev = arr[arr.length - 1];
+        const t = prev ? prev.t + 1 : 0;
+        const smooth =
+          overrides.smooth ??
+          clamp(rnd(user.smoothnessBase, 0.15) * params.difficulty, 0, 1);
+        const tremor =
+          overrides.tremor ??
+          clamp(rnd(user.tremorBase, 0.2) * (1.15 - smooth), 0, 1);
+        const emgEnv =
+          overrides.emgEnv ??
+          clamp(rnd(0.35, 0.12) * (smooth < 0.55 ? 1.2 : 0.9), 0, 1);
+
+        let strain =
+          overrides.strain ?? [
+            clamp(rnd(0.46, 0.08), 0, 1), // wrist bridge
+            clamp(rnd(0.52, 0.08), 0, 1), // elbow/knee bridge
+            clamp(rnd(0.58, 0.08), 0, 1), // shoulder/ankle bridge
+          ];
+        let grip =
+          overrides.grip ??
+          clamp(
+            rnd(params.gripTarget, 6) *
+              (sensors.forcePads ? 1 : 0) *
+              (mode === "REST" ? 0.6 : 1),
+            0,
+            user.gripMax
+          );
+        let fsr =
+          overrides.fsr ?? [
+            clamp(grip * 0.45 + rnd(4, 2), 0, user.gripMax / 2),
+            clamp(grip * 0.35 + rnd(3, 2), 0, user.gripMax / 2),
+            clamp(rnd(16, 6), 0, 45),
+          ];
+
+        const hr =
+          overrides.hr ??
+          clamp(
+            rnd(
+              user.hrRest + params.difficulty * 25 * (smooth < 0.55 ? 1 : 0.6),
+              4
+            ),
+            50,
+            200
+          );
+        const rr =
+          overrides.rr ??
+          clamp(rnd(user.rrRest + (hr - user.hrRest) / 20, 1.4), 6, 35);
+        const resp = overrides.resp ?? clamp(rnd(0.55, 0.1) * (rr / 18), 0, 1.2);
+
+        let pose = overrides.pose;
+        if (pose && overrides.usePoseSensors) {
+          const mapped = poseToSensors(pose, user.gripMax);
+          strain = overrides.strain ?? mapped.strain;
+          fsr = overrides.fsr ?? mapped.fsr;
+          grip = overrides.grip ?? mapped.grip;
+        }
+        if (!pose) {
+          pose = derivePoseFromSensors(strain, fsr, emgEnv, resp);
+        }
+
+        const rec = { t, smooth, tremor, strain, emgEnv, fsr, resp, grip, hr, rr, pose };
+        return [...arr.slice(-180), rec];
+      });
+    },
+    [mode, params, sensors.forcePads, user]
+  );
 
   useEffect(() => {
     if (!running) return;
     tickRef.current = setInterval(() => {
       setTime((t) => t + 1);
-      setStream((arr) => {
-        const t = arr.length ? arr[arr.length - 1].t + 1 : 0;
-        // synth signals with mild drifts
-        const smooth = clamp(
-          rnd(user.smoothnessBase, 0.15) * params.difficulty,
-          0,
-          1
-        );
-        const tremor = clamp(rnd(user.tremorBase, 0.2) * (1.15 - smooth), 0, 1);
-        const strain = [
-          clamp(rnd(0.46, 0.08), 0, 1), // wrist bridge
-          clamp(rnd(0.52, 0.08), 0, 1), // elbow bridge
-          clamp(rnd(0.58, 0.08), 0, 1), // shoulder bridge
-        ];
-        const emgEnv = clamp(rnd(0.35, 0.12) * (smooth < 0.55 ? 1.2 : 0.9), 0, 1);
-        const grip = clamp(
-          rnd(params.gripTarget, 6) *
-            (sensors.forcePads ? 1 : 0) *
-            (mode === "REST" ? 0.6 : 1),
-          0,
-          user.gripMax
-        );
-        const fsr = [
-          clamp(grip * 0.45 + rnd(4, 2), 0, user.gripMax / 2),
-          clamp(grip * 0.35 + rnd(3, 2), 0, user.gripMax / 2),
-          clamp(rnd(16, 6), 0, 45),
-        ];
-        const hr = clamp(
-          rnd(
-            user.hrRest + params.difficulty * 25 * (smooth < 0.55 ? 1 : 0.6),
-            4
-          ),
-          50,
-          200
-        );
-        const rr = clamp(
-          rnd(user.rrRest + (hr - user.hrRest) / 20, 1.4),
-          6,
-          35
-        );
-        const resp = clamp(rnd(0.55, 0.1) * (rr / 18), 0, 1.2);
-        const rec = { t, smooth, tremor, strain, emgEnv, fsr, resp, grip, hr, rr };
-        return [...arr.slice(-180), rec]; // keep ~3 minutes @ 1 Hz
-      });
+      pushFrame();
     }, 1000);
     return () => clearInterval(tickRef.current);
-  }, [running, params.difficulty, sensors.forcePads, mode, user]);
+  }, [running, pushFrame]);
+
+  useEffect(() => {
+    if (!demoActive) return;
+    setRunning(true);
+    const handle = setInterval(() => {
+      const swing = Math.sin(Date.now() / 600);
+      const knee = Math.sin(Date.now() / 800) * 55 + 10;
+      const ankle = Math.cos(Date.now() / 700) * 25;
+      pushFrame({
+        pose: {
+          wrist: {
+            flexion: swing * 50,
+            rotation: swing * 35,
+            fingers: [40 + swing * 20, 50 + swing * 15, 35 + swing * 10],
+          },
+          leg: { knee, ankle },
+        },
+        usePoseSensors: true,
+      });
+    }, 420);
+    return () => clearInterval(handle);
+  }, [demoActive, pushFrame]);
 
   // Coaching policy — simple rule engine with mode transitions
   useEffect(() => {
@@ -224,6 +326,7 @@ export default function App() {
   };
   const stop = () => {
     setRunning(false);
+    setDemoActive(false);
     setMode("IDLE");
     setMessage("Coach idle. Press Start.");
   };
@@ -231,7 +334,15 @@ export default function App() {
     setStream([]);
     setNotes([]);
     setTime(0);
+    setDemoActive(false);
   };
+
+  const injectPose = useCallback(
+    (pose) => {
+      pushFrame({ pose, usePoseSensors: true });
+    },
+    [pushFrame]
+  );
 
   return (
     <div className="w-full min-h-screen bg-slate-50 text-slate-900">
@@ -352,7 +463,9 @@ export default function App() {
         {/* Right column: Content panes */}
         <div className="lg:col-span-3 space-y-6">
           {active === "overview" && <OverviewPane />}
-          {active === "layout" && <LayoutPane />}
+          {active === "layout" && (
+            <LayoutPane points={layoutPoints} setPoints={setLayoutPoints} />
+          )}
           {active === "signals" && (
             <SignalsPane stream={stream} params={params} />
           )}
@@ -369,6 +482,17 @@ export default function App() {
               notes={notes}
               latest={stream[stream.length - 1]}
               onExport={() => notes.length && exportCSV(notes)}
+            />
+          )}
+          {active === "viz" && (
+            <VisualizationPane
+              latest={stream[stream.length - 1]}
+              layoutPoints={layoutPoints}
+              sensors={sensors}
+              running={running}
+              demoActive={demoActive}
+              onToggleDemo={() => setDemoActive((v) => !v)}
+              onInjectPose={injectPose}
             />
           )}
         </div>
@@ -446,16 +570,7 @@ function OverviewPane() {
 }
 
 // ---------- Sensor Layout (SVG) ----------
-function LayoutPane() {
-  const [points, setPoints] = useState([
-    { id: "shoulder", x: 110, y: 70 },
-    { id: "bicep", x: 170, y: 90 },
-    { id: "forearm", x: 260, y: 150 },
-    { id: "wrist", x: 330, y: 200 },
-    { id: "imu", x: 210, y: 120 },
-    { id: "ppg", x: 140, y: 130 },
-    { id: "resp", x: 80, y: 110 },
-  ]);
+function LayoutPane({ points, setPoints }) {
   const dragging = useRef(null);
 
   const onDown = (id) => (e) => {

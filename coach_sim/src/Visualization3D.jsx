@@ -1,0 +1,421 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "./three-lite";
+
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const defaultPose = {
+  wrist: { flexion: 0, rotation: 0, fingers: [0, 0, 0] },
+  leg: { knee: 0, ankle: 0 },
+};
+
+function useLerpedPose(targetPose) {
+  const [pose, setPose] = useState(defaultPose);
+  const targetRef = useRef(targetPose);
+
+  useEffect(() => {
+    targetRef.current = targetPose;
+  }, [targetPose]);
+
+  useEffect(() => {
+    let raf;
+    const step = () => {
+      setPose((prev) => {
+        const t = targetRef.current || defaultPose;
+        const lerp = (a, b, k = 0.12) => a + (b - a) * k;
+        return {
+          wrist: {
+            flexion: lerp(prev.wrist.flexion, t.wrist?.flexion ?? 0),
+            rotation: lerp(prev.wrist.rotation, t.wrist?.rotation ?? 0),
+            fingers: prev.wrist.fingers.map((f, i) =>
+              lerp(f, t.wrist?.fingers?.[i] ?? 0, 0.2)
+            ),
+          },
+          leg: {
+            knee: lerp(prev.leg.knee, t.leg?.knee ?? 0),
+            ankle: lerp(prev.leg.ankle, t.leg?.ankle ?? 0),
+          },
+        };
+      });
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return pose;
+}
+
+function buildWrist(scene, partsRef) {
+  const group = new THREE.Group();
+  group.position.set(-1.2, -0.2, 0);
+
+  const forearm = new THREE.Mesh(
+    new THREE.BoxGeometry(1.4, 0.3, 0.3),
+    new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.3 })
+  );
+  forearm.position.set(0, 0, 0);
+
+  const wristPivot = new THREE.Group();
+  wristPivot.position.set(0.7, 0, 0);
+
+  const palm = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6, 0.32, 0.4),
+    new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.35 })
+  );
+  palm.position.set(0.3, 0, 0);
+
+  const twist = new THREE.Group();
+  twist.position.copy(wristPivot.position);
+
+  const fingers = new THREE.Group();
+  const fingerMaterial = new THREE.MeshStandardMaterial({ color: 0xf97316 });
+  [0, 1, 2].forEach((i) => {
+    const finger = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.08, 0.1), fingerMaterial);
+    finger.position.set(0.6, 0.12 - i * 0.12, 0.14 - i * 0.08);
+    finger.geometry.translate(0.16, 0, 0);
+    finger.rotation.z = -0.3;
+    fingers.add(finger);
+    partsRef.current.fingers[i] = finger;
+  });
+
+  twist.add(palm);
+  palm.add(fingers);
+  wristPivot.add(twist);
+  group.add(forearm);
+  group.add(wristPivot);
+  partsRef.current.wristPivot = wristPivot;
+  partsRef.current.wristTwist = twist;
+  return group;
+}
+
+function buildLeg(scene, partsRef) {
+  const group = new THREE.Group();
+  group.position.set(0.8, -0.6, 0);
+
+  const thigh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.4, 1.2, 0.4),
+    new THREE.MeshStandardMaterial({ color: 0x22c55e })
+  );
+  thigh.position.set(0, 0.6, 0);
+
+  const kneePivot = new THREE.Group();
+  kneePivot.position.set(0, 1.2, 0);
+
+  const shin = new THREE.Mesh(
+    new THREE.BoxGeometry(0.34, 1.1, 0.34),
+    new THREE.MeshStandardMaterial({ color: 0x16a34a })
+  );
+  shin.position.set(0, 0.55, 0);
+
+  const anklePivot = new THREE.Group();
+  anklePivot.position.set(0, 1.1, 0);
+
+  const foot = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 0.14, 0.8),
+    new THREE.MeshStandardMaterial({ color: 0xf59e0b })
+  );
+  foot.position.set(0, 0.07, 0.25);
+
+  anklePivot.add(foot);
+  shin.add(anklePivot);
+  kneePivot.add(shin);
+  group.add(thigh);
+  group.add(kneePivot);
+  partsRef.current.kneePivot = kneePivot;
+  partsRef.current.anklePivot = anklePivot;
+  return group;
+}
+
+function applyPoseToScene(pose, partsRef) {
+  const { wrist, leg } = pose;
+  if (partsRef.current.wristPivot) {
+    partsRef.current.wristPivot.rotation.z = THREE.MathUtils.degToRad(wrist.flexion || 0);
+  }
+  if (partsRef.current.wristTwist) {
+    partsRef.current.wristTwist.rotation.x = THREE.MathUtils.degToRad(wrist.rotation || 0);
+  }
+  (partsRef.current.fingers || []).forEach((finger, i) => {
+    if (!finger) return;
+    const angle = wrist.fingers?.[i] ?? 0;
+    finger.rotation.x = THREE.MathUtils.degToRad(-angle);
+  });
+  if (partsRef.current.kneePivot) {
+    partsRef.current.kneePivot.rotation.x = THREE.MathUtils.degToRad(-leg.knee || 0);
+  }
+  if (partsRef.current.anklePivot) {
+    partsRef.current.anklePivot.rotation.x = THREE.MathUtils.degToRad(leg.ankle || 0);
+  }
+}
+
+export default function VisualizationPane({
+  latest,
+  layoutPoints,
+  sensors,
+  running,
+  demoActive,
+  onToggleDemo,
+  onInjectPose,
+}) {
+  const containerRef = useRef(null);
+  const rendererRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const partsRef = useRef({ fingers: [] });
+  const [model, setModel] = useState("wrist");
+  const [manualPose, setManualPose] = useState(defaultPose);
+
+  const livePose = useMemo(() => latest?.pose || defaultPose, [latest?.pose]);
+  const lerpedPose = useLerpedPose(livePose);
+  const poseRef = useRef(lerpedPose);
+
+  useEffect(() => {
+    poseRef.current = lerpedPose;
+  }, [lerpedPose]);
+
+  useEffect(() => {
+    setManualPose(livePose);
+  }, [livePose]);
+
+  useEffect(() => {
+    const width = containerRef.current?.clientWidth || 600;
+    const height = 420;
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#f8fafc");
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(1.2, 1.3, 4.8);
+    camera.lookAt(0, 0.4, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    containerRef.current?.appendChild(renderer.domElement);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 1.1);
+    const key = new THREE.DirectionalLight(0xffffff, 0.8);
+    key.position.set(2, 3, 3);
+    scene.add(ambient, key);
+
+    const grid = new THREE.GridHelper(12, 12, 0xcbd5e1, 0xe2e8f0);
+    grid.position.y = -0.7;
+    scene.add(grid);
+
+    const wrist = buildWrist(scene, partsRef);
+    const leg = buildLeg(scene, partsRef);
+    leg.visible = false;
+    scene.add(wrist);
+    scene.add(leg);
+
+    sceneRef.current = scene;
+    rendererRef.current = renderer;
+    cameraRef.current = camera;
+
+    const animate = () => {
+      applyPoseToScene(poseRef.current, partsRef);
+      renderer.render(scene, camera);
+    };
+    renderer.setAnimationLoop(animate);
+
+    const onResize = () => {
+      const w = containerRef.current?.clientWidth || width;
+      const h = height;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      renderer.setAnimationLoop(null);
+      renderer.dispose();
+      containerRef.current?.removeChild(renderer.domElement);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    const [wrist, leg] = sceneRef.current.children.filter((c) => c.type === "Group");
+    if (wrist && leg) {
+      wrist.visible = model === "wrist";
+      leg.visible = model === "leg";
+    }
+  }, [model]);
+
+  const updateManual = (next) => {
+    setManualPose(next);
+    onInjectPose(next);
+  };
+
+  const slider = (label, value, onChange, min, max, step = 1, suffix = "°") => (
+    <div className="grid gap-1">
+      <div className="flex justify-between text-sm">
+        <span>{label}</span>
+        <span className="font-mono text-xs">{value.toFixed(0)}{suffix}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+    </div>
+  );
+
+  const latestSensors = useMemo(() => {
+    if (!latest)
+      return { strain: ["—", "—", "—"], fsr: ["—", "—", "—"], resp: "—" };
+    return {
+      strain: latest.strain?.map((v) => v.toFixed(2)) ?? [],
+      fsr: latest.fsr?.map((v) => v.toFixed(1)) ?? [],
+      resp: latest.resp?.toFixed(2) ?? "—",
+    };
+  }, [latest]);
+
+  const layoutSvg = (
+    <svg viewBox="0 0 360 180" className="w-full h-[160px]">
+      <rect x="0" y="0" width="360" height="180" rx="12" fill="#f1f5f9" />
+      {layoutPoints.map((p) => (
+        <g key={p.id}>
+          <circle cx={p.x * 0.6} cy={p.y * 0.7} r={6} fill="#0ea5e9" />
+          <text x={p.x * 0.6 + 10} y={p.y * 0.7 + 4} fontSize={11} fill="#0f172a">
+            {p.id}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+
+  return (
+    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-lg font-semibold">3D Visualization</h2>
+          <p className="text-sm text-slate-600">
+            Live articulated wrist/leg driven by the shared simulated signals.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Mode</label>
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className="border rounded-lg px-2 py-1"
+          >
+            <option value="wrist">Wrist visualization</option>
+            <option value="leg">Leg visualization</option>
+          </select>
+          <button
+            onClick={onToggleDemo}
+            className={`px-3 py-1.5 rounded-xl text-white ${
+              demoActive ? "bg-emerald-600" : "bg-slate-900"
+            }`}
+          >
+            {demoActive ? "Stop Randomized Demo" : "Run Randomized Demonstration"}
+          </button>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="border border-slate-200 rounded-xl p-2 bg-slate-50">
+          <div ref={containerRef} className="w-full" />
+        </div>
+        <div className="space-y-4">
+          <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm">Manual articulation</h3>
+              <span className="text-xs text-slate-500">
+                Injects values into the shared stream
+              </span>
+            </div>
+            {model === "wrist" && (
+              <div className="space-y-3">
+                {slider(
+                  "Flexion/Extension",
+                  manualPose.wrist.flexion,
+                  (v) =>
+                    updateManual({
+                      ...manualPose,
+                      wrist: { ...manualPose.wrist, flexion: v },
+                    }),
+                  -70,
+                  90
+                )}
+                {slider(
+                  "Pronation/Supination",
+                  manualPose.wrist.rotation,
+                  (v) =>
+                    updateManual({
+                      ...manualPose,
+                      wrist: { ...manualPose.wrist, rotation: v },
+                    }),
+                  -80,
+                  80
+                )}
+                {slider(
+                  "Finger curl",
+                  manualPose.wrist.fingers[0],
+                  (v) =>
+                    updateManual({
+                      ...manualPose,
+                      wrist: { ...manualPose.wrist, fingers: [v, v - 5, v - 10] },
+                      leg: manualPose.leg,
+                    }),
+                  0,
+                  95
+                )}
+              </div>
+            )}
+            {model === "leg" && (
+              <div className="space-y-3">
+                {slider(
+                  "Knee flexion",
+                  manualPose.leg.knee,
+                  (v) => updateManual({ ...manualPose, leg: { ...manualPose.leg, knee: v } }),
+                  -10,
+                  120
+                )}
+                {slider(
+                  "Ankle flexion",
+                  manualPose.leg.ankle,
+                  (v) => updateManual({ ...manualPose, leg: { ...manualPose.leg, ankle: v } }),
+                  -40,
+                  60
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
+            <div className="font-semibold text-sm">Live telemetry</div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <Telemetry label="Strain" value={latestSensors.strain.join(", ")} />
+              <Telemetry label="FSR" value={latestSensors.fsr.join(", ")} />
+              <Telemetry label="Resp" value={latestSensors.resp} />
+              <Telemetry label="Sensors" value={Object.keys(sensors).filter((k) => sensors[k]).join(", ") || "none"} />
+              <Telemetry label="Stream state" value={running ? "Running" : "Paused"} />
+              <Telemetry label="Pose source" value={demoActive ? "Random demo" : "Live/Manual"} />
+            </div>
+          </div>
+
+          <div className="border border-slate-200 rounded-xl p-3 bg-slate-50">
+            <div className="font-semibold text-sm mb-1">Sensor anchors (from layout)</div>
+            <div className="text-xs text-slate-600 mb-2">
+              Markers mirror the editable layout tab so placement matches the rendered model.
+            </div>
+            {layoutSvg}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Telemetry({ label, value }) {
+  return (
+    <div className="p-2 rounded-lg bg-slate-50 border">
+      <div className="text-[11px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="font-mono text-xs text-slate-800 break-words">{value}</div>
+    </div>
+  );
+}
