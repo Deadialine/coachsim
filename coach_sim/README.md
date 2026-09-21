@@ -1,70 +1,29 @@
-# Getting Started with Create React App
+# CoachSim experiment workflow
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The default screen implements the first four Fall 2026 thesis milestones as a simulation workflow. Start a seeded seven-posture session, monitor four raw EMG traces and IMU acceleration, inject a quality fault, export a versioned ZIP and replay it. The earlier concept simulator remains at `?view=concept`.
 
-## Available Scripts
+Signals, confidence and latency in generated sessions are synthetic. There is no connected device and no trained classifier. Imported legacy logs preserve provenance; reserved v1 EMG is never promoted to raw EMG.
 
-In the project directory, you can run:
+## Run and verify
 
-### `npm start`
+Node.js 22 or later and npm are recommended. This is a Vite project, not Create React App.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```sh
+npm ci
+npm test
+npm run dev -- --host 127.0.0.1
+npm run build
+npm run preview -- --host 127.0.0.1
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Open the local URL printed by Vite. Enter simulation IDs and a nonnegative 32-bit seed; start a simulation. Each of eight blocks includes seven shuffled classes, 3 s cue and 3 s rest (336 s nominal). The browser uses a virtual clock; background throttling may slow wall-clock playback. It does not measure acquisition timing. Stop before exporting. Session data stays in memory until export; export before starting a new session or leaving the page.
 
-### `npm test`
+Export produces a ZIP containing session.json, emg.csv, imu.csv, events.csv and predictions.csv. Full 2 kHz EMG and 100 Hz IMU rows are retained; charts show only short visible windows. Import accepts a four-channel v2 ZIP or an exact-header v1 CSV. One-channel bench variants are intentionally unsupported in this UI. Archives are limited to 80 MB compressed and 240 MB unpacked. Import/export can pause the UI while processing large files; offline tools are provided for larger datasets.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Replay advances one shared cursor for traces, target labels, predictions and events. Fault injection rails the generated ADC, reduces confidence and suppresses positive coaching. The overlay gates on confidence, freshness, raw signal quality and prediction stability. Synthetic overlay values are labeled `synthetic-overlay-1`; they do not estimate recognition accuracy.
 
-### `npm run build`
+## Research documentation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The [phase-one evidence repository](https://github.com/Deadialine/Coachsim-phase1-design) contains the system spec, schema, channel map, continuity audit, literature matrix, protocol, analysis plan, manuscript outline and synthetic bench reports. See its D1–D4 delivery index for the physical and hosting evidence that remains unverified.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Tests exercise data integrity, deterministic schedules, independent sample rates, ZIP roundtrip, v1 migration and uncertainty gates. Browser verification and screenshots are in ../evidence. No physical firmware or real-time transport has been certified by these tests.
