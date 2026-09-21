@@ -37,7 +37,7 @@ function Slider({
     </label>
   );
 }
-export default function App() {
+export default function App({ active = true, sensorLayout }) {
   const [controls, setControls] = useState({ ...DEFAULT_CONTROLS }),
     [appearance, setAppearance] = useState({
       shell: true,
@@ -80,7 +80,7 @@ export default function App() {
     setReset((n) => n + 1);
   }
   return (
-    <main className="hand-app">
+    <section className="hand-app" aria-label="Hand mechanics lab">
       <header className="hand-header">
         <a className="wordmark" href="?">
           COACH<span>SIM</span>
@@ -135,8 +135,8 @@ export default function App() {
             </div>
             <HandViewport
               controls={controls}
-              appearance={appearance}
-              paused={paused}
+              appearance={{ ...appearance, layout: sensorLayout }}
+              paused={paused || !active}
               reset={reset}
               ballRequest={ballRequest}
               cameraView={cameraView}
@@ -474,6 +474,6 @@ export default function App() {
         <span>COACHSIM / SPARSE EMG–IMU RESEARCH</span>
         <a href="?">Return to experiment workflow →</a>
       </footer>
-    </main>
+    </section>
   );
 }

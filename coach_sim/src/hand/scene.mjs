@@ -93,6 +93,7 @@ export function createScene(host, model) {
   const groups = new Map(),
     shellMeshes = [],
     markers = [],
+    markerSites = [],
     labelObjects = [];
   function mesh(geometry, material, parent, position) {
     const m = new THREE.Mesh(geometry, material);
@@ -186,6 +187,10 @@ export function createScene(host, model) {
       axes.position.set(0, 0.024, 0.022);
       g.add(axes);
       markers.push(axes);
+      markerSites.push({
+        id: "imu",
+        objects: [markers.at(-3), markers.at(-2), axes],
+      });
     } else if (link.kind === "forearm") {
       boneBetween(point(0.013, 0.005, 0), point(0.014, 0.242, 0), 0.009, g);
       shellMeshes.push(
@@ -215,6 +220,10 @@ export function createScene(host, model) {
           ).rotation.x = Math.PI / 2;
         markers.push(electrode);
         markers.push(label(`EMG ${i + 1}`, g, point(x * 2.1, y, z * 2.2)));
+        markerSites.push({
+          id: `emg_ch${i + 1}`,
+          objects: [electrode, markers.at(-1)],
+        });
       });
       label("Radius · axial rotation", g, point(0.066, 0.035, 0));
     } else {
@@ -320,6 +329,29 @@ export function createScene(host, model) {
   return {
     view,
     draw(options = {}) {
+      for (const site of markerSites) {
+        const placement = options.layout?.find((s) => s.id === site.id);
+        if (!placement) continue;
+        if (site.id === "imu") {
+          const x = ((placement.x - 50) / 100) * 0.045,
+            y = 0.012 + ((100 - placement.y) / 100) * 0.05;
+          site.objects[0].position.set(x, y, 0.018);
+          site.objects[1].position.set(x + 0.05, y, 0.025);
+          site.objects[2].position.set(x, y, 0.022);
+        } else {
+          const x = ((placement.x - 50) / 50) * 0.022,
+            y = 0.035 + ((100 - placement.y) / 100) * 0.18;
+          const z =
+            Math.sqrt(Math.max(0, 0.026 ** 2 - x ** 2)) *
+            (placement.surface === "palmar" ? -1 : 1);
+          site.objects[0].position.set(x, y, z);
+          site.objects[0].quaternion.setFromUnitVectors(
+            new THREE.Vector3(0, 0, 1),
+            new THREE.Vector3(x, 0, z).normalize(),
+          );
+          site.objects[1].position.set(x * 2, y, z * 1.8);
+        }
+      }
       for (const link of model.links) {
         const g = groups.get(link.id);
         g.position.copy(link.body.translation());

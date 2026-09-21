@@ -1,0 +1,247 @@
+.experiment [hidden] {
+  display: none !important;
+}
+.workspace-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  background: #fff;
+  border-bottom: 1px solid #dae4dd;
+  padding: 12px 5%;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.experiment .workspace-tabs button {
+  white-space: nowrap;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 10px 16px;
+  border-radius: 7px;
+  color: #49635d;
+  font-weight: 600;
+}
+.experiment .workspace-tabs button[aria-selected="true"] {
+  color: #fff;
+  background: #177965;
+}
+.experiment .workspace-tabs button:focus-visible {
+  outline: 3px solid #d7a45b;
+  outline-offset: 1px;
+}
+.signals-workspace {
+  grid-template-columns: 1fr !important;
+}
+.layout-panel,
+.logic-panel,
+.logs-panel {
+  margin-bottom: 24px;
+}
+.layout-panel > h2,
+.logic-panel > h2,
+.logs-panel > h2 {
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+.layout-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(230px, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+.layout-editor svg {
+  width: 100%;
+  max-height: 540px;
+  touch-action: none;
+}
+.layout-editor svg text {
+  font-size: 12px;
+  fill: #315b4c;
+}
+.layout-editor .site {
+  cursor: grab;
+  outline: none;
+}
+.layout-editor .site text:first-of-type {
+  fill: white;
+  font-weight: 700;
+}
+.layout-editor .site.selected circle,
+.layout-editor .site:focus circle {
+  stroke: #dda64d;
+  stroke-width: 4;
+}
+.experiment .site-controls label,
+.experiment .notes-editor label,
+.experiment .log-actions label {
+  display: block;
+  font-size: 12px;
+  color: #425d54;
+  margin: 12px 0;
+}
+.experiment .site-controls input,
+.experiment .site-controls select,
+.experiment .log-actions input,
+.experiment textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid #cddbd4;
+  border-radius: 6px;
+  padding: 9px;
+  margin-top: 6px;
+  font: inherit;
+  background: #fff;
+}
+.experiment textarea {
+  resize: vertical;
+}
+.logic-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+}
+.logic-inputs > div {
+  background: #f0f5f1;
+  padding: 15px;
+  border-radius: 7px;
+}
+.logic-inputs small {
+  display: block;
+  color: #60766e;
+  margin-bottom: 8px;
+}
+.logic-inputs strong {
+  font-size: 15px;
+  text-transform: capitalize;
+}
+.gate-list {
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.gate-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 16px;
+  border: 1px solid #d6dfd9;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.gate-list .passed {
+  background: #eaf6ed;
+}
+.gate-list .waiting {
+  background: #fff5df;
+}
+.coaching-output {
+  background: #e5efed;
+  border-left: 4px solid #177965;
+  padding: 20px;
+  border-radius: 6px;
+}
+.coaching-output > strong {
+  letter-spacing: 1.4px;
+}
+.logic-states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 20px 0;
+}
+.logic-states span {
+  font-size: 10px;
+  background: #eef1ee;
+  border: 1px solid #dce3db;
+  padding: 8px;
+  border-radius: 5px;
+}
+.logic-states .active {
+  background: #177965;
+  color: #fff;
+}
+.log-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+}
+.log-actions label {
+  flex: 1;
+  min-width: 200px;
+}
+.note-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 600px;
+}
+.experiment details {
+  margin: 18px 0;
+  font-size: 13px;
+}
+.experiment summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.experiment pre {
+  overflow: auto;
+  padding: 14px;
+  background: #eff3ef;
+  border-radius: 6px;
+  font-size: 11px;
+  max-height: 350px;
+}
+.embedded-hand .hand-app {
+  padding: 0;
+  background: transparent;
+}
+.embedded-hand .hand-header,
+.embedded-hand .hand-footer {
+  display: none;
+}
+.embedded-hand .hand-intro {
+  padding-top: 10px;
+}
+.embedded-hand .hand-app button {
+  font-size: 11px;
+}
+.embedded-hand {
+  margin-top: 20px;
+}
+.experiment .hand-toggle input {
+  width: 16px;
+  flex: 0 0 16px;
+}
+.experiment .hand-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.experiment .event-table {
+  overflow: auto;
+}
+@media (max-width: 760px) {
+  .workspace-tabs {
+    padding: 9px 4%;
+  }
+  .experiment .workspace-tabs button {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  .layout-editor {
+    grid-template-columns: 1fr;
+  }
+  .logic-inputs {
+    grid-template-columns: 1fr;
+  }
+  .gate-list li {
+    font-size: 12px;
+  }
+  .experiment header nav .muted {
+    display: none;
+  }
+}

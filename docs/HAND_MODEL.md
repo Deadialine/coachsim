@@ -1,6 +1,6 @@
 # CoachSim articulated hand model
 
-The hand workspace at `?view=hand` replaces the earlier box-and-three-finger concept model. The old `?view=concept` address opens this workspace too. The experiment remains the default route. Its optional **Show 3D posture illustration** panel follows either the target cue or a stable, quality-gated prediction without leaving the session.
+The 3D Model tab at `?view=hand` replaces the earlier box-and-three-finger model within the restored six-tab workspace. The old `?view=concept` address opens Overview. The experiment remains the default route. Its optional **Show 3D posture illustration** panel follows either the target cue or a stable, quality-gated prediction without leaving the session. The full hand tab preserves its pose while other tabs are used and pauses physics while hidden.
 
 This is an engineering rigid-body model, not a validated musculoskeletal or patient-specific model. No measured EMG-to-force, EMG-to-angle, inverse-kinematics, or trained recognition model is implemented. The existing synthetic experiment data retain their original provenance. Model angles are not exported as acquired sensor measurements.
 
@@ -48,7 +48,7 @@ Reset creates a fresh world. Pause stops physics while allowing camera movement.
 
 ## Current study scope
 
-The sensor display contains four bipolar **MyoWare RAW sEMG** channels targeting **2 kHz per channel** and one **MPU6050** targeting **100 Hz** on the dorsal hand/wrist. Electrode positions in the drawing are schematic, not an approved placement map. The IMU axes are attached to the palm; no magnetometer or absolute heading is assumed. **ESP32 acquisition is planned**, not connected or verified. **DS1307** is for wall-clock metadata only, not sample timing.
+The sensor display contains four bipolar **MyoWare RAW sEMG** channels targeting **2 kHz per channel** and one **MPU6050** targeting **100 Hz** on the dorsal hand/wrist. The interactive Sensor Layout draft updates the full 3D Model tab's markers. Electrode positions are schematic, not an approved placement map; editing them does not modify the synthetic signal generator or physical model. A session captures its own placement snapshot at start, separate from later draft edits. The IMU axes are attached to the palm; no magnetometer or absolute heading is assumed. **ESP32 acquisition is planned**, not connected or verified. **DS1307** is for wall-clock metadata only, not sample timing.
 
 The seven classes remain neutral rest, wrist flexion, wrist extension, radial deviation, ulnar deviation, forearm pronation, and forearm supination. LDA is the planned primary classifier and RBF SVM the comparison, with separate-session evaluation. Trained recognition is not supplied by this visualization. Finger tracking, strain/FSR, respiration, PPG, haptics, and lower-limb sensing are outside the current study. The previous broad sleeve/leg controls and unused miniature renderer have been removed from active source code; historical evidence remains preserved.
 
