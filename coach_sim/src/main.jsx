@@ -1,13 +1,19 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import Experiment from "./experiment/Experiment";
 import "./index.css";
+const App = lazy(() => import("./App"));
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {new URLSearchParams(window.location.search).get("view") === "concept" ? (
-      <App />
+    {["hand", "concept"].includes(
+      new URLSearchParams(window.location.search).get("view"),
+    ) ? (
+      <Suspense
+        fallback={<p style={{ padding: 32 }}>Loading hand mechanics…</p>}
+      >
+        <App />
+      </Suspense>
     ) : (
       <Experiment />
     )}
