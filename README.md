@@ -1,6 +1,8 @@
 # CoachSim
 
-[Run CoachSim](coach_sim/README.md). The default app is the Fall 2026 simulation experiment. Open **Hand mechanics** (`?view=hand`) for the articulated 3D hand, or enable the optional posture illustration inside a session.
+[Run CoachSim](coach_sim/README.md). One shared session spans **Overview, Sensor Layout, Signals, Coaching Logic, Data Logs, and 3D Model**. Switching tabs preserves recording, replay, notes, and the hand pose. Open `?view=hand` directly for the articulated model, or enable the posture illustration in Overview.
+
+The restored sensor editor supports dragging and keyboard/numeric placement. Session ZIPs retain the placement snapshot and timestamped operator notes. Signals exposes all four EMG channels and all six MPU6050 axes. Coaching Logic displays the live quality, confidence, freshness, stability, and target-match decision. [Workspace guide](docs/WORKSPACE.md).
 
 The model has five digits, 23 constrained rotational axes, gravity, motor torques, object contact, and hand self-contact. [Model assumptions and current sensor scope](docs/HAND_MODEL.md) · [Numerical verification](evidence/HAND_VERIFICATION.md).
 

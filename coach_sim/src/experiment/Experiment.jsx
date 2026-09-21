@@ -15,7 +15,32 @@ import {
   qualitySummary,
 } from "./core.mjs";
 import "./experiment.css";
+import "./workspace.css";
+import { SensorLayout, CoachingLogic, DataLogs } from "./WorkspacePanels";
+import {
+  DEFAULT_LAYOUT,
+  normalizeLayout,
+  coachingDecision,
+  addOperatorNote,
+} from "./workspace.mjs";
 const ExperimentHand = lazy(() => import("../hand/ExperimentHand"));
+const HandLab = lazy(() => import("../App"));
+const TABS = [
+  ["overview", "Overview"],
+  ["layout", "Sensor Layout"],
+  ["signals", "Signals"],
+  ["logic", "Coaching Logic"],
+  ["log", "Data Logs"],
+  ["hand", "3D Model"],
+];
+function initialTab() {
+  const view = new URLSearchParams(window.location.search).get("view");
+  return view === "concept"
+    ? "overview"
+    : TABS.some(([id]) => id === view)
+      ? view
+      : "overview";
+}
 const label = (s) => (s || "uncertain").replaceAll("_", " ");
 function Trace({ rows, field, title, color, unit }) {
   const last = rows.at(-1)?.t_us ?? 0,
@@ -72,6 +97,16 @@ function prefix(rows, t) {
   return rows.slice(0, lo);
 }
 export default function Experiment() {
+  const [tab, setTab] = useState(initialTab),
+    [visitedHand, setVisitedHand] = useState(() => initialTab() === "hand");
+  const [layout, setLayout] = useState(() => normalizeLayout(DEFAULT_LAYOUT));
+  function navigate(id) {
+    setTab(id);
+    if (id === "hand") setVisitedHand(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", id);
+    window.history.replaceState(null, "", url);
+  }
   const [showHand, setShowHand] = useState(false);
   const data = useRef(newSession()),
     plan = useRef(schedule()),
@@ -161,6 +196,12 @@ export default function Experiment() {
       session: session.trim(),
       seed,
     });
+    data.current.session.placement_metadata = {
+      mode: "simulation",
+      coordinate_system: "schematic_region_percent",
+      sites: normalizeLayout(layout),
+    };
+    data.current.session.operator_notes = [];
     plan.current = schedule(seed);
     clock.current = 0;
     gate.current = null;
@@ -264,6 +305,8 @@ export default function Experiment() {
         );
       }
       data.current = bundle;
+      if (bundle.session.placement_metadata?.sites)
+        setLayout(normalizeLayout(bundle.session.placement_metadata.sites));
       setDownload(null);
       setReplay(true);
       setReplaying(false);
@@ -290,7 +333,7 @@ export default function Experiment() {
   let status = running
     ? gate.current
     : displayPrediction(signalQualityAt(b, t) ? pred : null, t, null);
-  if (replay && status?.label !== "uncertain") {
+  if (!running && pred && status?.label !== "uncertain") {
     let since = pred.t_us;
     for (let i = b.predictions.indexOf(pred) - 1; i >= 0; i--) {
       const prev = b.predictions[i];
@@ -312,6 +355,19 @@ export default function Experiment() {
     true,
   );
   const recentBad = emg.length && !signalQualityAt(b, t);
+  const decision = coachingDecision({
+    prediction: pred,
+    status,
+    target: cue?.target_posture,
+    eventType: cue?.event_type,
+    qualityOk: signalQualityAt(b, t),
+    t,
+  });
+  function saveNote(text) {
+    addOperatorNote(b.session, { text, t_us: t, target: cue?.target_posture });
+    setDownload(null);
+    render((v) => v + 1);
+  }
   const nextBoundary = (replay ? b.events : plan.current).find(
     (e) =>
       ["cue", "rest", "complete"].includes(e.event_type) &&
@@ -342,17 +398,53 @@ export default function Experiment() {
           </div>
         </div>
         <nav>
-          <a href="?view=hand" target="_blank" rel="noreferrer">
-            Hand mechanics ↗
-          </a>
+          <span className="muted">4 × sEMG · 1 × IMU</span>
           <span className="pill">{provenance}</span>
         </nav>
       </header>
-      <main>
+      <div
+        className="workspace-tabs"
+        role="tablist"
+        aria-label="CoachSim workspace"
+      >
+        {TABS.map(([id, name], index) => (
+          <button
+            key={id}
+            id={`tab-${id}`}
+            role="tab"
+            aria-selected={tab === id}
+            aria-controls="workspace-panel"
+            tabIndex={tab === id ? 0 : -1}
+            onKeyDown={(e) => {
+              const offset =
+                e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+              const next =
+                e.key === "Home"
+                  ? 0
+                  : e.key === "End"
+                    ? TABS.length - 1
+                    : (index + offset + TABS.length) % TABS.length;
+              if (offset || e.key === "Home" || e.key === "End") {
+                e.preventDefault();
+                navigate(TABS[next][0]);
+                document.getElementById(`tab-${TABS[next][0]}`)?.focus();
+              }
+            }}
+            onClick={() => navigate(id)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+      <main id="workspace-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
         <div className="intro">
           <div>
             <p className="eyebrow">FALL 2026 · D1–D4</p>
-            <h1>From sensing to feedback.</h1>
+            <h1>
+              {tab === "overview"
+                ? "From sensing to feedback."
+                : TABS.find(([id]) => id === tab)[1]}
+            </h1>
             <p>
               Seven maintained postures. Synchronized traces. A reproducible
               session.
@@ -467,7 +559,42 @@ export default function Experiment() {
             </strong>
           </div>
         </div>
-        <div className="hand-toggle">
+        {tab === "layout" && (
+          <SensorLayout
+            layout={layout}
+            onChange={setLayout}
+            recorded={b.session.duration_us > 0}
+          />
+        )}
+        {tab === "logic" && (
+          <CoachingLogic
+            decision={decision}
+            prediction={pred}
+            target={cue?.target_posture}
+            t={t}
+            onFault={toggleFault}
+            fault={fault}
+            running={running}
+          />
+        )}
+        <div hidden={tab !== "log"}>
+          <DataLogs
+            bundle={b}
+            t={t}
+            onNote={saveNote}
+            onExport={exportZip}
+            busy={busy}
+            running={running}
+          />
+        </div>
+        {visitedHand && (
+          <div hidden={tab !== "hand"} className="embedded-hand">
+            <Suspense fallback={<p>Loading hand mechanics…</p>}>
+              <HandLab embedded active={tab === "hand"} sensorLayout={layout} />
+            </Suspense>
+          </div>
+        )}
+        <div className="hand-toggle" hidden={tab !== "overview"}>
           <label>
             <input
               type="checkbox"
@@ -477,7 +604,7 @@ export default function Experiment() {
             Show 3D posture illustration
           </label>
         </div>
-        {showHand && (
+        {showHand && tab === "overview" && (
           <Suspense fallback={<p>Loading 3D posture illustration…</p>}>
             <ExperimentHand
               target={cue?.target_posture}
@@ -486,7 +613,10 @@ export default function Experiment() {
             />
           </Suspense>
         )}
-        <div className="workspace">
+        <div
+          className={`workspace ${tab === "signals" ? "signals-workspace" : ""}`}
+          hidden={!["overview", "signals"].includes(tab)}
+        >
           <section className="panel traces">
             <div className="section-title">
               <h2>Acquisition monitor</h2>
@@ -512,19 +642,27 @@ export default function Experiment() {
                 />
               ))}
             </div>
-            <Trace
-              rows={imu}
-              field="ax"
-              title="IMU acceleration X"
-              unit="g"
-              color="#334155"
-            />
+            <div className={tab === "signals" ? "trace-grid" : ""}>
+              {(tab === "signals"
+                ? ["ax", "ay", "az", "gx", "gy", "gz"]
+                : ["ax"]
+              ).map((field) => (
+                <Trace
+                  key={field}
+                  rows={imu}
+                  field={field}
+                  title={`IMU ${field.startsWith("a") ? "acceleration" : "angular velocity"} ${field.at(-1).toUpperCase()}`}
+                  unit={field.startsWith("a") ? "g" : "°/s"}
+                  color={field.startsWith("a") ? "#334155" : "#9a6524"}
+                />
+              ))}
+            </div>
             <p className="muted">
               Raw EMG at 2 kHz/channel · IMU at 100 Hz · display follows its own
               clock.
             </p>
           </section>
-          <section className="panel cue-panel">
+          <section className="panel cue-panel" hidden={tab === "signals"}>
             <p className="eyebrow">
               {cue?.event_type === "rest" ? "REST INTERVAL" : "TARGET POSTURE"}
             </p>
@@ -548,13 +686,7 @@ export default function Experiment() {
               {((pred?.confidence || 0) * 100).toFixed(0)}% confidence ·{" "}
               {status?.stable ? "stable" : "waiting for stability"}
             </p>
-            <p className="muted">
-              {status?.label === "uncertain"
-                ? "No coaching cue: confidence, freshness, or signal quality gate failed."
-                : status?.stable
-                  ? "Posture held. Continue following the target cue."
-                  : "Hold position while the prediction settles."}
-            </p>
+            <p className="muted">{decision.message}</p>
             <button
               className={fault ? "fault active" : "fault"}
               disabled={!running}
@@ -567,7 +699,10 @@ export default function Experiment() {
             </small>
           </section>
         </div>
-        <section className="panel replay-panel">
+        <section
+          className="panel replay-panel"
+          hidden={!["overview", "log", "signals", "logic"].includes(tab)}
+        >
           <div className="section-title">
             <h2>Replay & events</h2>
             <button
