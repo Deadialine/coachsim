@@ -9,14 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.21",
     "fflate": "0.8.2",
+    "postcss": "^8.5.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.12.7"
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
+    "recharts": "^2.12.7",
     "tailwindcss": "^3.4.18",
     "vite": "^5.3.4"
   }
