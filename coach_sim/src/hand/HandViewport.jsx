@@ -1,0 +1,90 @@
+import React, { useEffect, useRef, useState } from "react";
+import { createHand, initPhysics } from "./physics.mjs";
+import { createScene } from "./scene.mjs";
+
+export default function HandViewport({
+  controls,
+  appearance,
+  paused,
+  reset,
+  ballRequest,
+  cameraView,
+  cameraVersion = 0,
+  onDiagnostics,
+}) {
+  const host = useRef(null),
+    engine = useRef(null),
+    current = useRef({ controls, appearance, paused, onDiagnostics });
+  current.current = { controls, appearance, paused, onDiagnostics };
+  const [error, setError] = useState(""),
+    [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false,
+      frame,
+      model,
+      scene;
+    setError("");
+    setLoading(true);
+    (async () => {
+      try {
+        await initPhysics();
+        if (cancelled) return;
+        model = createHand();
+        scene = createScene(host.current, model);
+        engine.current = { model, scene };
+        setLoading(false);
+        let last = performance.now(),
+          report = 0;
+        function tick(now) {
+          if (cancelled) return;
+          const state = current.current;
+          if (!state.paused) model.advance((now - last) / 1000, state.controls);
+          last = now;
+          scene.draw(state.appearance);
+          if (now - report > 200) {
+            state.onDiagnostics?.(model.diagnostics());
+            report = now;
+          }
+          frame = requestAnimationFrame(tick);
+        }
+        frame = requestAnimationFrame(tick);
+      } catch (e) {
+        setError(
+          `The 3D workspace could not start: ${e.message}. Enable WebGL in your browser and reload.`,
+        );
+        setLoading(false);
+        scene?.dispose();
+        model?.dispose();
+        scene = null;
+        model = null;
+      }
+    })();
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      engine.current = null;
+      scene?.dispose();
+      model?.dispose();
+    };
+  }, [reset]);
+  useEffect(() => {
+    if (ballRequest) engine.current?.model.placeBall();
+  }, [ballRequest]);
+  useEffect(() => {
+    engine.current?.scene.view(cameraView);
+  }, [cameraView, cameraVersion]);
+  return (
+    <div className="hand-viewport" ref={host}>
+      {loading && (
+        <div className="viewport-message" role="status">
+          Building articulated hand…
+        </div>
+      )}
+      {error && (
+        <div className="viewport-message" role="alert">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}

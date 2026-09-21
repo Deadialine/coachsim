@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { zipSync, unzipSync, strToU8, strFromU8 } from "fflate";
 import {
   CLASSES,
@@ -15,6 +15,7 @@ import {
   qualitySummary,
 } from "./core.mjs";
 import "./experiment.css";
+const ExperimentHand = lazy(() => import("../hand/ExperimentHand"));
 const label = (s) => (s || "uncertain").replaceAll("_", " ");
 function Trace({ rows, field, title, color, unit }) {
   const last = rows.at(-1)?.t_us ?? 0,
@@ -71,6 +72,7 @@ function prefix(rows, t) {
   return rows.slice(0, lo);
 }
 export default function Experiment() {
+  const [showHand, setShowHand] = useState(false);
   const data = useRef(newSession()),
     plan = useRef(schedule()),
     clock = useRef(0),
@@ -340,7 +342,9 @@ export default function Experiment() {
           </div>
         </div>
         <nav>
-          <a href="?view=concept">Concept simulator ↗</a>
+          <a href="?view=hand" target="_blank" rel="noreferrer">
+            Hand mechanics ↗
+          </a>
           <span className="pill">{provenance}</span>
         </nav>
       </header>
@@ -463,6 +467,25 @@ export default function Experiment() {
             </strong>
           </div>
         </div>
+        <div className="hand-toggle">
+          <label>
+            <input
+              type="checkbox"
+              checked={showHand}
+              onChange={(e) => setShowHand(e.target.checked)}
+            />{" "}
+            Show 3D posture illustration
+          </label>
+        </div>
+        {showHand && (
+          <Suspense fallback={<p>Loading 3D posture illustration…</p>}>
+            <ExperimentHand
+              target={cue?.target_posture}
+              prediction={status?.label}
+              stable={status?.stable}
+            />
+          </Suspense>
+        )}
         <div className="workspace">
           <section className="panel traces">
             <div className="section-title">
