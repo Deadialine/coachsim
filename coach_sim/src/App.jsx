@@ -44,11 +44,12 @@ export default function App({ active = true, sensorLayout }) {
       labels: true,
       sensors: true,
       tendons: false,
+      opacity: 0.24,
     });
   const [paused, setPaused] = useState(false),
     [reset, setReset] = useState(0),
     [ballRequest, setBallRequest] = useState(0),
-    [cameraView, setCameraView] = useState("dorsal"),
+    [cameraView, setCameraView] = useState("detail"),
     [cameraVersion, setCameraVersion] = useState(0),
     [diagnostics, setDiagnostics] = useState(null),
     [preset, setPreset] = useState("neutral_rest");
@@ -68,6 +69,7 @@ export default function App({ active = true, sensorLayout }) {
       thumb: 0,
       opposition: 0,
       spread: 0,
+      cup: 0,
     }));
     setPreset(key);
   };
@@ -75,7 +77,7 @@ export default function App({ active = true, sensorLayout }) {
     setControls({ ...DEFAULT_CONTROLS });
     setPreset("neutral_rest");
     setPaused(false);
-    setCameraView("dorsal");
+    setCameraView("detail");
     setDiagnostics(null);
     setReset((n) => n + 1);
   }
@@ -143,7 +145,7 @@ export default function App({ active = true, sensorLayout }) {
             <div className="stage-bottom">
               <span>Drag to orbit · Scroll to zoom · Right-drag to pan</span>
               <div>
-                {["dorsal", "palmar", "side"].map((view) => (
+                {["detail", "dorsal", "palmar", "side"].map((view) => (
                   <button
                     key={view}
                     className={cameraView === view ? "selected" : ""}
@@ -152,7 +154,7 @@ export default function App({ active = true, sensorLayout }) {
                       setCameraVersion((v) => v + 1);
                     }}
                   >
-                    {title(view)}
+                    {view === "detail" ? "Hand detail" : title(view)}
                   </button>
                 ))}
               </div>
@@ -219,6 +221,44 @@ export default function App({ active = true, sensorLayout }) {
             </p>
           </section>
           <div className="view-options">
+            <button
+              onClick={() =>
+                setAppearance((a) => ({
+                  ...a,
+                  shell: true,
+                  opacity: 0.24,
+                  labels: true,
+                  tendons: false,
+                }))
+              }
+            >
+              Anatomy view
+            </button>
+            <button
+              onClick={() =>
+                setAppearance((a) => ({
+                  ...a,
+                  shell: true,
+                  opacity: 1,
+                  labels: false,
+                  tendons: false,
+                }))
+              }
+            >
+              Surface view
+            </button>
+            <button
+              onClick={() =>
+                setAppearance((a) => ({
+                  ...a,
+                  shell: false,
+                  labels: true,
+                  tendons: true,
+                }))
+              }
+            >
+              Tendon guide view
+            </button>
             <strong>Show</strong>
             {[
               ["shell", "Surface"],
@@ -243,6 +283,38 @@ export default function App({ active = true, sensorLayout }) {
             Sensor sites and tendon paths are schematic. The tendons shown are
             visual guides, not force-generating tissues.
           </p>
+          <section className="motion-feedback">
+            <div className="section-title">
+              <h2>Follow the connections</h2>
+              <label>
+                Trace a digit{" "}
+                <select
+                  value={appearance.focus ?? ""}
+                  onChange={(e) =>
+                    setAppearance((a) => ({ ...a, focus: e.target.value }))
+                  }
+                >
+                  <option value="">None</option>
+                  {[...DIGITS, "thumb"].map((d) => (
+                    <option value={d} key={d}>
+                      {title(d)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <p>
+              The mint line follows the selected physical chain from forearm to
+              fingertip. Ring and little fingers pass through moving CMC joints;
+              index and middle metacarpals stay with the palm core. The thumb
+              has its own two-axis base.
+            </p>
+            <p>
+              Surface view follows the bones for visual continuity. Contact uses
+              simplified rigid colliders; the surface is not simulated soft
+              tissue.
+            </p>
+          </section>
           <section className="scope-card">
             <p className="eyebrow">ACQUISITION PLAN</p>
             <h2>Designed around the current study.</h2>
@@ -333,6 +405,7 @@ export default function App({ active = true, sensorLayout }) {
                     thumb: 0,
                     opposition: 0,
                     spread: 0,
+                    cup: 0,
                   }));
                   setPreset("manual");
                 }}
@@ -351,13 +424,43 @@ export default function App({ active = true, sensorLayout }) {
                     opposition: 55,
                     spread: 0,
                     motors: true,
+                    cup: 0.8,
                   }));
                   setPreset("manual");
                 }}
               >
                 Power curl
               </button>
+              <button
+                onClick={() => {
+                  setControls((c) => ({
+                    ...c,
+                    index: 0.55,
+                    middle: 0.6,
+                    ring: 0.65,
+                    little: 0.7,
+                    thumb: 0.4,
+                    opposition: 45,
+                    cup: 1,
+                    spread: 0,
+                    motors: true,
+                  }));
+                  setPreset("manual");
+                }}
+              >
+                Cupped grasp
+              </button>
             </div>
+            <Slider
+              name="Palm cupping"
+              value={controls.cup}
+              min={0}
+              max={1}
+              step={0.01}
+              unit="%"
+              onChange={(v) => set("cup", v)}
+              note="Moves the ring and little metacarpals at their CMC joints."
+            />
             {[...DIGITS, "thumb"].map((name) => (
               <Slider
                 key={name}
@@ -460,14 +563,15 @@ export default function App({ active = true, sensorLayout }) {
         </div>
         <div>
           <p>
-            23 constrained rotation axes connect rigid segments. The solver
+            25 constrained rotation axes connect rigid segments. The solver
             applies motor torques, inertial response, gravity, friction, object
             contact, and finger self-contact at 120 steps per simulated second.
             Target and actual angles can differ under load.
           </p>
           <p>
             Serial hinges approximate the wrist and thumb saddle joint. The
-            carpal bones and four finger metacarpals form one rigid palm. Radius
+            carpal bones and index/middle metacarpals form the stable palm core.
+            Ring and little metacarpals articulate to cup the palm. Radius
             rotation is schematic; radioulnar translation, ligament forces,
             tendon routing mechanics, and soft-tissue deformation are not
             modeled. Nonadjacent hand segments do collide. Link sizes, masses,
@@ -489,7 +593,7 @@ export default function App({ active = true, sensorLayout }) {
         </div>
       </section>
       <details className="joint-readout">
-        <summary>Inspect all 23 joints · target, command & actual</summary>
+        <summary>Inspect all 25 joints · target, command & actual</summary>
         <table>
           <thead>
             <tr>

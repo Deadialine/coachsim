@@ -5,6 +5,7 @@ import {
   CSS2DObject,
 } from "three/addons/renderers/CSS2DRenderer.js";
 import { DIGITS, worldPoint } from "./physics.mjs";
+import { createPalmSurface } from "./palmSurface.mjs";
 
 export function createScene(host, model) {
   const scene = new THREE.Scene();
@@ -39,9 +40,10 @@ export function createScene(host, model) {
       dorsal: [0.31, 0.21, 0.73],
       palmar: [-0.27, 0.14, -0.72],
       side: [0.72, 0.1, 0.03],
+      detail: [0.2, 0.16, 0.36],
     };
     camera.position.set(...positions[which]);
-    orbit.target.set(0, -0.035, 0);
+    orbit.target.set(0, which === "detail" ? 0.075 : -0.035, 0);
     orbit.update();
   }
   view();
@@ -69,11 +71,12 @@ export function createScene(host, model) {
       metalness: 0.15,
     }),
     shell: new THREE.MeshStandardMaterial({
-      color: "#97b9b8",
+      color: "#d7ad91",
       transparent: true,
-      opacity: 0.16,
+      opacity: 0.24,
       depthWrite: false,
-      roughness: 0.65,
+      roughness: 0.85,
+      side: THREE.DoubleSide,
     }),
     sensor: new THREE.MeshStandardMaterial({
       color: "#5de1c6",
@@ -108,8 +111,28 @@ export function createScene(host, model) {
   function boneBetween(a, b, r, parent, material = materials.bone) {
     const delta = vec(b).sub(vec(a)),
       length = delta.length();
+    const geometry =
+      material === materials.bone
+        ? new THREE.LatheGeometry(
+            [
+              [0, 0],
+              [0.72, 0.025],
+              [1.05, 0.08],
+              [0.85, 0.16],
+              [0.58, 0.3],
+              [0.52, 0.65],
+              [0.7, 0.83],
+              [1, 0.93],
+              [0.85, 0.98],
+              [0, 1],
+            ].map(
+              ([width, t]) => new THREE.Vector2(r * width, length * (t - 0.5)),
+            ),
+            20,
+          )
+        : new THREE.CapsuleGeometry(r, Math.max(0, length - 2 * r), 8, 20);
     const m = mesh(
-      new THREE.CapsuleGeometry(r, Math.max(0, length - 2 * r), 6, 12),
+      geometry,
       material,
       parent,
       vec(a).add(vec(b)).multiplyScalar(0.5),
@@ -140,11 +163,17 @@ export function createScene(host, model) {
     }
     const shape = link.shape;
     if (link.kind === "palm") {
+      const wristSurface = mesh(
+        new THREE.SphereGeometry(1, 24, 16),
+        materials.shell,
+        g,
+        vec(point(0, 0, 0)),
+      );
+      wristSurface.scale.set(0.022, 0.014, 0.014);
+      shellMeshes.push(wristSurface);
       for (const [x, y] of [
         [0.026, 0.08],
         [0.008, 0.087],
-        [-0.012, 0.083],
-        [-0.03, 0.072],
       ]) {
         boneBetween(point(x * 0.48, 0.014, 0), point(x, y, 0), 0.006, g);
         mesh(
@@ -164,14 +193,6 @@ export function createScene(host, model) {
           );
           carpal.scale.set(1, 0.8, 0.9);
         }
-      shellMeshes.push(
-        mesh(
-          new THREE.BoxGeometry(0.075, 0.081, 0.025),
-          materials.shell,
-          g,
-          vec(point(0, 0.042, 0)),
-        ),
-      );
       markers.push(
         mesh(
           new THREE.BoxGeometry(0.019, 0.023, 0.006),
@@ -240,6 +261,33 @@ export function createScene(host, model) {
         g,
       );
       shellMeshes.push(boneBetween(a, b, shape.radius, g, materials.shell));
+      if (link.id === "thumb_CMC") {
+        const thenar = mesh(
+          new THREE.SphereGeometry(1, 24, 16),
+          materials.shell,
+          g,
+          vec(point(b.x * 0.36, b.y * 0.36, -0.003)),
+        );
+        thenar.scale.set(0.014, 0.023, 0.013);
+        thenar.quaternion.setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0),
+          vec(b).normalize(),
+        );
+        shellMeshes.push(thenar);
+      }
+      if (link.kind === "metacarpal")
+        label(
+          `${link.id.startsWith("ring") ? "IV" : "V"} CMC · palm arch`,
+          g,
+          point(-0.025, 0.012, 0.016),
+        );
+      shellMeshes.push(
+        mesh(
+          new THREE.SphereGeometry(shape.radius * 1.015, 20, 14),
+          materials.shell,
+          g,
+        ),
+      );
       if (link.id.endsWith("_DIP") || link.id === "thumb_IP") {
         const nail = mesh(
           new THREE.SphereGeometry(1, 12, 8),
@@ -299,6 +347,22 @@ export function createScene(host, model) {
   grid.position.y = -0.294;
   scene.add(grid);
   const tendonGroup = new THREE.Group();
+  const connection = new THREE.Line(
+    new THREE.BufferGeometry(),
+    new THREE.LineBasicMaterial({
+      color: "#7fffe0",
+      depthTest: false,
+      transparent: true,
+      opacity: 0.9,
+    }),
+  );
+  connection.renderOrder = 20;
+  connection.frustumCulled = false;
+  scene.add(connection);
+  const palmSurface = createPalmSurface();
+  const palmSkin = mesh(palmSurface.geometry, materials.shell, scene);
+  palmSkin.frustumCulled = false;
+  shellMeshes.push(palmSkin);
   scene.add(tendonGroup);
   const tendons = [];
   for (const digit of DIGITS)
@@ -368,6 +432,48 @@ export function createScene(host, model) {
       const ballPose = model.renderPose(model.ball, interpolate);
       ball.position.copy(ballPose.position);
       ball.quaternion.copy(ballPose.rotation);
+      connection.visible = !!options.focus;
+      if (options.focus) {
+        const tipId =
+          options.focus === "thumb" ? "thumb_IP" : `${options.focus}_DIP`;
+        let link = model.links.find((l) => l.id === tipId);
+        const chain = [];
+        if (link) {
+          const tip = link.shape.offset
+            ? point(link.shape.offset.x * 2, link.shape.offset.y * 2, 0)
+            : point(0, link.shape.length, 0);
+          chain.push(vec(worldPoint(poseBody(link.body), tip)));
+          while (link) {
+            chain.push(vec(poseBody(link.body).translation()));
+            link = model.links.find((l) => l.body === link.parent);
+          }
+        }
+        connection.geometry.setFromPoints(chain);
+      }
+      const palmPose = poseBody(model.bodies.deviation);
+      const names = ["little", "ring", "middle", "index"];
+      const bases = [-0.035, -0.012, 0.008, 0.032].map((x) =>
+        vec(worldPoint(palmPose, point(x * 0.55, 0.002, 0))),
+      );
+      const heads = names.map((name, i) => {
+        const l = model.links.find((l) => l.id === `${name}_spread`);
+        return vec(
+          worldPoint(
+            poseBody(l.body),
+            point(i === 0 ? -0.007 : i === 3 ? 0.007 : 0, -0.004, 0),
+          ),
+        );
+      });
+      const q = model.renderPose(model.bodies.deviation, interpolate).rotation;
+      palmSurface.update(
+        bases,
+        heads,
+        new THREE.Vector3(0, 0, 1).applyQuaternion(
+          new THREE.Quaternion(q.x, q.y, q.z, q.w),
+        ),
+      );
+      materials.shell.opacity = options.opacity ?? 0.24;
+      materials.shell.depthWrite = materials.shell.opacity >= 0.95;
       shellMeshes.forEach((m) => (m.visible = options.shell !== false));
       labelObjects.forEach((m) => (m.visible = !!options.labels));
       markers.forEach(
@@ -382,14 +488,19 @@ export function createScene(host, model) {
           const links = ["MCP", "PIP", "DIP"].map((k) =>
             model.links.find((l) => l.id === `${digit}_${k}`),
           );
-          const base = model.links.find(
+          const spreadLink = model.links.find(
             (l) => l.id === `${digit}_spread`,
-          ).anchor;
+          );
+          const baseWorld = worldPoint(
+            poseBody(spreadLink.body),
+            point(0, 0, side * 0.01),
+          );
           const pts = [
             worldPoint(
               poseBody(model.bodies.deviation),
-              point(base.x * 0.4, 0.012, side * 0.014),
+              point((DIGITS.indexOf(digit) - 1.5) * -0.01, 0.012, side * 0.014),
             ),
+            baseWorld,
             ...links.map((l) =>
               worldPoint(poseBody(l.body), point(0, 0, side * 0.01)),
             ),

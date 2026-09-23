@@ -141,8 +141,8 @@ export function createHand() {
     v(),
     v(0, 0, -1),
     [-35, 20],
-    { type: "box", half: [0.037, 0.041, 0.012], offset: v(0, 0.041, 0) },
-    0.28,
+    { type: "box", half: [0.024, 0.041, 0.012], offset: v(0.012, 0.041, 0) },
+    0.2,
     "palm",
   );
   const sizes = [
@@ -154,10 +154,39 @@ export function createHand() {
   DIGITS.forEach((name, i) => {
     const [x, y, a, b, c] = sizes[i],
       radius = i === 3 ? 0.0065 : 0.008;
+    let metacarpal = palm,
+      knuckle = v(x, y, 0);
+    if (i >= 2) {
+      const base = v(x * 0.48, 0.014, 0);
+      knuckle = v(x - base.x, y - base.y, 0);
+      const length = Math.hypot(knuckle.x, knuckle.y);
+      const angle = -Math.atan2(knuckle.x, knuckle.y);
+      metacarpal = link(
+        `${name}_CMC`,
+        palm,
+        base,
+        v(-0.8, -0.6, 0),
+        [0, i === 2 ? 20 : 30],
+        {
+          type: "capsule",
+          length,
+          radius: 0.009,
+          offset: v(knuckle.x / 2, knuckle.y / 2, 0),
+          rotation: {
+            x: 0,
+            y: 0,
+            z: Math.sin(angle / 2),
+            w: Math.cos(angle / 2),
+          },
+        },
+        0.04,
+        "metacarpal",
+      );
+    }
     const mcp = link(
       `${name}_spread`,
-      palm,
-      v(x, y, 0),
+      metacarpal,
+      knuckle,
       v(0, 0, -1),
       [-20, 20],
       pivot,
@@ -295,11 +324,13 @@ export function createHand() {
       if (DIGITS.includes(digit)) {
         const curl = coupledCurl(c[digit], wristAngle, c.coupling);
         target =
-          articulation === "spread"
-            ? c.spread *
-              [1, 0.15, -0.45, -1][DIGITS.indexOf(digit)] *
-              (1 - curl)
-            : curl * { MCP: 80, PIP: 100, DIP: 66 }[articulation];
+          articulation === "CMC"
+            ? c.cup * (digit === "ring" ? 12 : 22)
+            : articulation === "spread"
+              ? c.spread *
+                [1, 0.15, -0.45, -1][DIGITS.indexOf(digit)] *
+                (1 - curl)
+              : curl * { MCP: 80, PIP: 100, DIP: 66 }[articulation];
       }
       if (digit === "thumb")
         target = c.thumb * { CMC: 30, MCP: 55, IP: 70 }[articulation];

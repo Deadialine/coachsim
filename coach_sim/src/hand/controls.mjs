@@ -14,6 +14,7 @@ export const DEFAULT_CONTROLS = {
   motors: true,
   strength: 4,
   coupling: 0,
+  cup: 0,
 };
 export const PRESETS = {
   neutral_rest: { flex: 0, deviation: 0, rotation: 0 },

@@ -2,7 +2,7 @@
 
 The default screen implements the first four Fall 2026 thesis milestones as a simulation workflow. Six tabs share one session: Overview, Sensor Layout, Signals, Coaching Logic, Data Logs, and 3D Model. Start a seeded seven-posture session, inspect four raw EMG traces and all six IMU axes, inject a quality fault, add notes, export a versioned ZIP, and replay it. The articulated hand tab is at `?view=hand`; `?view=concept` opens the restored workspace's Overview.
 
-The hand uses Three.js and Rapier rigid-body dynamics with five digits, 23 constrained axes, motor torques, gravity, object contact, and nonadjacent self-contact. Controls include seven study postures, individual finger curls, thumb opposition, spread, three camera views, and anatomical/sensor layers. Read [model assumptions](../docs/HAND_MODEL.md) and [verification](../evidence/HAND_VERIFICATION.md).
+The hand uses Three.js and Rapier rigid-body dynamics with five digits, 25 constrained axes, motor torques, gravity, object contact, and nonadjacent self-contact. Controls include seven study postures, individual finger curls, thumb opposition, palm cupping, spread, four camera views, and anatomical/sensor layers. Read [model assumptions](../docs/HAND_MODEL.md) and [verification](../evidence/HAND_VERIFICATION.md).
 
 Enable **Show 3D posture illustration** in Overview to follow target cues or stable predictions. The full 3D Model tab keeps its pose and camera while you inspect other tabs, and pauses physics while hidden. The model follows illustrative posture targets, not measured joint angles. Its physics clock is independent of acquisition/replay time, and no simulated joint angles are inserted into session exports.
 

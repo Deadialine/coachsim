@@ -16,7 +16,14 @@ export default function HandViewport({
   const host = useRef(null),
     engine = useRef(null),
     current = useRef({ controls, appearance, paused, active, onDiagnostics });
-  current.current = { controls, appearance, paused, active, onDiagnostics };
+  current.current = {
+    controls,
+    appearance,
+    paused,
+    active,
+    onDiagnostics,
+    cameraView,
+  };
   const [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -32,6 +39,7 @@ export default function HandViewport({
         if (cancelled) return;
         model = createHand();
         scene = createScene(host.current, model);
+        scene.view(current.current.cameraView);
         engine.current = { model, scene };
         setLoading(false);
         let last = performance.now(),
