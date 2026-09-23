@@ -104,11 +104,7 @@ export default function App({ active = true, sensorLayout }) {
       <section className="hand-intro">
         <div>
           <p className="eyebrow">BIOMECHANICS LAB / 01</p>
-          <h1>
-            A hand that moves
-            <br />
-            as a connected system.
-          </h1>
+          <h1>Explore movement. See the mechanics.</h1>
           <p>
             Explore the right hand, from forearm rotation to individual finger
             joints. Motor targets drive a rigid-body physics simulation with
@@ -137,6 +133,7 @@ export default function App({ active = true, sensorLayout }) {
               controls={controls}
               appearance={{ ...appearance, layout: sensorLayout }}
               paused={paused || !active}
+              active={active}
               reset={reset}
               ballRequest={ballRequest}
               cameraView={cameraView}
@@ -190,6 +187,37 @@ export default function App({ active = true, sensorLayout }) {
               </strong>
             </div>
           </div>
+          <section
+            className="motion-feedback"
+            aria-label="Live movement feedback"
+          >
+            <div className="section-title">
+              <h2>Movement response</h2>
+              <span>Target / actual · degrees</span>
+            </div>
+            <div className="angle-cards">
+              {[
+                ["flex", "Wrist bend"],
+                ["deviation", "Wrist deviation"],
+                ["rotation", "Forearm rotation"],
+                ["index_PIP", "Index PIP"],
+              ].map(([key, name]) => (
+                <div key={key}>
+                  <span>{name}</span>
+                  <strong>
+                    {diagnostics?.angles[key]?.toFixed(1) ?? "—"}°
+                  </strong>
+                  <small>
+                    Target {diagnostics?.targets[key]?.toFixed(1) ?? "0.0"}°
+                  </small>
+                </div>
+              ))}
+            </div>
+            <p>
+              Actual angles respond to inertia, gravity, and contact. Targets
+              are commands, not measurements.
+            </p>
+          </section>
           <div className="view-options">
             <strong>Show</strong>
             {[
@@ -364,6 +392,21 @@ export default function App({ active = true, sensorLayout }) {
           <section className="control-card">
             <p className="eyebrow">03 / PHYSICS BENCH</p>
             <h2>Forces & contact</h2>
+            <Slider
+              name="Wrist–finger coupling"
+              value={controls.coupling}
+              min={0}
+              max={1}
+              step={0.1}
+              unit="%"
+              onChange={(v) => set("coupling", v)}
+            />
+            <p className="help">
+              Optional tenodesis illustration: wrist extension increases the
+              resting finger curl; flexion opens it. 0% keeps independent
+              controls. This motor-target approximation is not passive tendon
+              mechanics or a fitted human model.
+            </p>
             <label className="toggle-row">
               <span>Gravity · 9.81 m/s²</span>
               <input
@@ -446,11 +489,13 @@ export default function App({ active = true, sensorLayout }) {
         </div>
       </section>
       <details className="joint-readout">
-        <summary>Inspect actual joint angles</summary>
+        <summary>Inspect all 23 joints · target, command & actual</summary>
         <table>
           <thead>
             <tr>
               <th>Joint</th>
+              <th>Target</th>
+              <th>Smoothed command</th>
               <th>Actual angle</th>
             </tr>
           </thead>
@@ -458,6 +503,8 @@ export default function App({ active = true, sensorLayout }) {
             {Object.entries(diagnostics?.angles ?? {}).map(([key, value]) => (
               <tr key={key}>
                 <td>{title(key)}</td>
+                <td>{diagnostics.targets[key].toFixed(1)}°</td>
+                <td>{diagnostics.commands[key].toFixed(1)}°</td>
                 <td>{value.toFixed(1)}°</td>
               </tr>
             ))}

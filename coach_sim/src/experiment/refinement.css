@@ -1,0 +1,297 @@
+/* Shared visual language for every workspace, including the lazy-loaded lab. */
+.experiment {
+  background: #f1f5f4;
+  color: #193d43;
+}
+.experiment > header {
+  background: #102f36;
+  color: #f1faf8;
+  padding: 18px 4%;
+  border: 0;
+}
+.experiment > header .brand small,
+.experiment > header .muted {
+  color: #b0c9c9;
+}
+.experiment > header .brand-icon {
+  background: #b9eee0;
+  color: #183e41;
+  border-radius: 14px 5px 14px 5px;
+}
+.experiment > header .pill {
+  background: #23484d;
+  color: #d2eee5;
+  border: 1px solid #3c6265;
+}
+.experiment .workspace-tabs {
+  padding: 10px 4%;
+  background: #ffffffed;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 4px 16px #183d4210;
+  gap: 8px;
+}
+.experiment .workspace-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 15px;
+  border-radius: 9px;
+}
+.tab-number {
+  font-size: 10px;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+.experiment main {
+  max-width: 1600px;
+  padding: 28px 4% 40px;
+}
+.experiment .intro h1 {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 650;
+  letter-spacing: -1.4px;
+}
+.experiment .intro .eyebrow {
+  color: #548078;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+.experiment .session-status {
+  border: 1px solid #d5e2de;
+  background: #fff;
+  padding: 11px 15px;
+  border-radius: 30px;
+}
+.experiment .notice {
+  background: #fbf9f0;
+  border-color: #e8e0c9;
+  border-left: 3px solid #b99548;
+  font-size: 12px;
+  padding: 11px 16px;
+}
+.experiment .panel {
+  border-color: #dbe5e1;
+  box-shadow: 0 5px 20px #163e3b04;
+  border-radius: 13px;
+}
+.experiment .controls {
+  padding: 16px 18px;
+  gap: 10px;
+}
+.experiment button,
+.experiment .file-button {
+  transition:
+    background-color 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+.experiment button:not(:disabled):hover {
+  border-color: #6a9f92;
+  box-shadow: 0 2px 7px #1f4e4210;
+}
+.experiment button:focus-visible,
+.experiment input:focus-visible,
+.experiment select:focus-visible,
+.experiment textarea:focus-visible {
+  outline: 3px solid #c59643;
+  outline-offset: 3px;
+}
+.experiment .metrics {
+  gap: 12px;
+}
+.experiment .metrics .panel {
+  padding: 15px 19px;
+  border-top: 2px solid #b4d5cb;
+}
+.experiment .metrics strong {
+  font-size: 25px;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.experiment .trace {
+  background: #f8fbfa;
+  border-color: #dfeae5;
+}
+.experiment .trace svg {
+  height: 105px;
+}
+.experiment .cue-panel {
+  background: linear-gradient(155deg, #eef7f2, #fff 65%);
+}
+.experiment .event-table thead {
+  position: sticky;
+  top: 0;
+  background: #f4f8f6;
+}
+.experiment .embedded-hand .hand-app {
+  background: transparent;
+}
+.experiment .hand-intro {
+  padding: 8px 0 22px;
+  gap: 25px;
+}
+.experiment .hand-intro h1 {
+  font-size: clamp(23px, 2.3vw, 32px);
+  margin-bottom: 10px;
+}
+.experiment .hand-intro .eyebrow {
+  display: none;
+}
+.experiment .hand-intro > div > p:last-child {
+  margin: 0;
+  font-size: 13px;
+  max-width: 650px;
+}
+.experiment .hand-intro aside {
+  max-width: 240px;
+}
+.experiment .hand-intro aside strong {
+  font-size: 18px;
+}
+.experiment .hand-workspace {
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+}
+.experiment .stage-column,
+.experiment .control-column {
+  min-width: 0;
+}
+.experiment .stage {
+  border-radius: 16px;
+  box-shadow: 0 14px 30px #112e3620;
+}
+.experiment .hand-viewport {
+  height: 600px;
+}
+.experiment .stage-top {
+  background: linear-gradient(#101f2ce6, transparent);
+}
+.experiment .stage-bottom {
+  background: linear-gradient(transparent, #101f2cf2);
+  padding-top: 30px;
+}
+.experiment .control-card {
+  background: #fff;
+  padding: 20px;
+  border-color: #d6e3de;
+  border-radius: 13px;
+}
+.experiment .control-card .help {
+  font-size: 11px;
+}
+.experiment .control-card h2 {
+  margin-bottom: 16px;
+}
+.experiment .control-card .joint-control > span {
+  font-size: 12px;
+}
+.experiment .preset-grid button {
+  white-space: normal;
+  min-height: 42px;
+}
+.experiment .physics-strip {
+  border-color: #d6e3de;
+  padding-top: 21px;
+}
+.motion-feedback {
+  background: #fff;
+  border: 1px solid #d6e3de;
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 18px;
+}
+.motion-feedback .section-title {
+  margin-bottom: 16px;
+}
+.angle-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.angle-cards > div {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f0f6f3;
+}
+.angle-cards span,
+.angle-cards small {
+  display: block;
+  font-size: 10px;
+  color: #526d66;
+}
+.angle-cards strong {
+  display: block;
+  font-size: 22px;
+  color: #1b6958;
+  font-variant-numeric: tabular-nums;
+  margin: 5px 0;
+}
+.motion-feedback > p {
+  font-size: 11px;
+  color: #647970;
+  margin: 13px 0 0;
+}
+.experiment .joint-readout {
+  overflow-x: auto;
+  background: #fff;
+}
+@media (min-width: 1100px) {
+  .experiment .control-column {
+    max-height: 840px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 5px;
+  }
+}
+@media (max-width: 850px) {
+  .experiment .hand-workspace {
+    grid-template-columns: 1fr;
+  }
+  .experiment .hand-intro aside {
+    display: none;
+  }
+  .experiment .hand-viewport {
+    height: 520px;
+  }
+  .experiment .angle-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .experiment > header nav .muted {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .experiment main {
+    padding: 20px 12px;
+  }
+  .experiment .workspace-tabs {
+    padding: 8px 12px;
+    gap: 3px;
+  }
+  .experiment .workspace-tabs button {
+    padding: 10px 12px;
+  }
+  .tab-number {
+    display: none;
+  }
+  .experiment .metrics .panel {
+    padding: 13px;
+  }
+  .experiment .controls label {
+    min-width: 100%;
+  }
+  .experiment .hand-viewport {
+    height: 470px;
+  }
+  .motion-feedback .section-title {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experiment *,
+  .experiment *::before,
+  .experiment *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

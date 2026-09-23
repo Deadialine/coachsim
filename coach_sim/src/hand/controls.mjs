@@ -13,6 +13,7 @@ export const DEFAULT_CONTROLS = {
   gravity: true,
   motors: true,
   strength: 4,
+  coupling: 0,
 };
 export const PRESETS = {
   neutral_rest: { flex: 0, deviation: 0, rotation: 0 },
