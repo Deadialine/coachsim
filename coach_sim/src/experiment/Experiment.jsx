@@ -16,6 +16,7 @@ import {
 } from "./core.mjs";
 import "./experiment.css";
 import "./workspace.css";
+import "./refinement.css";
 import { SensorLayout, CoachingLogic, DataLogs } from "./WorkspacePanels";
 import {
   DEFAULT_LAYOUT,
@@ -388,7 +389,7 @@ export default function Experiment() {
         : "LEGACY · UNVERIFIED";
   void revision;
   return (
-    <div className="experiment">
+    <div className={`experiment view-${tab}`}>
       <header>
         <div className="brand">
           <span className="brand-icon">C</span>
@@ -432,6 +433,9 @@ export default function Experiment() {
             }}
             onClick={() => navigate(id)}
           >
+            <span className="tab-number" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
             {name}
           </button>
         ))}
@@ -446,8 +450,19 @@ export default function Experiment() {
                 : TABS.find(([id]) => id === tab)[1]}
             </h1>
             <p>
-              Seven maintained postures. Synchronized traces. A reproducible
-              session.
+              {
+                {
+                  overview:
+                    "Seven postures. Synchronized signals. One reproducible session.",
+                  layout:
+                    "Arrange the four forearm channels and dorsal hand IMU.",
+                  signals: "Inspect raw waveforms and all six inertial axes.",
+                  logic:
+                    "Follow the quality gates from a prediction to feedback.",
+                  log: "Review the timeline, annotate observations, and export your session.",
+                  hand: "Explore connected joints, motion response, and object contact.",
+                }[tab]
+              }
             </p>
           </div>
           <div className="session-status">

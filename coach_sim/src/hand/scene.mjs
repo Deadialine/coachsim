@@ -328,7 +328,14 @@ export function createScene(host, model) {
   resize.observe(host);
   return {
     view,
-    draw(options = {}) {
+    draw(options = {}, interpolate = true) {
+      const poseBody = (body) => {
+        const pose = model.renderPose(body, interpolate);
+        return {
+          translation: () => pose.position,
+          rotation: () => pose.rotation,
+        };
+      };
       for (const site of markerSites) {
         const placement = options.layout?.find((s) => s.id === site.id);
         if (!placement) continue;
@@ -354,11 +361,13 @@ export function createScene(host, model) {
       }
       for (const link of model.links) {
         const g = groups.get(link.id);
-        g.position.copy(link.body.translation());
-        g.quaternion.copy(link.body.rotation());
+        const pose = model.renderPose(link.body, interpolate);
+        g.position.copy(pose.position);
+        g.quaternion.copy(pose.rotation);
       }
-      ball.position.copy(model.ball.translation());
-      ball.quaternion.copy(model.ball.rotation());
+      const ballPose = model.renderPose(model.ball, interpolate);
+      ball.position.copy(ballPose.position);
+      ball.quaternion.copy(ballPose.rotation);
       shellMeshes.forEach((m) => (m.visible = options.shell !== false));
       labelObjects.forEach((m) => (m.visible = !!options.labels));
       markers.forEach(
@@ -378,12 +387,14 @@ export function createScene(host, model) {
           ).anchor;
           const pts = [
             worldPoint(
-              model.bodies.deviation,
+              poseBody(model.bodies.deviation),
               point(base.x * 0.4, 0.012, side * 0.014),
             ),
-            ...links.map((l) => worldPoint(l.body, point(0, 0, side * 0.01))),
+            ...links.map((l) =>
+              worldPoint(poseBody(l.body), point(0, 0, side * 0.01)),
+            ),
             worldPoint(
-              links[2].body,
+              poseBody(links[2].body),
               point(0, links[2].shape.length, side * 0.006),
             ),
           ];

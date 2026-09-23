@@ -6,6 +6,7 @@ export default function HandViewport({
   controls,
   appearance,
   paused,
+  active = true,
   reset,
   ballRequest,
   cameraView,
@@ -14,8 +15,8 @@ export default function HandViewport({
 }) {
   const host = useRef(null),
     engine = useRef(null),
-    current = useRef({ controls, appearance, paused, onDiagnostics });
-  current.current = { controls, appearance, paused, onDiagnostics };
+    current = useRef({ controls, appearance, paused, active, onDiagnostics });
+  current.current = { controls, appearance, paused, active, onDiagnostics };
   const [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -38,9 +39,14 @@ export default function HandViewport({
         function tick(now) {
           if (cancelled) return;
           const state = current.current;
+          if (!state.active || document.hidden) {
+            last = now;
+            frame = requestAnimationFrame(tick);
+            return;
+          }
           if (!state.paused) model.advance((now - last) / 1000, state.controls);
           last = now;
-          scene.draw(state.appearance);
+          scene.draw(state.appearance, !state.paused);
           if (now - report > 200) {
             state.onDiagnostics?.(model.diagnostics());
             report = now;

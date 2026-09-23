@@ -1,4 +1,5 @@
 import RAPIER from "@dimforge/rapier3d-compat";
+import { smoothCommand, coupledCurl } from "./motion.mjs";
 
 export const DT = 1 / 120;
 export const RAD = Math.PI / 180;
@@ -278,26 +279,43 @@ export function createHand() {
   let accumulator = 0,
     steps = 0,
     discarded = 0;
+  const renderedBodies = [...links.map((l) => l.body), ball];
+  const previous = new Map();
+  const remember = (body) =>
+    previous.set(body.handle, { p: body.translation(), q: body.rotation() });
+  renderedBodies.forEach(remember);
   function step(controls = DEFAULT_CONTROLS) {
+    renderedBodies.forEach(remember);
     const c = { ...DEFAULT_CONTROLS, ...controls };
     world.gravity.y = c.gravity ? -9.81 : 0;
+    const wristAngle = jointAngle(joints.find((j) => j.id === "flex"));
     joints.forEach((j) => {
       let target = c[j.id] ?? 0;
       const [digit, articulation] = j.id.split("_");
       if (DIGITS.includes(digit)) {
+        const curl = coupledCurl(c[digit], wristAngle, c.coupling);
         target =
           articulation === "spread"
             ? c.spread *
               [1, 0.15, -0.45, -1][DIGITS.indexOf(digit)] *
-              (1 - c[digit])
-            : c[digit] * { MCP: 80, PIP: 100, DIP: 66 }[articulation];
+              (1 - curl)
+            : curl * { MCP: 80, PIP: 100, DIP: 66 }[articulation];
       }
       if (digit === "thumb")
         target = c.thumb * { CMC: 30, MCP: 55, IP: 70 }[articulation];
       j.target = Math.max(j.range[0], Math.min(j.range[1], target));
-      j.commanded =
-        (j.commanded ?? 0) +
-        Math.max(-120 * DT, Math.min(120 * DT, j.target - (j.commanded ?? 0)));
+      const command = smoothCommand(
+        j.commanded ?? 0,
+        j.commandVelocity ?? 0,
+        j.target,
+        DT,
+      );
+      j.commanded = Math.max(
+        j.range[0],
+        Math.min(j.range[1], command.position),
+      );
+      j.commandVelocity =
+        j.commanded === command.position ? command.velocity : 0;
       const stiffness = c.motors
         ? c.strength *
           (["rotation", "flex", "deviation"].includes(j.id) ? 20 : 0.3)
@@ -321,6 +339,33 @@ export function createHand() {
     bodies,
     ball,
     step,
+    renderPose(body, interpolate = true) {
+      const p = body.translation(),
+        q = body.rotation(),
+        prev = previous.get(body.handle);
+      const alpha = interpolate
+        ? Math.max(0, Math.min(1, accumulator / DT))
+        : 1;
+      if (!prev) return { position: p, rotation: q };
+      const sign =
+        prev.q.x * q.x + prev.q.y * q.y + prev.q.z * q.z + prev.q.w * q.w < 0
+          ? -1
+          : 1;
+      const rotation = Object.fromEntries(
+        ["x", "y", "z", "w"].map((k) => [
+          k,
+          prev.q[k] * (1 - alpha) + q[k] * sign * alpha,
+        ]),
+      );
+      const norm = Math.hypot(...Object.values(rotation));
+      for (const k of Object.keys(rotation)) rotation[k] /= norm;
+      return {
+        position: v(
+          ...["x", "y", "z"].map((k) => prev.p[k] * (1 - alpha) + p[k] * alpha),
+        ),
+        rotation,
+      };
+    },
     advance(seconds, controls) {
       const accepted = Math.max(0, Math.min(seconds, 0.1));
       discarded += Math.max(0, seconds - accepted);
@@ -335,6 +380,7 @@ export function createHand() {
       ball.setTranslation(p, true);
       ball.setLinvel(v(), true);
       ball.setAngvel(v(), true);
+      remember(ball);
     },
     diagnostics() {
       let separation = 0,
@@ -371,6 +417,10 @@ export function createHand() {
         steps,
         discarded,
         angles: Object.fromEntries(joints.map((j) => [j.id, jointAngle(j)])),
+        targets: Object.fromEntries(joints.map((j) => [j.id, j.target ?? 0])),
+        commands: Object.fromEntries(
+          joints.map((j) => [j.id, j.commanded ?? 0]),
+        ),
       };
     },
     dispose() {
