@@ -17,11 +17,11 @@ function near(a, b, tolerance, message) {
   assert.ok(Math.abs(a - b) < tolerance, `${message}: ${a} versus ${b}`);
 }
 
-test("all five digits connect to one supported tree with 23 bounded axes", () => {
+test("all five digits connect to one supported tree with 25 bounded axes", () => {
   const h = createHand();
   try {
-    assert.equal(h.joints.length, 23);
-    assert.equal(new Set(h.links.map((l) => l.body.handle)).size, 23);
+    assert.equal(h.joints.length, 25);
+    assert.equal(new Set(h.links.map((l) => l.body.handle)).size, 25);
     for (const j of h.joints) {
       assert.ok(j.joint.limitsEnabled());
       assert.ok(j.body.mass() > 0);
@@ -48,6 +48,7 @@ test("study postures and extreme curls stay connected and within mechanical limi
   const scenarios = {
     ...PRESETS,
     full_curl: {
+      cup: 1,
       index: 1,
       middle: 1,
       ring: 1,
@@ -56,6 +57,7 @@ test("study postures and extreme curls stay connected and within mechanical limi
       opposition: 65,
     },
     combined_limits: {
+      cup: 1,
       flex: 70,
       deviation: -35,
       rotation: 80,

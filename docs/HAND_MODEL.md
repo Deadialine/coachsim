@@ -6,11 +6,11 @@ This is an engineering rigid-body model, not a validated musculoskeletal or pati
 
 ## Connections and coordinates
 
-The supported right forearm connects to a two-axis wrist and a rigid palm. Four fingers each have MCP flexion and spread, PIP flexion, and DIP flexion. The thumb has two CMC axes, MCP flexion, and IP flexion: **23 rotational degrees of freedom** in total. Compound joints use serial revolute constraints with small virtual carrier bodies. Each body is connected by local joint anchors; rendering reads the solved body transforms rather than setting them from slider values.
+The supported right forearm connects to a two-axis wrist and a segmented palm. Four fingers each have MCP flexion and spread, PIP flexion, and DIP flexion. The thumb has two CMC axes, MCP flexion, and IP flexion: **25 rotational degrees of freedom**, including ring and little-finger CMC cupping axes. Compound joints use serial revolute constraints with small virtual carrier bodies. Each body is connected by local joint anchors; rendering reads the solved body transforms rather than setting them from slider values.
 
 Initial coordinates are metres, +Y toward the fingertips, +X toward the thumb, +Z dorsal. Positive flexion rotates about −X toward the palm (−Z); positive radial deviation rotates about −Z toward the thumb. The forearm rotation axis is +Y. The supination/pronation labels denote positive/negative rotation relative to the model's reference pose, not an anatomically calibrated neutral frame. The ulna drawing stays at the fixed reference and the radius drawing follows the rotating forearm body. This illustrates the axial relationship; it does not model radioulnar translations or the changing radius–ulna contact geometry.
 
-The eight carpal shapes and four finger metacarpal shapes are rigidly attached to the palm. They are anatomical landmarks, not eight independently simulated carpal bodies. The thumb metacarpal is independently articulated. The palm collision surface is a box; phalanges and the forearm use capsules. The translucent surface shows these approximate collision envelopes.
+The eight carpal shapes and index/middle metacarpals remain attached to the palm core. Ring, little, and thumb metacarpals are articulated. The core collider is a narrower box; moving metacarpals, phalanges, and forearm use capsules. The display surface follows the solved bones but is not the collision envelope. See [articulated palm anatomy and limitations](PALM_ANATOMY.md).
 
 ## Selected parameters
 
@@ -29,7 +29,7 @@ These are explicit engineering assumptions for an adult-sized demonstration, not
 | Thumb CMC second axis        | 0° to 40°             |
 | Thumb MCP / IP flexion       | 0° to 60° / 0° to 80° |
 
-Forearm length is 240 mm; palm envelope is 74 × 82 × 24 mm. Proximal/middle/distal phalanx lengths are index 41/24/19 mm, middle 45/28/21 mm, ring 42/27/20 mm, and little 32/20/17 mm. Thumb metacarpal/proximal/distal lengths are 38/30/24 mm. Forearm moving mass is 0.85 kg; palm mass is 0.28 kg. Each finger's moving phalanges have masses 25/14/9 g. Thumb link masses are 35/25/14 g. Virtual carriers contribute 35 g at the wrist, 8 g per MCP spread axis, and 12 g at the thumb CMC. Mass distribution and inertia are approximate; carrier inertia stabilizes the compound-joint representation.
+Forearm length is 240 mm; palm core collider is 48 × 82 × 24 mm, with separately moving ulnar metacarpals. Proximal/middle/distal phalanx lengths are index 41/24/19 mm, middle 45/28/21 mm, ring 42/27/20 mm, and little 32/20/17 mm. Thumb metacarpal/proximal/distal lengths are 38/30/24 mm. Forearm moving mass is 0.85 kg; palm mass totals 0.28 kg (0.20 kg core plus two 0.04 kg metacarpals). Each finger's moving phalanges have masses 25/14/9 g. Thumb link masses are 35/25/14 g. Virtual carriers contribute 35 g at the wrist, 8 g per MCP spread axis, and 12 g at the thumb CMC. Mass distribution and inertia are approximate; carrier inertia stabilizes the compound-joint representation.
 
 Finger curl is a coordinated command: MCP = 80 × curl, PIP = 100 × curl, DIP = 66 × curl (degrees). This is a selected motion synergy, not a universal tendon law. Thumb curl commands CMC/MCP/IP = 30/55/70 × curl. The thumb opposition control remains independent. Spread decreases with curl. Optional blue/red tendon paths are schematic extensor/flexor guides for the four fingers; they generate no forces and are not collision-aware tendon routing.
 
@@ -65,6 +65,6 @@ The most important unmodeled effects are muscle activation and force-length/velo
 - [Three.js OrbitControls](https://threejs.org/docs/pages/OrbitControls.html) — camera inspection.
 - [Hollister et al., The axes of rotation of the thumb interphalangeal and metacarpophalangeal joints (1995)](https://pubmed.ncbi.nlm.nih.gov/7586826/) — evidence that thumb flexion axes are anatomically more complex than aligned hinges.
 - [Coordination of thumb joints during opposition (2006)](https://pubmed.ncbi.nlm.nih.gov/16643926/) — coupled thumb movements; supports explicitly labeling the implemented command synergy as a simplification.
-- [Three-dimensional kinematic analysis of the second through fifth carpometacarpal joints (2001)](https://pubmed.ncbi.nlm.nih.gov/11721246/) — mobility omitted by the rigid-palm approximation.
+- [Three-dimensional kinematic analysis of the second through fifth carpometacarpal joints (2001)](https://pubmed.ncbi.nlm.nih.gov/11721246/) — motivates metacarpal mobility; the new hinges still simplify full three-dimensional kinematics.
 
 These references inform topology and limitations. They do not validate the chosen dimensions, masses, limits, coefficients, or motor gains.
