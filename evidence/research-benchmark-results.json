@@ -1,0 +1,490 @@
+{
+  "schema": "coachsim-research-benchmark-1",
+  "provenance": "software verification only",
+  "trials": [
+    {
+      "placement": "upright",
+      "schema": "coachsim-motion-trial-1",
+      "model": "coachsim-25-axis-orientation-v1",
+      "solver": "Rapier 0.19.3",
+      "timestepSeconds": 0.008333333333333333,
+      "provenance": "software simulation",
+      "configuration": {
+        "scenario": "postures",
+        "setup": {
+          "baseOrientation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "basePosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "floorY": -0.6
+        },
+        "controls": {
+          "flex": 0,
+          "deviation": 0,
+          "rotation": 0,
+          "index": 0,
+          "middle": 0,
+          "ring": 0,
+          "little": 0,
+          "thumb": 0,
+          "opposition": 0,
+          "spread": 0,
+          "gravity": true,
+          "motors": true,
+          "strength": 4,
+          "coupling": 0,
+          "cup": 0
+        },
+        "ball": "disabled",
+        "impulse": null
+      },
+      "complete": true,
+      "steps": 1680,
+      "totalSteps": 1680,
+      "seconds": 14,
+      "discardedWallSeconds": 0,
+      "summary": {
+        "rmseDeg": {
+          "flex": 15.72996758881977,
+          "deviation": 7.103558941435865,
+          "rotation": 25.60600925255897
+        },
+        "commandRmseDeg": {
+          "flex": 1.3080264719614434,
+          "deviation": 0.4694194083431835,
+          "rotation": 0.8018201824269892
+        },
+        "maxAnchorMm": 0.003095915860747639,
+        "maxLimitDeg": 0.010600380887496633
+      },
+      "events": [],
+      "sampleCount": 1680
+    },
+    {
+      "placement": "upright",
+      "schema": "coachsim-motion-trial-1",
+      "model": "coachsim-25-axis-orientation-v1",
+      "solver": "Rapier 0.19.3",
+      "timestepSeconds": 0.008333333333333333,
+      "provenance": "software simulation",
+      "configuration": {
+        "scenario": "recovery",
+        "setup": {
+          "baseOrientation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "basePosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "floorY": -0.6
+        },
+        "controls": {
+          "flex": 0,
+          "deviation": 0,
+          "rotation": 0,
+          "index": 0,
+          "middle": 0,
+          "ring": 0,
+          "little": 0,
+          "thumb": 0,
+          "opposition": 0,
+          "spread": 0,
+          "gravity": true,
+          "motors": true,
+          "strength": 4,
+          "coupling": 0,
+          "cup": 0
+        },
+        "ball": "disabled",
+        "impulse": {
+          "atStep": 360,
+          "palmNormalNs": 0.02,
+          "palmPointM": {
+            "x": 0,
+            "y": 0.06,
+            "z": 0
+          }
+        }
+      },
+      "complete": true,
+      "steps": 720,
+      "totalSteps": 720,
+      "seconds": 6,
+      "discardedWallSeconds": 0,
+      "summary": {
+        "rmseDeg": {
+          "flex": 4.493315314857381,
+          "deviation": 0.06581968584848497,
+          "rotation": 0.0006727093175700045
+        },
+        "commandRmseDeg": {
+          "flex": 1.3225607045464953,
+          "deviation": 0.06581968584848497,
+          "rotation": 0.0006727093175700045
+        },
+        "maxAnchorMm": 0.00262475153578553,
+        "maxLimitDeg": 0.0034448080880998366
+      },
+      "events": [
+        {
+          "step": 360,
+          "t_s": 3,
+          "type": "palm_impulse",
+          "impulseWorldNs": {
+            "x": 4.4721503674686373e-7,
+            "y": 0.008880579592553867,
+            "z": 0.01792025128372046
+          },
+          "pointWorldM": {
+            "x": 0.00007174510940419416,
+            "y": 0.2937579452356906,
+            "z": -0.026641259291121884
+          }
+        }
+      ],
+      "sampleCount": 720
+    },
+    {
+      "placement": "inverted",
+      "schema": "coachsim-motion-trial-1",
+      "model": "coachsim-25-axis-orientation-v1",
+      "solver": "Rapier 0.19.3",
+      "timestepSeconds": 0.008333333333333333,
+      "provenance": "software simulation",
+      "configuration": {
+        "scenario": "postures",
+        "setup": {
+          "baseOrientation": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "w": 6.123233995736766e-17
+          },
+          "basePosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "floorY": -0.6
+        },
+        "controls": {
+          "flex": 0,
+          "deviation": 0,
+          "rotation": 0,
+          "index": 0,
+          "middle": 0,
+          "ring": 0,
+          "little": 0,
+          "thumb": 0,
+          "opposition": 0,
+          "spread": 0,
+          "gravity": true,
+          "motors": true,
+          "strength": 4,
+          "coupling": 0,
+          "cup": 0
+        },
+        "ball": "disabled",
+        "impulse": null
+      },
+      "complete": true,
+      "steps": 1680,
+      "totalSteps": 1680,
+      "seconds": 14,
+      "discardedWallSeconds": 0,
+      "summary": {
+        "rmseDeg": {
+          "flex": 15.196005193897449,
+          "deviation": 7.055635546728994,
+          "rotation": 25.606003535456015
+        },
+        "commandRmseDeg": {
+          "flex": 1.1488116637273376,
+          "deviation": 0.4573586218455736,
+          "rotation": 0.8018232490949545
+        },
+        "maxAnchorMm": 0.0029367807281430636,
+        "maxLimitDeg": 0.003186359820174214
+      },
+      "events": [],
+      "sampleCount": 1680
+    },
+    {
+      "placement": "inverted",
+      "schema": "coachsim-motion-trial-1",
+      "model": "coachsim-25-axis-orientation-v1",
+      "solver": "Rapier 0.19.3",
+      "timestepSeconds": 0.008333333333333333,
+      "provenance": "software simulation",
+      "configuration": {
+        "scenario": "recovery",
+        "setup": {
+          "baseOrientation": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "w": 6.123233995736766e-17
+          },
+          "basePosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "floorY": -0.6
+        },
+        "controls": {
+          "flex": 0,
+          "deviation": 0,
+          "rotation": 0,
+          "index": 0,
+          "middle": 0,
+          "ring": 0,
+          "little": 0,
+          "thumb": 0,
+          "opposition": 0,
+          "spread": 0,
+          "gravity": true,
+          "motors": true,
+          "strength": 4,
+          "coupling": 0,
+          "cup": 0
+        },
+        "ball": "disabled",
+        "impulse": {
+          "atStep": 360,
+          "palmNormalNs": 0.02,
+          "palmPointM": {
+            "x": 0,
+            "y": 0.06,
+            "z": 0
+          }
+        }
+      },
+      "complete": true,
+      "steps": 720,
+      "totalSteps": 720,
+      "seconds": 6,
+      "discardedWallSeconds": 0,
+      "summary": {
+        "rmseDeg": {
+          "flex": 4.615900812862357,
+          "deviation": 0.06212818681094539,
+          "rotation": 0.0005026956504538231
+        },
+        "commandRmseDeg": {
+          "flex": 1.2544838213582936,
+          "deviation": 0.06212818681094539,
+          "rotation": 0.0005026956504538231
+        },
+        "maxAnchorMm": 0.002641898566535705,
+        "maxLimitDeg": 0.006240862003282971
+      },
+      "events": [
+        {
+          "step": 360,
+          "t_s": 3,
+          "type": "palm_impulse",
+          "impulseWorldNs": {
+            "x": -5.8453205880403e-7,
+            "y": -0.008067290544566301,
+            "z": -0.01830078839170698
+          },
+          "pointWorldM": {
+            "x": -0.00006755679541661539,
+            "y": -0.29490517291542073,
+            "z": 0.02420221950184752
+          }
+        }
+      ],
+      "sampleCount": 720
+    },
+    {
+      "placement": "oblique",
+      "schema": "coachsim-motion-trial-1",
+      "model": "coachsim-25-axis-orientation-v1",
+      "solver": "Rapier 0.19.3",
+      "timestepSeconds": 0.008333333333333333,
+      "provenance": "software simulation",
+      "configuration": {
+        "scenario": "postures",
+        "setup": {
+          "baseOrientation": {
+            "x": 0.5050462617946501,
+            "y": 0.10002558798013997,
+            "z": -0.4198112027455445,
+            "w": 0.7474501383007541
+          },
+          "basePosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "floorY": -0.6
+        },
+        "controls": {
+          "flex": 0,
+          "deviation": 0,
+          "rotation": 0,
+          "index": 0,
+          "middle": 0,
+          "ring": 0,
+          "little": 0,
+          "thumb": 0,
+          "opposition": 0,
+          "spread": 0,
+          "gravity": true,
+          "motors": true,
+          "strength": 4,
+          "coupling": 0,
+          "cup": 0
+        },
+        "ball": "disabled",
+        "impulse": null
+      },
+      "complete": true,
+      "steps": 1680,
+      "totalSteps": 1680,
+      "seconds": 14,
+      "discardedWallSeconds": 0,
+      "summary": {
+        "rmseDeg": {
+          "flex": 15.472667557601866,
+          "deviation": 7.092899501677851,
+          "rotation": 25.614499918614662
+        },
+        "commandRmseDeg": {
+          "flex": 2.2451266744344784,
+          "deviation": 0.5457980695496365,
+          "rotation": 0.8182912960791706
+        },
+        "maxAnchorMm": 0.0043785649235324,
+        "maxLimitDeg": 0.011401582084254359
+      },
+      "events": [],
+      "sampleCount": 1680
+    },
+    {
+      "placement": "oblique",
+      "schema": "coachsim-motion-trial-1",
+      "model": "coachsim-25-axis-orientation-v1",
+      "solver": "Rapier 0.19.3",
+      "timestepSeconds": 0.008333333333333333,
+      "provenance": "software simulation",
+      "configuration": {
+        "scenario": "recovery",
+        "setup": {
+          "baseOrientation": {
+            "x": 0.5050462617946501,
+            "y": 0.10002558798013997,
+            "z": -0.4198112027455445,
+            "w": 0.7474501383007541
+          },
+          "basePosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "floorY": -0.6
+        },
+        "controls": {
+          "flex": 0,
+          "deviation": 0,
+          "rotation": 0,
+          "index": 0,
+          "middle": 0,
+          "ring": 0,
+          "little": 0,
+          "thumb": 0,
+          "opposition": 0,
+          "spread": 0,
+          "gravity": true,
+          "motors": true,
+          "strength": 4,
+          "coupling": 0,
+          "cup": 0
+        },
+        "ball": "disabled",
+        "impulse": {
+          "atStep": 360,
+          "palmNormalNs": 0.02,
+          "palmPointM": {
+            "x": 0,
+            "y": 0.06,
+            "z": 0
+          }
+        }
+      },
+      "complete": true,
+      "steps": 720,
+      "totalSteps": 720,
+      "seconds": 6,
+      "discardedWallSeconds": 0,
+      "summary": {
+        "rmseDeg": {
+          "flex": 5.378679186312907,
+          "deviation": 0.30336029985492174,
+          "rotation": 0.12190935848312898
+        },
+        "commandRmseDeg": {
+          "flex": 2.293211765035827,
+          "deviation": 0.30336029985492174,
+          "rotation": 0.12190935848312898
+        },
+        "maxAnchorMm": 0.002787379329788078,
+        "maxLimitDeg": 0.005778845112989022
+      },
+      "events": [
+        {
+          "step": 360,
+          "t_s": 3,
+          "type": "palm_impulse",
+          "impulseWorldNs": {
+            "x": 0.0005717543554113291,
+            "y": -0.01437513020207966,
+            "z": 0.013893478886398079
+          },
+          "pointWorldM": {
+            "x": 0.2217885892031659,
+            "y": 0.05990246113027599,
+            "z": 0.18698047923109393
+          }
+        }
+      ],
+      "sampleCount": 720
+    }
+  ],
+  "syntheticOrientation": {
+    "schema": "coachsim-orientation-comparison-1",
+    "offsetUs": 0,
+    "maxGapUs": 50000,
+    "estimatedSamples": 1500,
+    "calibrationSamplesExcluded": 100,
+    "matchedSamples": 1500,
+    "coverage": 1,
+    "orientationDeg": {
+      "rmse": 0.9382835017474964,
+      "mean": 0.5511294419120709,
+      "p95": 2.2288507555117643,
+      "max": 2.5007039054563465
+    },
+    "tiltDeg": {
+      "rmse": 0.10085818847068488,
+      "mean": 0.07100679055730379,
+      "p95": 0.1894653398467474,
+      "max": 0.2128572406236259
+    },
+    "source": "synthetic noise, acceleration pulse and bias-drift demonstration"
+  }
+}

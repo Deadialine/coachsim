@@ -27,6 +27,7 @@ export function downloadJSON(name, data) {
 }
 export default function OrientationPanel({
   active,
+  onRecording,
   setup,
   onSetup,
   onObservation,
@@ -102,6 +103,20 @@ export default function OrientationPanel({
         quality: error ? "Input stopped" : (current?.quality ?? "waiting"),
       });
   }, [record, current, mount, error]);
+  useEffect(() => {
+    onRecording?.(
+      record
+        ? {
+            ...record,
+            inputStatus: error || "available",
+            sensorToHand: mount,
+            estimates: record.estimates.map((e) =>
+              e.q ? { ...e, q: normalize(multiply(e.q, mount)) } : e,
+            ),
+          }
+        : null,
+    );
+  }, [record, mount, error, onRecording]);
   function load(samples, provenance) {
     try {
       if (!samples.length)

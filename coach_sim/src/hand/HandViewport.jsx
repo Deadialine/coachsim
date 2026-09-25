@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createHand, initPhysics } from "./physics.mjs";
 import { createScene } from "./scene.mjs";
+import { createTrial } from "./trials.mjs";
 
 export default function HandViewport({
   controls,
+  trial,
+  onTrialReport,
   setup,
   observation,
   appearance,
@@ -26,6 +29,8 @@ export default function HandViewport({
     onDiagnostics,
     cameraView,
     setup,
+    trial,
+    onTrialReport,
     observation,
   };
   const [error, setError] = useState(""),
@@ -42,6 +47,10 @@ export default function HandViewport({
         await initPhysics();
         if (cancelled) return;
         model = createHand(current.current.setup);
+        const runner = current.current.trial
+          ? createTrial(model, current.current.trial)
+          : null;
+        let completeReported = false;
         scene = createScene(host.current, model);
         scene.view(current.current.cameraView);
         engine.current = { model, scene };
@@ -51,32 +60,52 @@ export default function HandViewport({
         function tick(now) {
           if (cancelled) return;
           const state = current.current;
-          if (!state.active || document.hidden) {
+          try {
+            if (!state.active || document.hidden) {
+              last = now;
+              frame = requestAnimationFrame(tick);
+              return;
+            }
+            if (runner) {
+              if (!state.paused)
+                runner.advance(Math.max(0, (now - last) / 1000));
+            } else if (state.observation) {
+              if (state.observation.q)
+                model.setObservedPalmOrientation(state.observation.q);
+            } else if (!state.paused)
+              model.advance((now - last) / 1000, state.controls);
             last = now;
-            frame = requestAnimationFrame(tick);
-            return;
-          }
-          if (state.observation) {
-            if (state.observation.q)
-              model.setObservedPalmOrientation(state.observation.q);
-          } else if (!state.paused)
-            model.advance((now - last) / 1000, state.controls);
-          last = now;
-          scene.draw(
-            {
-              ...state.appearance,
-              observation: !!state.observation,
-              gravity: state.controls.gravity,
-            },
-            !state.paused && !state.observation,
-          );
-          if (now - report > 200) {
-            state.onDiagnostics?.(
-              state.observation ? null : model.diagnostics(),
+            scene.draw(
+              {
+                ...state.appearance,
+                observation: !!state.observation,
+                gravity: state.controls.gravity,
+                trial: !!runner,
+                trails: !!runner || state.appearance.trails,
+              },
+              !state.paused && !state.observation && !runner,
             );
-            report = now;
+            if (now - report > 200) {
+              state.onDiagnostics?.(
+                state.observation ? null : model.diagnostics(),
+              );
+              if (runner && !completeReported) {
+                state.onTrialReport?.(runner.report(runner.complete));
+                completeReported = runner.complete;
+              }
+              report = now;
+            }
+            frame = requestAnimationFrame(tick);
+          } catch (e) {
+            setError(
+              `Simulation stopped: ${e.message}. Return to manual physics or reset the model to retry.`,
+            );
+            if (runner)
+              state.onTrialReport?.({
+                ...runner.report(false),
+                error: e.message,
+              });
           }
-          frame = requestAnimationFrame(tick);
         }
         frame = requestAnimationFrame(tick);
       } catch (e) {
