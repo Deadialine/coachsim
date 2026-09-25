@@ -17,6 +17,8 @@ export function createScene(host, model) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
   renderer.domElement.setAttribute(
     "aria-label",
     "Interactive right hand and forearm physics model. Drag to orbit, scroll to zoom. Use the controls beside the model to move joints.",
@@ -42,8 +44,17 @@ export function createScene(host, model) {
       side: [0.72, 0.1, 0.03],
       detail: [0.2, 0.16, 0.36],
     };
-    camera.position.set(...positions[which]);
-    orbit.target.set(0, which === "detail" ? 0.075 : -0.035, 0);
+    const palm = model.bodies.deviation;
+    const target = worldPoint(palm, {
+      x: 0,
+      y: which === "detail" ? 0.065 : -0.03,
+      z: 0,
+    });
+    orbit.target.set(target.x, target.y, target.z);
+    const offset = new THREE.Vector3(...positions[which]);
+    offset.y -= which === "detail" ? 0.075 : -0.035;
+    offset.applyQuaternion(palm.rotation());
+    camera.position.copy(orbit.target).add(offset);
     orbit.update();
   }
   view();
@@ -300,7 +311,8 @@ export function createScene(host, model) {
     }
   }
   const fixed = new THREE.Group();
-  fixed.position.set(0, -0.24, 0);
+  fixed.position.copy(model.bodies.base.translation());
+  fixed.quaternion.copy(model.bodies.base.rotation());
   scene.add(fixed);
   boneBetween(point(-0.013, 0, 0), point(-0.014, 0.236, 0), 0.0085, fixed);
   label("Ulna · fixed reference", fixed, point(-0.068, 0.035, 0));
@@ -340,12 +352,50 @@ export function createScene(host, model) {
     new THREE.PlaneGeometry(3, 3),
     new THREE.MeshStandardMaterial({ color: "#152936", roughness: 1 }),
     scene,
-    new THREE.Vector3(0, -0.295, 0),
+    new THREE.Vector3(0, model.floorY, 0),
   );
   ground.rotation.x = -Math.PI / 2;
   const grid = new THREE.GridHelper(1.3, 26, "#34505d", "#233c49");
-  grid.position.y = -0.294;
+  grid.position.y = model.floorY + 0.001;
   scene.add(grid);
+  const worldAxes = new THREE.AxesHelper(0.07);
+  worldAxes.position.set(-0.14, 0, 0);
+  scene.add(worldAxes);
+  label("World XYZ", worldAxes, point(0, -0.025, 0));
+  const collisionLines = new THREE.Group();
+  const collisionObjects = [];
+  const collisionMaterial = new THREE.LineBasicMaterial({
+    color: 0x7bffd8,
+    transparent: true,
+    opacity: 0.6,
+    depthTest: false,
+  });
+  for (const link of model.links.filter((l) => l.kind !== "pivot")) {
+    const c = link.collider;
+    const half = link.shape.type === "box" ? c.halfExtents() : null;
+    const geometry = half
+      ? new THREE.BoxGeometry(half.x * 2, half.y * 2, half.z * 2)
+      : new THREE.CapsuleGeometry(c.radius(), c.halfHeight() * 2, 4, 8);
+    const lines = new THREE.LineSegments(
+      new THREE.EdgesGeometry(geometry, 12),
+      collisionMaterial,
+    );
+    geometry.dispose();
+    lines.renderOrder = 15;
+    collisionLines.add(lines);
+    collisionObjects.push({ lines, collider: c });
+  }
+  scene.add(collisionLines);
+  const gravityArrow = new THREE.ArrowHelper(
+    new THREE.Vector3(0, -1, 0),
+    new THREE.Vector3(-0.18, 0.08, 0),
+    0.12,
+    0x73dcca,
+    0.026,
+    0.012,
+  );
+  scene.add(gravityArrow);
+  label("World gravity", gravityArrow, point(0, 0.02, 0));
   const tendonGroup = new THREE.Group();
   const connection = new THREE.Line(
     new THREE.BufferGeometry(),
@@ -393,6 +443,21 @@ export function createScene(host, model) {
   return {
     view,
     draw(options = {}, interpolate = true) {
+      worldAxes.visible = !!options.axes;
+      collisionLines.visible = !!options.colliders && !options.observation;
+      if (collisionLines.visible)
+        for (const { lines, collider } of collisionObjects) {
+          lines.position.copy(collider.translation());
+          lines.quaternion.copy(collider.rotation());
+        }
+      if (options.observation) {
+        const center = worldPoint(model.bodies.deviation, point(0, 0.065, 0));
+        const delta = new THREE.Vector3(center.x, center.y, center.z).sub(
+          orbit.target,
+        );
+        camera.position.add(delta);
+        orbit.target.add(delta);
+      }
       const poseBody = (body) => {
         const pose = model.renderPose(body, interpolate);
         return {
@@ -429,6 +494,11 @@ export function createScene(host, model) {
         g.position.copy(pose.position);
         g.quaternion.copy(pose.rotation);
       }
+      fixed.position.copy(model.bodies.base.translation());
+      fixed.quaternion.copy(model.bodies.base.rotation());
+      fixed.visible = !options.observation;
+      ball.visible = !options.observation;
+      gravityArrow.visible = !!options.gravity && !options.observation;
       const ballPose = model.renderPose(model.ball, interpolate);
       ball.position.copy(ballPose.position);
       ball.quaternion.copy(ballPose.rotation);

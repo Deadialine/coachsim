@@ -68,3 +68,7 @@ The most important unmodeled effects are muscle activation and force-length/velo
 - [Three-dimensional kinematic analysis of the second through fifth carpometacarpal joints (2001)](https://pubmed.ncbi.nlm.nih.gov/11721246/) — motivates metacarpal mobility; the new hinges still simplify full three-dimensional kinematics.
 
 These references inform topology and limitations. They do not validate the chosen dimensions, masses, limits, coefficients, or motor gains.
+
+## Arbitrary orientation and sensor observation
+
+The [orientation laboratory](ORIENTATION_LAB.md) separates world placement from joint articulation, keeps gravity world-fixed, and provides a separate calibrated IMU orientation viewer. Read its frame conventions, live protocol, export limitations and validation plan before interpreting any observation as participant motion.

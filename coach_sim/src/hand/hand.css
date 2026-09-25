@@ -583,3 +583,93 @@
   flex: 0 0 16px;
   accent-color: #177965;
 }
+
+.orientation-panel {
+  margin: 18px 0;
+  padding: 24px;
+  border: 1px solid #304b56;
+  border-radius: 18px;
+  background: linear-gradient(130deg, #122f39, #172530);
+}
+.orientation-panel h2 {
+  font-size: 25px;
+  margin: 4px 0;
+}
+.orientation-panel p {
+  color: #b0c5ce;
+  line-height: 1.6;
+}
+.orientation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+.orientation-grid > div {
+  min-width: 0;
+}
+.orientation-panel button,
+.imu-file {
+  border: 1px solid #49616c;
+  border-radius: 8px;
+  background: #233d47;
+  color: #e1f3f0;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+.orientation-panel button:hover {
+  border-color: #78d9c2;
+}
+.orientation-panel button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.imu-file {
+  display: block;
+  font-size: 12px;
+}
+.imu-file input {
+  display: block;
+  max-width: 190px;
+  margin-top: 6px;
+}
+.imu-status {
+  padding: 12px;
+  border-left: 3px solid #70d9c0;
+  background: #1d3d44;
+}
+.articulation-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 18px;
+}
+.articulation-fieldset:disabled {
+  opacity: 0.55;
+}
+.physics-strip[hidden],
+.motion-feedback[hidden] {
+  display: none;
+}
+@media (max-width: 760px) {
+  .orientation-grid {
+    grid-template-columns: 1fr;
+  }
+  .orientation-panel {
+    padding: 16px;
+  }
+  .orientation-panel .section-title {
+    display: block;
+  }
+}
+
+.hand-app .orientation-panel h2,
+.hand-app .orientation-panel h3,
+.hand-app .orientation-panel label,
+.hand-app .orientation-panel .section-title > span {
+  color: #e4f3f1;
+}
+.hand-app .orientation-panel .joint-control output {
+  color: #7ce0c9;
+}

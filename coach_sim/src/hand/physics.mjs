@@ -1,5 +1,6 @@
 import RAPIER from "@dimforge/rapier3d-compat";
 import { smoothCommand, coupledCurl } from "./motion.mjs";
+import { IDENTITY, normalize, multiply, inverse, vector } from "./frames.mjs";
 
 export const DT = 1 / 120;
 export const RAD = Math.PI / 180;
@@ -42,7 +43,16 @@ export async function initPhysics() {
 }
 
 /** SI units. Rigid links and servo torques; no muscle-force or sensor inversion model. */
-export function createHand() {
+export function createHand(options = {}) {
+  const baseOrientation = normalize(options.baseOrientation ?? IDENTITY);
+  const basePosition = options.basePosition ?? v(0, -0.24, 0);
+  const floorY = options.floorY ?? -0.295;
+  if (
+    ![basePosition.x, basePosition.y, basePosition.z, floorY].every(
+      Number.isFinite,
+    )
+  )
+    throw new Error("Invalid scene placement.");
   const world = new RAPIER.World(v(0, -9.81, 0));
   // Rapier's JS pipeline applies contact hooks on the event-enabled step path.
   const events = new RAPIER.EventQueue(true);
@@ -55,7 +65,9 @@ export function createHand() {
   const bodies = {};
   const handGroups = (1 << 16) | 7;
   const base = world.createRigidBody(
-    RAPIER.RigidBodyDesc.fixed().setTranslation(0, -0.24, 0),
+    RAPIER.RigidBodyDesc.fixed()
+      .setTranslation(basePosition.x, basePosition.y, basePosition.z)
+      .setRotation(baseOrientation),
   );
   bodies.base = base;
   function link(id, parent, anchor, axis, range, shape, mass, kind = "bone") {
@@ -63,6 +75,7 @@ export function createHand() {
     const body = world.createRigidBody(
       RAPIER.RigidBodyDesc.dynamic()
         .setTranslation(pos.x, pos.y, pos.z)
+        .setRotation(parent.rotation())
         .setCanSleep(false)
         .setLinearDamping(0.15)
         .setAngularDamping(0.2)
@@ -264,7 +277,7 @@ export function createHand() {
     "thumb",
   );
   const floor = world.createRigidBody(
-    RAPIER.RigidBodyDesc.fixed().setTranslation(0, -0.31, 0),
+    RAPIER.RigidBodyDesc.fixed().setTranslation(0, floorY - 0.015, 0),
   );
   world.createCollider(
     RAPIER.ColliderDesc.cuboid(0.65, 0.015, 0.65)
@@ -364,12 +377,35 @@ export function createHand() {
     steps++;
   }
   return {
+    floorY,
     world,
     links,
     joints,
     bodies,
     ball,
     step,
+    // Observation mode only: reorient a frozen articulated pose about its palm.
+    // No physics step, inferred finger motion, or position tracking is implied.
+    setObservedPalmOrientation(orientation) {
+      const delta = normalize(
+        multiply(normalize(orientation), inverse(palm.rotation())),
+      );
+      const origin = palm.translation();
+      for (const body of [base, ...links.map((l) => l.body)]) {
+        const p = body.translation();
+        const offset = vector(
+          delta,
+          v(p.x - origin.x, p.y - origin.y, p.z - origin.z),
+        );
+        body.setTranslation(add(origin, offset), true);
+        body.setRotation(normalize(multiply(delta, body.rotation())), true);
+        if (body !== base) {
+          body.setLinvel(v(), true);
+          body.setAngvel(v(), true);
+          remember(body);
+        }
+      }
+    },
     renderPose(body, interpolate = true) {
       const p = body.translation(),
         q = body.rotation(),
@@ -447,6 +483,8 @@ export function createHand() {
         contacts,
         steps,
         discarded,
+        palmOrientation: { ...palm.rotation() },
+        baseOrientation: { ...base.rotation() },
         angles: Object.fromEntries(joints.map((j) => [j.id, jointAngle(j)])),
         targets: Object.fromEntries(joints.map((j) => [j.id, j.target ?? 0])),
         commands: Object.fromEntries(

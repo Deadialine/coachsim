@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import HandViewport from "./hand/HandViewport";
 import { DEFAULT_CONTROLS, PRESETS, DIGITS } from "./hand/controls.mjs";
 import "./hand/hand.css";
+import OrientationPanel from "./hand/OrientationPanel";
+import { IDENTITY } from "./hand/frames.mjs";
 
 const title = (s) =>
   s.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
@@ -45,6 +47,8 @@ export default function App({ active = true, sensorLayout }) {
       sensors: true,
       tendons: false,
       opacity: 0.24,
+      axes: false,
+      colliders: false,
     });
   const [paused, setPaused] = useState(false),
     [reset, setReset] = useState(0),
@@ -53,6 +57,18 @@ export default function App({ active = true, sensorLayout }) {
     [cameraVersion, setCameraVersion] = useState(0),
     [diagnostics, setDiagnostics] = useState(null),
     [preset, setPreset] = useState("neutral_rest");
+  const [setup, setSetup] = useState({
+    basePosition: { x: 0, y: 0, z: 0 },
+    baseOrientation: IDENTITY,
+    floorY: -0.6,
+  });
+  const [observation, setObservation] = useState(null);
+  const applySetup = (value) => {
+    setSetup(value);
+    setObservation(null);
+    setDiagnostics(null);
+    setReset((n) => n + 1);
+  };
   const set = (key, value) => {
     setControls((c) => ({ ...c, [key]: value }));
     setPreset("manual");
@@ -127,11 +143,20 @@ export default function App({ active = true, sensorLayout }) {
           <div className="stage">
             <div className="stage-top">
               <span>
-                <i /> RIGHT HAND / LIVE PHYSICS
+                <i /> RIGHT HAND /{" "}
+                {observation ? "OBSERVED ORIENTATION" : "LIVE PHYSICS"}
               </span>
-              <span>{paused ? "PAUSED" : "120 Hz fixed step"}</span>
+              <span>
+                {observation
+                  ? observation.quality
+                  : paused
+                    ? "PAUSED"
+                    : "120 Hz fixed step"}
+              </span>
             </div>
             <HandViewport
+              setup={setup}
+              observation={observation}
               controls={controls}
               appearance={{ ...appearance, layout: sensorLayout }}
               paused={paused || !active}
@@ -160,7 +185,15 @@ export default function App({ active = true, sensorLayout }) {
               </div>
             </div>
           </div>
-          <div className="physics-strip">
+          <OrientationPanel
+            active={active}
+            setup={setup}
+            onSetup={applySetup}
+            onObservation={setObservation}
+            diagnostics={diagnostics}
+            controls={controls}
+          />
+          <div className="physics-strip" hidden={!!observation}>
             <div>
               <span>Joint connections</span>
               <strong>
@@ -190,6 +223,7 @@ export default function App({ active = true, sensorLayout }) {
             </div>
           </div>
           <section
+            hidden={!!observation}
             className="motion-feedback"
             aria-label="Live movement feedback"
           >
@@ -265,6 +299,8 @@ export default function App({ active = true, sensorLayout }) {
               ["labels", "Labels"],
               ["sensors", "Sensor sites"],
               ["tendons", "Tendon paths"],
+              ["axes", "World axes"],
+              ["colliders", "Contact shapes"],
             ].map(([key, name]) => (
               <label key={key}>
                 <input
@@ -281,7 +317,9 @@ export default function App({ active = true, sensorLayout }) {
           <p className="caption">
             Bone-colored links show connections; amber points mark joints.
             Sensor sites and tendon paths are schematic. The tendons shown are
-            visual guides, not force-generating tissues.
+            visual guides, not force-generating tissues. Contact shapes show the
+            solver's simplified collision geometry at its latest step; they are
+            hidden during IMU observation.
           </p>
           <section className="motion-feedback">
             <div className="section-title">
@@ -340,216 +378,224 @@ export default function App({ active = true, sensorLayout }) {
             </div>
             <p className="scope-foot">
               ESP32 acquisition is planned. DS1307 supplies wall-clock metadata
-              only; sample timing uses a monotonic clock. All current recordings
-              are simulated.
+              only; sample timing uses a monotonic clock. Synthetic trials are
+              labeled; imported and live IMU data require hardware verification.
             </p>
           </section>
         </div>
         <aside className="control-column">
-          <section className="control-card">
-            <p className="eyebrow">01 / STUDY POSTURES</p>
-            <h2>Seven movement states</h2>
-            <div className="preset-grid">
-              {Object.keys(PRESETS).map((key) => (
-                <button
-                  key={key}
-                  className={preset === key ? "active" : ""}
-                  onClick={() => applyPreset(key)}
-                >
-                  {title(key)}
-                </button>
-              ))}
-            </div>
-            <p className="help">
-              These are illustrative targets for the seven study classes, not
-              measured angles or classifier output.
+          {observation && (
+            <p className="imu-status">
+              Articulation is held during observation. Apply a placement to
+              resume physics.
             </p>
-          </section>
-          <section className="control-card">
-            <p className="eyebrow">02 / ARTICULATION</p>
-            <h2>Wrist & forearm</h2>
-            <Slider
-              name="Wrist flexion / extension"
-              value={controls.flex}
-              min={-70}
-              max={70}
-              onChange={(v) => set("flex", v)}
-              note="Negative: extension · Positive: flexion"
-            />
-            <Slider
-              name="Radial / ulnar deviation"
-              value={controls.deviation}
-              min={-35}
-              max={20}
-              onChange={(v) => set("deviation", v)}
-              note="Negative: ulnar · Positive: radial"
-            />
-            <Slider
-              name="Forearm supination / pronation"
-              value={controls.rotation}
-              min={-80}
-              max={80}
-              onChange={(v) => set("rotation", v)}
-              note="Negative: pronation · Positive: supination"
-            />
-            <h3>Finger articulation</h3>
-            <div className="grip-buttons">
-              <button
-                onClick={() => {
-                  setControls((c) => ({
-                    ...c,
-                    index: 0,
-                    middle: 0,
-                    ring: 0,
-                    little: 0,
-                    thumb: 0,
-                    opposition: 0,
-                    spread: 0,
-                    cup: 0,
-                  }));
-                  setPreset("manual");
-                }}
-              >
-                Open hand
-              </button>
-              <button
-                onClick={() => {
-                  setControls((c) => ({
-                    ...c,
-                    index: 0.9,
-                    middle: 0.9,
-                    ring: 0.9,
-                    little: 0.9,
-                    thumb: 0.7,
-                    opposition: 55,
-                    spread: 0,
-                    motors: true,
-                    cup: 0.8,
-                  }));
-                  setPreset("manual");
-                }}
-              >
-                Power curl
-              </button>
-              <button
-                onClick={() => {
-                  setControls((c) => ({
-                    ...c,
-                    index: 0.55,
-                    middle: 0.6,
-                    ring: 0.65,
-                    little: 0.7,
-                    thumb: 0.4,
-                    opposition: 45,
-                    cup: 1,
-                    spread: 0,
-                    motors: true,
-                  }));
-                  setPreset("manual");
-                }}
-              >
-                Cupped grasp
-              </button>
-            </div>
-            <Slider
-              name="Palm cupping"
-              value={controls.cup}
-              min={0}
-              max={1}
-              step={0.01}
-              unit="%"
-              onChange={(v) => set("cup", v)}
-              note="Moves the ring and little metacarpals at their CMC joints."
-            />
-            {[...DIGITS, "thumb"].map((name) => (
+          )}
+          <fieldset disabled={!!observation} className="articulation-fieldset">
+            <section className="control-card">
+              <p className="eyebrow">01 / STUDY POSTURES</p>
+              <h2>Seven movement states</h2>
+              <div className="preset-grid">
+                {Object.keys(PRESETS).map((key) => (
+                  <button
+                    key={key}
+                    className={preset === key ? "active" : ""}
+                    onClick={() => applyPreset(key)}
+                  >
+                    {title(key)}
+                  </button>
+                ))}
+              </div>
+              <p className="help">
+                These are illustrative targets for the seven study classes, not
+                measured angles or classifier output.
+              </p>
+            </section>
+            <section className="control-card">
+              <p className="eyebrow">02 / ARTICULATION</p>
+              <h2>Wrist & forearm</h2>
               <Slider
-                key={name}
-                name={`${title(name)} curl`}
-                value={controls[name]}
+                name="Wrist flexion / extension"
+                value={controls.flex}
+                min={-70}
+                max={70}
+                onChange={(v) => set("flex", v)}
+                note="Negative: extension · Positive: flexion"
+              />
+              <Slider
+                name="Radial / ulnar deviation"
+                value={controls.deviation}
+                min={-35}
+                max={20}
+                onChange={(v) => set("deviation", v)}
+                note="Negative: ulnar · Positive: radial"
+              />
+              <Slider
+                name="Forearm supination / pronation"
+                value={controls.rotation}
+                min={-80}
+                max={80}
+                onChange={(v) => set("rotation", v)}
+                note="Negative: pronation · Positive: supination"
+              />
+              <h3>Finger articulation</h3>
+              <div className="grip-buttons">
+                <button
+                  onClick={() => {
+                    setControls((c) => ({
+                      ...c,
+                      index: 0,
+                      middle: 0,
+                      ring: 0,
+                      little: 0,
+                      thumb: 0,
+                      opposition: 0,
+                      spread: 0,
+                      cup: 0,
+                    }));
+                    setPreset("manual");
+                  }}
+                >
+                  Open hand
+                </button>
+                <button
+                  onClick={() => {
+                    setControls((c) => ({
+                      ...c,
+                      index: 0.9,
+                      middle: 0.9,
+                      ring: 0.9,
+                      little: 0.9,
+                      thumb: 0.7,
+                      opposition: 55,
+                      spread: 0,
+                      motors: true,
+                      cup: 0.8,
+                    }));
+                    setPreset("manual");
+                  }}
+                >
+                  Power curl
+                </button>
+                <button
+                  onClick={() => {
+                    setControls((c) => ({
+                      ...c,
+                      index: 0.55,
+                      middle: 0.6,
+                      ring: 0.65,
+                      little: 0.7,
+                      thumb: 0.4,
+                      opposition: 45,
+                      cup: 1,
+                      spread: 0,
+                      motors: true,
+                    }));
+                    setPreset("manual");
+                  }}
+                >
+                  Cupped grasp
+                </button>
+              </div>
+              <Slider
+                name="Palm cupping"
+                value={controls.cup}
                 min={0}
                 max={1}
                 step={0.01}
                 unit="%"
-                onChange={(v) => set(name, v)}
+                onChange={(v) => set("cup", v)}
+                note="Moves the ring and little metacarpals at their CMC joints."
               />
-            ))}
-            <Slider
-              name="Thumb opposition"
-              value={controls.opposition}
-              min={0}
-              max={65}
-              onChange={(v) => set("opposition", v)}
-            />
-            <Slider
-              name="Finger spread"
-              value={controls.spread}
-              min={0}
-              max={20}
-              onChange={(v) => set("spread", v)}
-            />
-            <p className="help">
-              Curl coordinates MCP, PIP, and DIP targets. Spread decreases as
-              fingers curl. The thumb has its own CMC, MCP, and IP chain.
-            </p>
-          </section>
-          <section className="control-card">
-            <p className="eyebrow">03 / PHYSICS BENCH</p>
-            <h2>Forces & contact</h2>
-            <Slider
-              name="Wrist–finger coupling"
-              value={controls.coupling}
-              min={0}
-              max={1}
-              step={0.1}
-              unit="%"
-              onChange={(v) => set("coupling", v)}
-            />
-            <p className="help">
-              Optional tenodesis illustration: wrist extension increases the
-              resting finger curl; flexion opens it. 0% keeps independent
-              controls. This motor-target approximation is not passive tendon
-              mechanics or a fitted human model.
-            </p>
-            <label className="toggle-row">
-              <span>Gravity · 9.81 m/s²</span>
-              <input
-                type="checkbox"
-                checked={controls.gravity}
-                onChange={(e) => set("gravity", e.target.checked)}
+              {[...DIGITS, "thumb"].map((name) => (
+                <Slider
+                  key={name}
+                  name={`${title(name)} curl`}
+                  value={controls[name]}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  unit="%"
+                  onChange={(v) => set(name, v)}
+                />
+              ))}
+              <Slider
+                name="Thumb opposition"
+                value={controls.opposition}
+                min={0}
+                max={65}
+                onChange={(v) => set("opposition", v)}
               />
-            </label>
-            <label className="toggle-row">
-              <span>Joint motors</span>
-              <input
-                type="checkbox"
-                checked={controls.motors}
-                onChange={(e) => set("motors", e.target.checked)}
+              <Slider
+                name="Finger spread"
+                value={controls.spread}
+                min={0}
+                max={20}
+                onChange={(v) => set("spread", v)}
               />
-            </label>
-            <Slider
-              name="Motor stiffness scale"
-              value={controls.strength}
-              min={0.5}
-              max={8}
-              step={0.5}
-              unit="×"
-              onChange={(v) => set("strength", v)}
-            />
-            <div className="grip-buttons">
-              <button onClick={() => setBallRequest((n) => n + 1)}>
-                Place contact ball
-              </button>
-              <button onClick={() => setPaused((p) => !p)}>
-                {paused ? "Resume physics" : "Pause physics"}
-              </button>
-              <button onClick={resetAll}>Reset model</button>
-            </div>
-            <p className="help">
-              A 60 g ball responds to gravity and collides with the hand and
-              floor. Switch to the palmar view to see contact. Motors off
-              releases the joints; the forearm support stays fixed.
-            </p>
-          </section>
+              <p className="help">
+                Curl coordinates MCP, PIP, and DIP targets. Spread decreases as
+                fingers curl. The thumb has its own CMC, MCP, and IP chain.
+              </p>
+            </section>
+            <section className="control-card">
+              <p className="eyebrow">03 / PHYSICS BENCH</p>
+              <h2>Forces & contact</h2>
+              <Slider
+                name="Wrist–finger coupling"
+                value={controls.coupling}
+                min={0}
+                max={1}
+                step={0.1}
+                unit="%"
+                onChange={(v) => set("coupling", v)}
+              />
+              <p className="help">
+                Optional tenodesis illustration: wrist extension increases the
+                resting finger curl; flexion opens it. 0% keeps independent
+                controls. This motor-target approximation is not passive tendon
+                mechanics or a fitted human model.
+              </p>
+              <label className="toggle-row">
+                <span>Gravity · 9.81 m/s²</span>
+                <input
+                  type="checkbox"
+                  checked={controls.gravity}
+                  onChange={(e) => set("gravity", e.target.checked)}
+                />
+              </label>
+              <label className="toggle-row">
+                <span>Joint motors</span>
+                <input
+                  type="checkbox"
+                  checked={controls.motors}
+                  onChange={(e) => set("motors", e.target.checked)}
+                />
+              </label>
+              <Slider
+                name="Motor stiffness scale"
+                value={controls.strength}
+                min={0.5}
+                max={8}
+                step={0.5}
+                unit="×"
+                onChange={(v) => set("strength", v)}
+              />
+              <div className="grip-buttons">
+                <button onClick={() => setBallRequest((n) => n + 1)}>
+                  Place contact ball
+                </button>
+                <button onClick={() => setPaused((p) => !p)}>
+                  {paused ? "Resume physics" : "Pause physics"}
+                </button>
+                <button onClick={resetAll}>Reset model</button>
+              </div>
+              <p className="help">
+                A 60 g ball responds to gravity and collides with the hand and
+                floor. Switch to the palmar view to see contact. Motors off
+                releases the joints; the forearm support stays fixed.
+              </p>
+            </section>
+          </fieldset>
         </aside>
       </section>
       <section className="model-notes">
@@ -592,7 +638,7 @@ export default function App({ active = true, sensorLayout }) {
           </a>
         </div>
       </section>
-      <details className="joint-readout">
+      <details className="joint-readout" hidden={!!observation}>
         <summary>Inspect all 25 joints · target, command & actual</summary>
         <table>
           <thead>
