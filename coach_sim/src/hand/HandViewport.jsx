@@ -4,6 +4,8 @@ import { createScene } from "./scene.mjs";
 
 export default function HandViewport({
   controls,
+  setup,
+  observation,
   appearance,
   paused,
   active = true,
@@ -23,6 +25,8 @@ export default function HandViewport({
     active,
     onDiagnostics,
     cameraView,
+    setup,
+    observation,
   };
   const [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
@@ -37,7 +41,7 @@ export default function HandViewport({
       try {
         await initPhysics();
         if (cancelled) return;
-        model = createHand();
+        model = createHand(current.current.setup);
         scene = createScene(host.current, model);
         scene.view(current.current.cameraView);
         engine.current = { model, scene };
@@ -52,11 +56,24 @@ export default function HandViewport({
             frame = requestAnimationFrame(tick);
             return;
           }
-          if (!state.paused) model.advance((now - last) / 1000, state.controls);
+          if (state.observation) {
+            if (state.observation.q)
+              model.setObservedPalmOrientation(state.observation.q);
+          } else if (!state.paused)
+            model.advance((now - last) / 1000, state.controls);
           last = now;
-          scene.draw(state.appearance, !state.paused);
+          scene.draw(
+            {
+              ...state.appearance,
+              observation: !!state.observation,
+              gravity: state.controls.gravity,
+            },
+            !state.paused && !state.observation,
+          );
           if (now - report > 200) {
-            state.onDiagnostics?.(model.diagnostics());
+            state.onDiagnostics?.(
+              state.observation ? null : model.diagnostics(),
+            );
             report = now;
           }
           frame = requestAnimationFrame(tick);
