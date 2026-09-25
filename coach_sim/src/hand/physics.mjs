@@ -320,13 +320,15 @@ export function createHand(options = {}) {
   };
   let accumulator = 0,
     steps = 0,
-    discarded = 0;
+    discarded = 0,
+    observationReference = null;
   const renderedBodies = [...links.map((l) => l.body), ball];
   const previous = new Map();
   const remember = (body) =>
     previous.set(body.handle, { p: body.translation(), q: body.rotation() });
   renderedBodies.forEach(remember);
   function step(controls = DEFAULT_CONTROLS) {
+    observationReference = null;
     renderedBodies.forEach(remember);
     const c = { ...DEFAULT_CONTROLS, ...controls };
     world.gravity.y = c.gravity ? -9.81 : 0;
@@ -387,18 +389,30 @@ export function createHand(options = {}) {
     // Observation mode only: reorient a frozen articulated pose about its palm.
     // No physics step, inferred finger motion, or position tracking is implied.
     setObservedPalmOrientation(orientation) {
+      if (!observationReference)
+        observationReference = {
+          origin: { ...palm.translation() },
+          rotation: { ...palm.rotation() },
+          poses: [base, ...links.map((l) => l.body)].map((body) => ({
+            body,
+            p: { ...body.translation() },
+            q: { ...body.rotation() },
+          })),
+        };
       const delta = normalize(
-        multiply(normalize(orientation), inverse(palm.rotation())),
+        multiply(
+          normalize(orientation),
+          inverse(observationReference.rotation),
+        ),
       );
-      const origin = palm.translation();
-      for (const body of [base, ...links.map((l) => l.body)]) {
-        const p = body.translation();
+      const origin = observationReference.origin;
+      for (const { body, p, q } of observationReference.poses) {
         const offset = vector(
           delta,
           v(p.x - origin.x, p.y - origin.y, p.z - origin.z),
         );
         body.setTranslation(add(origin, offset), true);
-        body.setRotation(normalize(multiply(delta, body.rotation())), true);
+        body.setRotation(normalize(multiply(delta, q)), true);
         if (body !== base) {
           body.setLinvel(v(), true);
           body.setAngvel(v(), true);

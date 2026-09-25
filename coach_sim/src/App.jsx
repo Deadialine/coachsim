@@ -3,6 +3,7 @@ import HandViewport from "./hand/HandViewport";
 import { DEFAULT_CONTROLS, PRESETS, DIGITS } from "./hand/controls.mjs";
 import "./hand/hand.css";
 import OrientationPanel from "./hand/OrientationPanel";
+import ResearchBench from "./hand/ResearchBench";
 import { IDENTITY } from "./hand/frames.mjs";
 
 const title = (s) =>
@@ -49,6 +50,7 @@ export default function App({ active = true, sensorLayout }) {
       opacity: 0.24,
       axes: false,
       colliders: false,
+      trails: false,
     });
   const [paused, setPaused] = useState(false),
     [reset, setReset] = useState(0),
@@ -63,6 +65,21 @@ export default function App({ active = true, sensorLayout }) {
     floorY: -0.6,
   });
   const [observation, setObservation] = useState(null);
+  const [trial, setTrial] = useState(null),
+    [trialReport, setTrialReport] = useState(null),
+    [imuData, setImuData] = useState(null);
+  const startTrial = (scenario) => {
+    setTrial({ scenario, setup, controls: { ...controls } });
+    setTrialReport(null);
+    setPaused(false);
+    setDiagnostics(null);
+    setReset((n) => n + 1);
+  };
+  const stopTrial = () => {
+    setTrial(null);
+    setPaused(false);
+    setReset((n) => n + 1);
+  };
   const applySetup = (value) => {
     setSetup(value);
     setObservation(null);
@@ -144,7 +161,11 @@ export default function App({ active = true, sensorLayout }) {
             <div className="stage-top">
               <span>
                 <i /> RIGHT HAND /{" "}
-                {observation ? "OBSERVED ORIENTATION" : "LIVE PHYSICS"}
+                {trial
+                  ? "CONTROLLED TRIAL"
+                  : observation
+                    ? "OBSERVED ORIENTATION"
+                    : "LIVE PHYSICS"}
               </span>
               <span>
                 {observation
@@ -155,6 +176,8 @@ export default function App({ active = true, sensorLayout }) {
               </span>
             </div>
             <HandViewport
+              trial={trial}
+              onTrialReport={setTrialReport}
               setup={setup}
               observation={observation}
               controls={controls}
@@ -185,13 +208,26 @@ export default function App({ active = true, sensorLayout }) {
               </div>
             </div>
           </div>
-          <OrientationPanel
-            active={active}
-            setup={setup}
-            onSetup={applySetup}
-            onObservation={setObservation}
-            diagnostics={diagnostics}
-            controls={controls}
+          <fieldset className="orientation-fieldset" disabled={!!trial}>
+            <OrientationPanel
+              active={active}
+              onRecording={setImuData}
+              setup={setup}
+              onSetup={applySetup}
+              onObservation={setObservation}
+              diagnostics={diagnostics}
+              controls={controls}
+            />
+          </fieldset>
+          <ResearchBench
+            disabled={!!observation}
+            trial={trial}
+            report={trialReport}
+            paused={paused}
+            onStart={startTrial}
+            onStop={stopTrial}
+            onPause={() => setPaused((p) => !p)}
+            imuData={imuData}
           />
           <div className="physics-strip" hidden={!!observation}>
             <div>
@@ -301,6 +337,7 @@ export default function App({ active = true, sensorLayout }) {
               ["tendons", "Tendon paths"],
               ["axes", "World axes"],
               ["colliders", "Contact shapes"],
+              ["trails", "Movement trails"],
             ].map(([key, name]) => (
               <label key={key}>
                 <input
@@ -390,7 +427,10 @@ export default function App({ active = true, sensorLayout }) {
               resume physics.
             </p>
           )}
-          <fieldset disabled={!!observation} className="articulation-fieldset">
+          <fieldset
+            disabled={!!observation || !!trial}
+            className="articulation-fieldset"
+          >
             <section className="control-card">
               <p className="eyebrow">01 / STUDY POSTURES</p>
               <h2>Seven movement states</h2>

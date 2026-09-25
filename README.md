@@ -11,3 +11,5 @@ Current scope: four MyoWare RAW sEMG channels targeting 2 kHz/channel and one MP
 [Arbitrary-orientation lab](docs/ORIENTATION_LAB.md): manual placement, calibrated IMU CSV playback, opt-in Web Serial input, and explicit measurement limits. [Orientation verification](evidence/ORIENTATION_VERIFICATION.md).
 
 [Research evidence and protocol](https://github.com/Deadialine/Coachsim-phase1-design).
+
+[Research benchmark lab](docs/RESEARCH_BENCH.md): repeatable seven-posture and impulse-recovery trials, fingertip trails, response charts, and independent orientation-reference scoring. [Comparison and advancement plan](docs/ADVANCEMENT_PLAN.md) · [Software verification](evidence/RESEARCH_BENCH_VERIFICATION.md).

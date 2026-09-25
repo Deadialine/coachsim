@@ -396,6 +396,21 @@ export function createScene(host, model) {
   );
   scene.add(gravityArrow);
   label("World gravity", gravityArrow, point(0, 0.02, 0));
+  const trailGroup = new THREE.Group();
+  scene.add(trailGroup);
+  const trails = [...DIGITS, "thumb"].map((digit, i) => {
+    const line = new THREE.Line(
+      new THREE.BufferGeometry(),
+      new THREE.LineBasicMaterial({
+        color: [0x73e1cb, 0x79bbfa, 0xc2a2ff, 0xf3c484, 0xf09aa8][i],
+        transparent: true,
+        opacity: 0.8,
+      }),
+    );
+    line.frustumCulled = false;
+    trailGroup.add(line);
+    return { digit, line, points: [] };
+  });
   const tendonGroup = new THREE.Group();
   const connection = new THREE.Line(
     new THREE.BufferGeometry(),
@@ -497,8 +512,31 @@ export function createScene(host, model) {
       fixed.position.copy(model.bodies.base.translation());
       fixed.quaternion.copy(model.bodies.base.rotation());
       fixed.visible = !options.observation;
-      ball.visible = !options.observation;
+      ball.visible = !options.observation && !options.trial;
       gravityArrow.visible = !!options.gravity && !options.observation;
+      trailGroup.visible = !!options.trails;
+      for (const trail of trails) {
+        if (!options.trails) {
+          trail.points = [];
+          continue;
+        }
+        const link = model.links.find(
+          (l) =>
+            l.id === `${trail.digit}_${trail.digit === "thumb" ? "IP" : "DIP"}`,
+        );
+        const tip = link.shape.offset
+          ? point(link.shape.offset.x * 2, link.shape.offset.y * 2, 0)
+          : point(0, link.shape.length, 0);
+        const p = vec(worldPoint(poseBody(link.body), tip));
+        if (
+          !trail.points.length ||
+          p.distanceTo(trail.points.at(-1)) > 0.00015
+        ) {
+          trail.points.push(p);
+          if (trail.points.length > 600) trail.points.shift();
+          trail.line.geometry.setFromPoints(trail.points);
+        }
+      }
       const ballPose = model.renderPose(model.ball, interpolate);
       ball.position.copy(ballPose.position);
       ball.quaternion.copy(ballPose.rotation);
