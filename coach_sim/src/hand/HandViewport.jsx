@@ -17,6 +17,7 @@ export default function HandViewport({
   cameraView,
   cameraVersion = 0,
   onDiagnostics,
+  onModelReady,
 }) {
   const host = useRef(null),
     engine = useRef(null),
@@ -27,6 +28,7 @@ export default function HandViewport({
     paused,
     active,
     onDiagnostics,
+    onModelReady,
     cameraView,
     setup,
     trial,
@@ -47,6 +49,16 @@ export default function HandViewport({
         await initPhysics();
         if (cancelled) return;
         model = createHand(current.current.setup);
+        current.current.onModelReady?.(
+          model.links.map((l) => ({
+            id: l.id,
+            range: l.range,
+            axis: l.axis,
+            parent:
+              model.links.find((p) => p.body === l.parent)?.id ??
+              "Fixed forearm support",
+          })),
+        );
         const runner = current.current.trial
           ? createTrial(model, current.current.trial)
           : null;

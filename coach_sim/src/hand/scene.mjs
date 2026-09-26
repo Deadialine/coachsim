@@ -6,6 +6,8 @@ import {
 } from "three/addons/renderers/CSS2DRenderer.js";
 import { DIGITS, worldPoint } from "./physics.mjs";
 import { createPalmSurface } from "./palmSurface.mjs";
+import { createDigitSurface } from "./digitSurface.mjs";
+import { createJointGizmo } from "./jointGizmo.mjs";
 
 export function createScene(host, model) {
   const scene = new THREE.Scene();
@@ -89,6 +91,7 @@ export function createScene(host, model) {
       roughness: 0.85,
       side: THREE.DoubleSide,
     }),
+    nail: new THREE.MeshStandardMaterial({ color: "#f2d5c1", roughness: 0.3 }),
     sensor: new THREE.MeshStandardMaterial({
       color: "#5de1c6",
       emissive: "#124b44",
@@ -105,6 +108,7 @@ export function createScene(host, model) {
     }),
   };
   const groups = new Map(),
+    internalMeshes = [],
     shellMeshes = [],
     markers = [],
     markerSites = [],
@@ -115,6 +119,8 @@ export function createScene(host, model) {
     m.castShadow = true;
     m.receiveShadow = true;
     parent.add(m);
+    if (material === materials.bone || material === materials.joint)
+      internalMeshes.push(m);
     return m;
   }
   const vec = (p) => new THREE.Vector3(p.x, p.y, p.z),
@@ -194,16 +200,25 @@ export function createScene(host, model) {
           vec(point(x, y, 0)),
         );
       }
-      for (let row = 0; row < 2; row++)
-        for (let col = 0; col < 4; col++) {
-          const carpal = mesh(
-            new THREE.SphereGeometry(0.0075, 12, 10),
-            materials.bone,
-            g,
-            vec(point((col - 1.5) * 0.012, 0.005 + row * 0.012, 0)),
-          );
-          carpal.scale.set(1, 0.8, 0.9);
-        }
+      for (const [name, x, y, z, sx, sy, sz] of [
+        ["Scaphoid", 0.015, 0.005, 0, 0.009, 0.012, 0.006],
+        ["Lunate", 0.001, 0.005, 0.001, 0.007, 0.007, 0.006],
+        ["Triquetrum", -0.013, 0.005, 0, 0.008, 0.007, 0.006],
+        ["Pisiform", -0.019, 0.004, -0.009, 0.004, 0.005, 0.004],
+        ["Trapezium", 0.024, 0.019, -0.001, 0.008, 0.007, 0.006],
+        ["Trapezoid", 0.012, 0.024, 0, 0.006, 0.007, 0.005],
+        ["Capitate", 0, 0.024, 0.001, 0.008, 0.011, 0.007],
+        ["Hamate", -0.016, 0.023, 0, 0.009, 0.009, 0.006],
+      ]) {
+        const carpal = mesh(
+          new THREE.SphereGeometry(1, 20, 14),
+          materials.bone,
+          g,
+          vec(point(x, y, z)),
+        );
+        carpal.name = name;
+        carpal.scale.set(sx, sy, sz);
+      }
       markers.push(
         mesh(
           new THREE.BoxGeometry(0.019, 0.023, 0.006),
@@ -271,7 +286,8 @@ export function createScene(host, model) {
         materials.joint,
         g,
       );
-      shellMeshes.push(boneBetween(a, b, shape.radius, g, materials.shell));
+      if (link.kind !== "finger" && link.kind !== "thumb")
+        shellMeshes.push(boneBetween(a, b, shape.radius, g, materials.shell));
       if (link.id === "thumb_CMC") {
         const thenar = mesh(
           new THREE.SphereGeometry(1, 24, 16),
@@ -292,21 +308,23 @@ export function createScene(host, model) {
           g,
           point(-0.025, 0.012, 0.016),
         );
-      shellMeshes.push(
-        mesh(
-          new THREE.SphereGeometry(shape.radius * 1.015, 20, 14),
-          materials.shell,
-          g,
-        ),
-      );
+      if (link.kind !== "finger" && link.kind !== "thumb")
+        shellMeshes.push(
+          mesh(
+            new THREE.SphereGeometry(shape.radius * 1.015, 20, 14),
+            materials.shell,
+            g,
+          ),
+        );
       if (link.id.endsWith("_DIP") || link.id === "thumb_IP") {
         const nail = mesh(
           new THREE.SphereGeometry(1, 12, 8),
-          materials.bone,
+          materials.nail,
           g,
-          vec(point(b.x * 0.72, b.y * 0.72, 0.006)),
+          vec(point(b.x * 0.73, b.y * 0.73, shape.radius * 0.83)),
         );
-        nail.scale.set(0.004, 0.006, 0.001);
+        nail.scale.set(shape.radius * 0.64, shape.length * 0.22, 0.0008);
+        nail.rotation.z = -Math.atan2(b.x, b.y);
       }
     }
   }
@@ -425,6 +443,17 @@ export function createScene(host, model) {
   connection.frustumCulled = false;
   scene.add(connection);
   const palmSurface = createPalmSurface();
+  const digitSkins = [...DIGITS, "thumb"].map((digit) => {
+    const links = (
+      digit === "thumb" ? ["CMC", "MCP", "IP"] : ["MCP", "PIP", "DIP"]
+    ).map((k) => model.links.find((l) => l.id === `${digit}_${k}`));
+    const skin = createDigitSurface(links);
+    const object = mesh(skin.geometry, materials.shell, scene);
+    object.frustumCulled = false;
+    shellMeshes.push(object);
+    return { skin, links };
+  });
+  const jointGizmo = createJointGizmo(scene);
   const palmSkin = mesh(palmSurface.geometry, materials.shell, scene);
   palmSkin.frustumCulled = false;
   shellMeshes.push(palmSkin);
@@ -480,6 +509,15 @@ export function createScene(host, model) {
           rotation: () => pose.rotation,
         };
       };
+      if (options.shell !== false)
+        for (const { skin, links } of digitSkins)
+          skin.update(
+            skin.bodies.map((body) => model.renderPose(body, interpolate)),
+          );
+      jointGizmo.update(
+        model.links.find((l) => l.id === options.jointFocus),
+        (body) => model.renderPose(body, interpolate),
+      );
       for (const site of markerSites) {
         const placement = options.layout?.find((s) => s.id === site.id);
         if (!placement) continue;
@@ -582,6 +620,11 @@ export function createScene(host, model) {
       );
       materials.shell.opacity = options.opacity ?? 0.24;
       materials.shell.depthWrite = materials.shell.opacity >= 0.95;
+      internalMeshes.forEach(
+        (m) =>
+          (m.visible =
+            options.shell === false || materials.shell.opacity < 0.95),
+      );
       shellMeshes.forEach((m) => (m.visible = options.shell !== false));
       labelObjects.forEach((m) => (m.visible = !!options.labels));
       markers.forEach(

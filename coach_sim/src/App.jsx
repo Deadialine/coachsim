@@ -4,6 +4,7 @@ import { DEFAULT_CONTROLS, PRESETS, DIGITS } from "./hand/controls.mjs";
 import "./hand/hand.css";
 import OrientationPanel from "./hand/OrientationPanel";
 import ResearchBench from "./hand/ResearchBench";
+import JointInspector from "./hand/JointInspector";
 import { IDENTITY } from "./hand/frames.mjs";
 
 const title = (s) =>
@@ -41,6 +42,7 @@ function Slider({
   );
 }
 export default function App({ active = true, sensorLayout }) {
+  const [jointCatalog, setJointCatalog] = useState([]);
   const [controls, setControls] = useState({ ...DEFAULT_CONTROLS }),
     [appearance, setAppearance] = useState({
       shell: true,
@@ -182,6 +184,7 @@ export default function App({ active = true, sensorLayout }) {
               observation={observation}
               controls={controls}
               appearance={{ ...appearance, layout: sensorLayout }}
+              onModelReady={setJointCatalog}
               paused={paused || !active}
               active={active}
               reset={reset}
@@ -391,6 +394,15 @@ export default function App({ active = true, sensorLayout }) {
             </p>
           </section>
           <section className="scope-card">
+            <JointInspector
+              catalog={jointCatalog}
+              selected={appearance.jointFocus}
+              onSelect={(jointFocus) =>
+                setAppearance((a) => ({ ...a, jointFocus }))
+              }
+              diagnostics={diagnostics}
+              observation={observation}
+            />
             <p className="eyebrow">ACQUISITION PLAN</p>
             <h2>Designed around the current study.</h2>
             <div className="sensor-grid">

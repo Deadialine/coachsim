@@ -13,3 +13,5 @@ Current scope: four MyoWare RAW sEMG channels targeting 2 kHz/channel and one MP
 [Research evidence and protocol](https://github.com/Deadialine/Coachsim-phase1-design).
 
 [Research benchmark lab](docs/RESEARCH_BENCH.md): repeatable seven-posture and impulse-recovery trials, fingertip trails, response charts, and independent orientation-reference scoring. [Comparison and advancement plan](docs/ADVANCEMENT_PLAN.md) · [Software verification](evidence/RESEARCH_BENCH_VERIFICATION.md).
+
+[Anatomical surface upgrade](docs/ANATOMY_SURFACE_PLAN.md): continuous dual-quaternion digit surfaces, schematic carpal arrangement, and a solver-connected joint inspector. [Surface verification](evidence/SURFACE_VERIFICATION.md).
