@@ -23,6 +23,7 @@ export function createTrial(model, configuration) {
     ...DEFAULT_CONTROLS,
     ...configuration.controls,
     motors: true,
+    jointTargets: {},
   };
   // The trial excludes the free ball so contact placement cannot change repeatability.
   model.ball.collider(0).setEnabled(false);

@@ -5,6 +5,7 @@ import "./hand/hand.css";
 import OrientationPanel from "./hand/OrientationPanel";
 import ResearchBench from "./hand/ResearchBench";
 import JointInspector from "./hand/JointInspector";
+import RoboticsPanel from "./hand/RoboticsPanel";
 import { IDENTITY } from "./hand/frames.mjs";
 
 const title = (s) =>
@@ -53,6 +54,7 @@ export default function App({ active = true, sensorLayout }) {
       axes: false,
       colliders: false,
       trails: false,
+      contactPoints: false,
     });
   const [paused, setPaused] = useState(false),
     [reset, setReset] = useState(0),
@@ -341,6 +343,7 @@ export default function App({ active = true, sensorLayout }) {
               ["axes", "World axes"],
               ["colliders", "Contact shapes"],
               ["trails", "Movement trails"],
+              ["contactPoints", "Object contact points"],
             ].map(([key, name]) => (
               <label key={key}>
                 <input
@@ -394,6 +397,16 @@ export default function App({ active = true, sensorLayout }) {
             </p>
           </section>
           <section className="scope-card">
+            <RoboticsPanel
+              setup={setup}
+              onApply={applySetup}
+              catalog={jointCatalog}
+              controls={controls}
+              onControls={setControls}
+              diagnostics={diagnostics}
+              disabled={!!observation || !!trial || !jointCatalog.length}
+              onPlace={() => setBallRequest((n) => n + 1)}
+            />
             <JointInspector
               catalog={jointCatalog}
               selected={appearance.jointFocus}
@@ -642,9 +655,9 @@ export default function App({ active = true, sensorLayout }) {
                 <button onClick={resetAll}>Reset model</button>
               </div>
               <p className="help">
-                A 60 g ball responds to gravity and collides with the hand and
-                floor. Switch to the palmar view to see contact. Motors off
-                releases the joints; the forearm support stays fixed.
+                A configurable sphere responds to gravity and collides with the
+                hand and floor. Switch to the palmar view to see contact. Motors
+                off releases the joints; the forearm support stays fixed.
               </p>
             </section>
           </fieldset>

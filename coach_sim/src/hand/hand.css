@@ -877,3 +877,15 @@
     grid-template-columns: 1fr;
   }
 }
+.joint-inspector input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  background: #294550;
+  color: #f0fbff;
+  border: 1px solid #66828e;
+  border-radius: 8px;
+  padding: 10px;
+}
+.joint-inspector button {
+  margin: 10px 5px 10px 0;
+}
