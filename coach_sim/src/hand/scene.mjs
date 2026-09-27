@@ -352,13 +352,15 @@ export function createScene(host, model) {
   label("CMC", groups.get("thumb_CMC"), point(0.014, -0.016, 0.01));
   label("Wrist · 2 axes", groups.get("flex"), point(-0.065, 0, 0.006));
   const ball = mesh(
-    new THREE.SphereGeometry(0.027, 32, 24),
+    new THREE.SphereGeometry(model.objectConfig.radius, 32, 24),
     new THREE.MeshStandardMaterial({ color: "#e09b62", roughness: 0.55 }),
     scene,
   );
   ball.add(
     new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(0.0272, 1)),
+      new THREE.EdgesGeometry(
+        new THREE.IcosahedronGeometry(model.objectConfig.radius + 0.0002, 1),
+      ),
       new THREE.LineBasicMaterial({
         color: "#ffc994",
         transparent: true,
@@ -404,6 +406,15 @@ export function createScene(host, model) {
     collisionObjects.push({ lines, collider: c });
   }
   scene.add(collisionLines);
+  const contactDots = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.0018, 10, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffad68, depthTest: false }),
+    64,
+  );
+  contactDots.renderOrder = 30;
+  contactDots.frustumCulled = false;
+  scene.add(contactDots);
+  const contactMatrix = new THREE.Matrix4();
   const gravityArrow = new THREE.ArrowHelper(
     new THREE.Vector3(0, -1, 0),
     new THREE.Vector3(-0.18, 0.08, 0),
@@ -488,6 +499,20 @@ export function createScene(host, model) {
     view,
     draw(options = {}, interpolate = true) {
       worldAxes.visible = !!options.axes;
+      contactDots.visible =
+        !!options.contactPoints && !options.observation && !options.trial;
+      if (contactDots.visible) {
+        const points = model
+          .contactTelemetry()
+          .pairs.flatMap((p) => p.pointsWorldM)
+          .slice(0, 64);
+        contactDots.count = points.length;
+        points.forEach((p, i) => {
+          contactMatrix.makeTranslation(p.x, p.y, p.z);
+          contactDots.setMatrixAt(i, contactMatrix);
+        });
+        contactDots.instanceMatrix.needsUpdate = true;
+      }
       collisionLines.visible = !!options.colliders && !options.observation;
       if (collisionLines.visible)
         for (const { lines, collider } of collisionObjects) {

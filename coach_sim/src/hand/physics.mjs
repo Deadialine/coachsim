@@ -1,6 +1,7 @@
 import RAPIER from "@dimforge/rapier3d-compat";
 import { smoothCommand, coupledCurl } from "./motion.mjs";
 import { IDENTITY, normalize, multiply, inverse, vector } from "./frames.mjs";
+import { objectConfiguration, validateJointTargets } from "./robotics.mjs";
 
 export const DT = 1 / 120;
 export const RAD = Math.PI / 180;
@@ -44,6 +45,7 @@ export async function initPhysics() {
 
 /** SI units. Rigid links and servo torques; no muscle-force or sensor inversion model. */
 export function createHand(options = {}) {
+  const objectConfig = objectConfiguration(options.object);
   const baseOrientation = normalize(options.baseOrientation ?? IDENTITY);
   const basePosition = options.basePosition ?? v(0, -0.24, 0);
   const floorY = options.floorY ?? -0.295;
@@ -288,12 +290,13 @@ export function createHand(options = {}) {
   const ball = world.createRigidBody(
     RAPIER.RigidBodyDesc.dynamic()
       .setTranslation(0.11, 0.19, -0.06)
+      .setCanSleep(false)
       .setCcdEnabled(true),
   );
   world.createCollider(
-    RAPIER.ColliderDesc.ball(0.027)
-      .setMass(0.06)
-      .setFriction(0.9)
+    RAPIER.ColliderDesc.ball(objectConfig.radius)
+      .setMass(objectConfig.mass)
+      .setFriction(objectConfig.friction)
       .setRestitution(0.15)
       .setCollisionGroups((2 << 16) | 7),
     ball,
@@ -328,6 +331,7 @@ export function createHand(options = {}) {
     previous.set(body.handle, { p: body.translation(), q: body.rotation() });
   renderedBodies.forEach(remember);
   function step(controls = DEFAULT_CONTROLS) {
+    validateJointTargets(controls.jointTargets, joints);
     observationReference = null;
     renderedBodies.forEach(remember);
     const c = { ...DEFAULT_CONTROLS, ...controls };
@@ -349,6 +353,7 @@ export function createHand(options = {}) {
       }
       if (digit === "thumb")
         target = c.thumb * { CMC: 30, MCP: 55, IP: 70 }[articulation];
+      if (c.jointTargets?.[j.id] !== undefined) target = c.jointTargets[j.id];
       j.target = Math.max(j.range[0], Math.min(j.range[1], target));
       const command = smoothCommand(
         j.commanded ?? 0,
@@ -385,6 +390,8 @@ export function createHand(options = {}) {
     joints,
     bodies,
     ball,
+    objectConfig,
+    contactTelemetry: objectContacts,
     step,
     // Observation mode only: reorient a frozen articulated pose about its palm.
     // No physics step, inferred finger motion, or position tracking is implied.
@@ -457,7 +464,7 @@ export function createHand(options = {}) {
       }
     },
     placeBall() {
-      const p = worldPoint(palm, v(0, 0.11, -0.065));
+      const p = worldPoint(palm, v(0, 0.11, -(objectConfig.radius + 0.038)));
       ball.setTranslation(p, true);
       ball.setLinvel(v(), true);
       ball.setAngvel(v(), true);
@@ -495,6 +502,7 @@ export function createHand(options = {}) {
         limitErrorDeg: Math.max(0, limitError),
         trackingDeg: tracking,
         contacts,
+        objectContacts: objectContacts(),
         steps,
         discarded,
         palmOrientation: { ...palm.rotation() },
@@ -511,4 +519,38 @@ export function createHand(options = {}) {
       world.free();
     },
   };
+
+  function objectContacts() {
+    const result = [];
+    world.contactPairsWith(ball.collider(0), (other) => {
+      const link = links.find((l) => l.collider.handle === other.handle);
+      world.contactPair(ball.collider(0), other, (manifold) => {
+        if (!manifold.numSolverContacts()) return;
+        let impulse = 0;
+        for (let i = 0; i < manifold.numContacts(); i++)
+          impulse += Math.max(0, manifold.contactImpulse(i));
+        result.push({
+          body: link?.id ?? "floor",
+          kind: link ? "hand" : "environment",
+          normalImpulseNs: impulse,
+          normalLoadN: impulse / DT,
+          pointsWorldM: Array.from(
+            { length: manifold.numSolverContacts() },
+            (_, i) => ({ ...manifold.solverContactPoint(i) }),
+          ),
+        });
+      });
+    });
+    return {
+      timestepSeconds: DT,
+      provenance: "ideal solver contact output",
+      pairs: result,
+      handNormalLoadN: result
+        .filter((r) => r.kind === "hand")
+        .reduce((s, r) => s + r.normalLoadN, 0),
+      environmentNormalLoadN: result
+        .filter((r) => r.kind === "environment")
+        .reduce((s, r) => s + r.normalLoadN, 0),
+    };
+  }
 }

@@ -1,5 +1,7 @@
 # CoachSim
 
+[Robotics research roadmap](docs/ROBOTICS_ROADMAP.md) · [Robotics laboratory and controller API](docs/ROBOTICS_LAB.md): direct joint targets, configurable contact sphere, ideal contact telemetry, seeded headless episodes and reproducible baselines.
+
 [Run CoachSim](coach_sim/README.md). One shared session spans **Overview, Sensor Layout, Signals, Coaching Logic, Data Logs, and 3D Model**. Switching tabs preserves recording, replay, notes, and the hand pose. Open `?view=hand` directly for the articulated model, or enable the posture illustration in Overview.
 
 The restored sensor editor supports dragging and keyboard/numeric placement. Session ZIPs retain the placement snapshot and timestamped operator notes. Signals exposes all four EMG channels and all six MPU6050 axes. Coaching Logic displays the live quality, confidence, freshness, stability, and target-match decision. [Workspace guide](docs/WORKSPACE.md).
