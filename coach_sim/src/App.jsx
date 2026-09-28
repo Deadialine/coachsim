@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
+import "./robot/robot.css";
+const RobotLab = lazy(() => import("./robot/RobotLab"));
 import HandViewport from "./hand/HandViewport";
 import { DEFAULT_CONTROLS, PRESETS, DIGITS } from "./hand/controls.mjs";
 import "./hand/hand.css";
@@ -42,7 +44,47 @@ function Slider({
     </label>
   );
 }
-export default function App({ active = true, sensorLayout }) {
+export default function App(props) {
+  const [model, setModel] = useState(() =>
+    new URLSearchParams(window.location.search).get("model") === "allegro"
+      ? "allegro"
+      : "human",
+  );
+  const choose = (next) => {
+    setModel(next);
+    const url = new URL(window.location.href);
+    if (next === "allegro") url.searchParams.set("model", "allegro");
+    else url.searchParams.delete("model");
+    window.history.replaceState(null, "", url);
+  };
+  return (
+    <>
+      <nav className="model-switch" aria-label="Hand model selection">
+        <button
+          aria-pressed={model === "human"}
+          onClick={() => choose("human")}
+        >
+          Thesis hand · 25 axes
+        </button>
+        <button
+          aria-pressed={model === "allegro"}
+          onClick={() => choose("allegro")}
+        >
+          Allegro V3 · 16 actuators
+        </button>
+        <span>Switching models resets the active hand lab.</span>
+      </nav>
+      {model === "human" ? (
+        <HumanHandApp {...props} />
+      ) : (
+        <Suspense fallback={<p>Loading robot laboratory…</p>}>
+          <RobotLab active={props.active} />
+        </Suspense>
+      )}
+    </>
+  );
+}
+function HumanHandApp({ active = true, sensorLayout }) {
   const [jointCatalog, setJointCatalog] = useState([]);
   const [controls, setControls] = useState({ ...DEFAULT_CONTROLS }),
     [appearance, setAppearance] = useState({

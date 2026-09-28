@@ -3,3 +3,5 @@ node_modules/
 coach_sim/dist/
 evidence/generated/
 .verification-build/
+.model-venv/
+.model-tools/

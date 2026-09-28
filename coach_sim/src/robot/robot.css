@@ -1,0 +1,304 @@
+.robot-lab {
+  max-width: 1440px;
+  margin: auto;
+  padding: 28px;
+  color: #163c42;
+}
+.robot-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+}
+.robot-heading h1 {
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -1.4px;
+  margin: 12px 0;
+}
+.robot-status {
+  background: #d9eee5;
+  border: 1px solid #b7d6ca;
+  border-radius: 100px;
+  padding: 10px 18px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+.robot-boundary {
+  max-width: 1020px;
+  line-height: 1.7;
+  color: #557072;
+  margin: 22px 0 30px;
+}
+.robot-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.robot-stage {
+  position: sticky;
+  top: 80px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #10232b;
+  color: #d7e6e4;
+}
+.robot-canvas {
+  height: 550px;
+  width: 100%;
+}
+.robot-caption {
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  border-top: 1px solid #29444d;
+  gap: 10px;
+}
+.robot-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 22px;
+  gap: 18px;
+  background: #17313b;
+  font-size: 11px;
+}
+.robot-metrics b {
+  display: block;
+  font-size: 22px;
+  color: #c3ebd8;
+  margin-bottom: 6px;
+}
+.robot-footnote {
+  font-size: 12px;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+.robot-stage > .robot-footnote {
+  padding: 0 24px 12px;
+}
+.robot-controls {
+  border: 1px solid #d2e1dc;
+  background: #fff;
+  border-radius: 24px;
+  padding: 26px;
+}
+.robot-controls h2,
+.robot-response h2 {
+  font-size: 23px;
+  letter-spacing: -0.6px;
+  margin: 10px 0 24px;
+}
+.robot-controls label {
+  display: block;
+  font-size: 13px;
+  margin: 16px 0;
+}
+.robot-controls select {
+  display: block;
+  padding: 12px;
+  margin-top: 8px;
+  width: 100%;
+  border-radius: 10px;
+  background: #f2f7f5;
+  border: 1px solid #c6d9d1;
+  color: #163c42;
+}
+.robot-controls input[type="range"] {
+  display: block;
+  width: 100%;
+  accent-color: #207b6b;
+  margin-top: 16px;
+}
+.robot-controls output {
+  float: right;
+  font-weight: 700;
+}
+.robot-joint-id {
+  font: 11px monospace;
+  color: #637d7b;
+  margin-top: 12px;
+}
+.robot-readouts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0;
+}
+.robot-readouts span {
+  font-size: 11px;
+  background: #edf4f0;
+  padding: 13px;
+  border-radius: 10px;
+}
+.robot-readouts strong {
+  display: block;
+  font-size: 17px;
+  margin-top: 6px;
+}
+.robot-lab button {
+  border: 1px solid #c1d6cc;
+  border-radius: 9px;
+  padding: 11px 15px;
+  background: #edf5ef;
+  color: #164b42;
+  font-weight: 600;
+  cursor: pointer;
+}
+.robot-lab button:hover {
+  background: #dceee4;
+}
+.robot-lab button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.robot-buttons {
+  display: flex;
+  gap: 10px;
+}
+.robot-controls fieldset {
+  border: 0;
+  border-top: 1px solid #d4e2da;
+  padding: 10px 0 0;
+  margin: 22px 0;
+}
+.robot-controls legend {
+  font-size: 11px;
+  color: #648078;
+  padding-right: 8px;
+}
+.robot-check {
+  display: flex !important;
+  gap: 10px;
+  align-items: center;
+}
+.robot-check input {
+  accent-color: #207b6b;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+}
+.robot-controls details {
+  border-top: 1px solid #d4e2da;
+  margin-top: 22px;
+  padding-top: 20px;
+}
+.robot-controls summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.robot-response {
+  margin-top: 28px;
+  border: 1px solid #d2e1dc;
+  background: #fff;
+  border-radius: 24px;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 35px;
+  line-height: 1.6;
+}
+.robot-response p {
+  max-width: 700px;
+}
+.robot-response button {
+  margin-top: 10px;
+}
+.robot-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 26px 0;
+  font-size: 12px;
+}
+.robot-source a {
+  color: #287465;
+}
+.model-switch {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px 28px 0;
+  max-width: 1440px;
+  margin: auto;
+}
+.model-switch button {
+  padding: 12px 18px;
+  border: 1px solid #bdcec7;
+  border-radius: 10px;
+  background: #fff;
+  color: #24554e;
+  font-weight: 600;
+  cursor: pointer;
+}
+.model-switch button[aria-pressed="true"] {
+  background: #1c6e5f;
+  color: white;
+}
+.model-switch span {
+  font-size: 11px;
+  color: #667e78;
+}
+.robot-lab :focus-visible,
+.model-switch :focus-visible {
+  outline: 3px solid #dc994c;
+  outline-offset: 3px;
+}
+@media (max-width: 1000px) {
+  .robot-layout {
+    grid-template-columns: 1fr;
+  }
+  .robot-stage {
+    position: relative;
+    top: 0;
+  }
+  .robot-canvas {
+    height: 460px;
+  }
+  .robot-response {
+    grid-template-columns: 1fr;
+  }
+  .robot-heading {
+    align-items: start;
+  }
+  .robot-status {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .robot-lab {
+    padding: 18px;
+  }
+  .robot-canvas {
+    height: 380px;
+  }
+  .robot-controls {
+    padding: 20px;
+  }
+  .robot-metrics {
+    gap: 8px;
+    padding: 15px;
+  }
+  .robot-metrics b {
+    font-size: 18px;
+  }
+  .robot-caption {
+    font-size: 10px;
+    padding: 12px;
+  }
+  .model-switch {
+    padding: 14px 18px 0;
+    flex-wrap: wrap;
+  }
+  .model-switch span {
+    width: 100%;
+  }
+  .robot-response {
+    padding: 22px;
+  }
+}
