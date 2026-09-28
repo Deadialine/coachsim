@@ -161,13 +161,23 @@ export function createRobot(manifest, options = {}) {
     return indices;
   });
   let steps = 0;
+  // Fixed fingertips belong to their distal link's collision family. Exclude
+  // that welded family's immediate parent, matching the source adjacency rule.
+  const families = new Map();
+  for (const b of manifest.bodies)
+    families.set(
+      b.id,
+      manifest.joints.some((j) => j.body === b.id) || b.parent === "world"
+        ? b.id
+        : families.get(b.parent),
+    );
   const hooks = {
     filterContactPair(a, b) {
-      return excluded.has(
-        [colliderBodies.get(a), colliderBodies.get(b)].sort().join("|"),
-      )
+      const fa = families.get(colliderBodies.get(a)),
+        fb = families.get(colliderBodies.get(b));
+      return fa && fb && (fa === fb || excluded.has([fa, fb].sort().join("|")))
         ? null
-        : RAPIER.SolverFlags.COMPUTE_IMPULSES;
+        : RAPIER.SolverFlags.COMPUTE_IMPULSE;
     },
   };
   function angle(j) {

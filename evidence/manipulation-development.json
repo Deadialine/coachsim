@@ -1,0 +1,2467 @@
+{
+  "schema": "coachsim-manipulation-benchmark-1",
+  "protocol": {
+    "id": "sphere-retention-v1",
+    "horizonSteps": 840,
+    "releaseStep": 240,
+    "impulseStep": 480,
+    "holdSteps": 240,
+    "radiusM": 0.025,
+    "massKg": 0.03,
+    "friction": 0.8,
+    "jitterM": 0.002,
+    "maxHoldDistanceM": 0.08,
+    "maxHoldSpeedMS": 0.15,
+    "dropHeightM": 0.1,
+    "dropDistanceM": 0.14,
+    "impulseNs": {
+      "x": 0.002,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "sourceSha256": {
+    "physics.mjs": "cb592e30fe1bf3fdfee2c1a2a7c05ca3c2770b5b547cf83bc4396e4bb30ae345",
+    "model.mjs": "3fdc4cec901d3bda1dc5b9d4d251a097e4fbf7c10911d5c3db068517f210b2e6",
+    "manipulation.mjs": "1bbb202b5423e37c64dc4dfad63fe23103223c3de688214784a06e5d4c8da338"
+  },
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "split": "development",
+  "conditions": [
+    {
+      "controller": "open-hand-v1",
+      "counts": {
+        "success": 0,
+        "dropped": 10,
+        "timeout": 0,
+        "numerical-failure": 0
+      },
+      "successRate": 0,
+      "wilson95": {
+        "lower": 0,
+        "upper": 0.2775327998628892,
+        "confidence": 0.95
+      },
+      "episodes": [
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 1,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05394582210108638,
+              "y": -0.0005229173051193356,
+              "z": 0.04501696812920272
+            },
+            "startWorldM": {
+              "x": 0.05394582210108638,
+              "y": 0.04501696812920272,
+              "z": 0.0005229173051193442
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 433,
+            "timeSeconds": 1.8041666666666667,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17185206711292267,
+                "y": -0.02767925150692463,
+                "z": 0.032520707696676254
+              },
+              "rotation": {
+                "x": 0.44900354743003845,
+                "y": 0.29739490151405334,
+                "z": 0.0066232867538928986,
+                "w": -0.8425605893135071
+              },
+              "velocityMS": {
+                "x": 0.27564266324043274,
+                "y": -0.8149639368057251,
+                "z": 0.0444975420832634
+              },
+              "displacementM": 0.1421635732250609,
+              "speedMS": 0.8614668463403664
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 2,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05394737231079489,
+              "y": -0.0001601022444665432,
+              "z": 0.043755801218561825
+            },
+            "startWorldM": {
+              "x": 0.05394737231079488,
+              "y": 0.04375580121856182,
+              "z": 0.00016010224446654994
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 470,
+            "timeSeconds": 1.9583333333333333,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17120066285133362,
+                "y": -0.028648991137742996,
+                "z": 0.032141122967004776
+              },
+              "rotation": {
+                "x": 0.4908752739429474,
+                "y": 0.34412074089050293,
+                "z": 0.0628155916929245,
+                "w": -0.7979202270507812
+              },
+              "velocityMS": {
+                "x": 0.26546815037727356,
+                "y": -0.8091809749603271,
+                "z": 0.03846767172217369
+              },
+              "displacementM": 0.1414693386752021,
+              "speedMS": 0.8524828155864499
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 3,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.0539489225205034,
+              "y": 0.00020271281618624925,
+              "z": 0.04649463430792093
+            },
+            "startWorldM": {
+              "x": 0.0539489225205034,
+              "y": 0.04649463430792093,
+              "z": -0.00020271281618624085
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 452,
+            "timeSeconds": 1.8833333333333333,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.1696145385503769,
+                "y": -0.02492297627031803,
+                "z": -0.033709120005369186
+              },
+              "rotation": {
+                "x": -0.3739505112171173,
+                "y": -0.5653166174888611,
+                "z": -0.03265891969203949,
+                "w": -0.7345144748687744
+              },
+              "velocityMS": {
+                "x": 0.26194849610328674,
+                "y": -0.7712987661361694,
+                "z": -0.09121979773044586
+              },
+              "displacementM": 0.14000603256646638,
+              "speedMS": 0.81965837563703
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 4,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395047273021191,
+              "y": 0.0005655278768390417,
+              "z": 0.045233467397280035
+            },
+            "startWorldM": {
+              "x": 0.053950472730211904,
+              "y": 0.045233467397280035,
+              "z": -0.0005655278768390282
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 478,
+            "timeSeconds": 1.9916666666666667,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17209285497665405,
+                "y": -0.02733604423701763,
+                "z": -0.029084844514727592
+              },
+              "rotation": {
+                "x": -0.43574652075767517,
+                "y": 0.12067433446645737,
+                "z": 0.04852842167019844,
+                "w": -0.890622079372406
+              },
+              "velocityMS": {
+                "x": 0.2850014865398407,
+                "y": -0.8303524255752563,
+                "z": 0.006949288304895163
+              },
+              "displacementM": 0.1415531982090022,
+              "speedMS": 0.8779289781050488
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 5,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395202293992043,
+              "y": 0.0009283429374918341,
+              "z": 0.04397230048663914
+            },
+            "startWorldM": {
+              "x": 0.05395202293992042,
+              "y": 0.04397230048663914,
+              "z": -0.0009283429374918259
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 441,
+            "timeSeconds": 1.8375,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17233209311962128,
+                "y": -0.027723314240574837,
+                "z": -0.029918815940618515
+              },
+              "rotation": {
+                "x": -0.4816364645957947,
+                "y": -0.011725342832505703,
+                "z": -0.027656927704811096,
+                "w": -0.8758561611175537
+              },
+              "velocityMS": {
+                "x": 0.29273492097854614,
+                "y": -0.8408536911010742,
+                "z": 0.0002585994661785662
+              },
+              "displacementM": 0.141402085245618,
+              "speedMS": 0.8903531494144896
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 6,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395357314962894,
+              "y": 0.0012911579981446267,
+              "z": 0.046711133575998244
+            },
+            "startWorldM": {
+              "x": 0.05395357314962894,
+              "y": 0.04671113357599825,
+              "z": -0.0012911579981446202
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 425,
+            "timeSeconds": 1.7708333333333333,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17264068126678467,
+                "y": -0.02638719044625759,
+                "z": -0.030469071120023727
+              },
+              "rotation": {
+                "x": -0.4721420109272003,
+                "y": -0.06929478049278259,
+                "z": -0.021627958863973618,
+                "w": -0.8785285353660583
+              },
+              "velocityMS": {
+                "x": 0.30519694089889526,
+                "y": -0.8157268762588501,
+                "z": -0.0011043187696486712
+              },
+              "displacementM": 0.14241258800479697,
+              "speedMS": 0.8709516225973806
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 7,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395512335933745,
+              "y": 0.0016539730587974192,
+              "z": 0.04544996666535735
+            },
+            "startWorldM": {
+              "x": 0.05395512335933745,
+              "y": 0.04544996666535734,
+              "z": -0.0016539730587974144
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 456,
+            "timeSeconds": 1.9,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17169955372810364,
+                "y": -0.027099665254354477,
+                "z": -0.029132641851902008
+              },
+              "rotation": {
+                "x": -0.12711410224437714,
+                "y": 0.3541586399078369,
+                "z": 0.049344442784786224,
+                "w": -0.9251912832260132
+              },
+              "velocityMS": {
+                "x": 0.2884243130683899,
+                "y": -0.8424075245857239,
+                "z": -0.006828397046774626
+              },
+              "displacementM": 0.14100452905205577,
+              "speedMS": 0.8904412663695724
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 8,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395667356904596,
+              "y": -0.0019832118805497884,
+              "z": 0.04418879975471646
+            },
+            "startWorldM": {
+              "x": 0.05395667356904596,
+              "y": 0.04418879975471646,
+              "z": 0.0019832118805497984
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 426,
+            "timeSeconds": 1.775,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17191661894321442,
+                "y": -0.02666439116001129,
+                "z": 0.029904954135417938
+              },
+              "rotation": {
+                "x": 0.2777438163757324,
+                "y": -0.17086632549762726,
+                "z": -0.00816127099096775,
+                "w": -0.9453023672103882
+              },
+              "velocityMS": {
+                "x": 0.29543977975845337,
+                "y": -0.8363860845565796,
+                "z": 0.00828179158270359
+              },
+              "displacementM": 0.14040778848063576,
+              "speedMS": 0.887070985871722
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 9,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395822377875447,
+              "y": -0.001620396819896996,
+              "z": 0.046927632844075556
+            },
+            "startWorldM": {
+              "x": 0.05395822377875448,
+              "y": 0.046927632844075556,
+              "z": 0.0016203968198969972
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 418,
+            "timeSeconds": 1.7416666666666667,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17210273444652557,
+                "y": -0.0244082473218441,
+                "z": 0.03049015998840332
+              },
+              "rotation": {
+                "x": 0.4367532730102539,
+                "y": 0.05799407511949539,
+                "z": -0.04992068186402321,
+                "w": -0.8963209390640259
+              },
+              "velocityMS": {
+                "x": 0.3106019198894501,
+                "y": -0.7944154739379883,
+                "z": 0.0019457167945802212
+              },
+              "displacementM": 0.1409978596482201,
+              "speedMS": 0.8529790640367297
+            },
+            "contacts": []
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 10,
+          "controller": "open-hand-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395977398846299,
+              "y": -0.0012575817592442036,
+              "z": 0.045666465933434666
+            },
+            "startWorldM": {
+              "x": 0.05395977398846298,
+              "y": 0.045666465933434666,
+              "z": 0.0012575817592442098
+            },
+            "targetsRad": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.263,
+              0,
+              0,
+              0
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 446,
+            "timeSeconds": 1.8583333333333334,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": 0.17220313847064972,
+                "y": -0.027063986286520958,
+                "z": 0.02943546324968338
+              },
+              "rotation": {
+                "x": 0.35545068979263306,
+                "y": -0.12901435792446136,
+                "z": 0.03508298099040985,
+                "w": -0.9250833988189697
+              },
+              "velocityMS": {
+                "x": 0.294047474861145,
+                "y": -0.828999936580658,
+                "z": -0.004781868774443865
+              },
+              "displacementM": 0.1416517028823718,
+              "speedMS": 0.8796179162522365
+            },
+            "contacts": []
+          }
+        }
+      ]
+    },
+    {
+      "controller": "fixed-close-v1",
+      "counts": {
+        "success": 0,
+        "dropped": 10,
+        "timeout": 0,
+        "numerical-failure": 0
+      },
+      "successRate": 0,
+      "wilson95": {
+        "lower": 0,
+        "upper": 0.2775327998628892,
+        "confidence": 0.95
+      },
+      "episodes": [
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 1,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05394582210108638,
+              "y": -0.0005229173051193356,
+              "z": 0.04501696812920272
+            },
+            "startWorldM": {
+              "x": 0.05394582210108638,
+              "y": 0.04501696812920272,
+              "z": 0.0005229173051193442
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 300,
+            "timeSeconds": 1.25,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08500455319881439,
+                "y": 0.03595235198736191,
+                "z": -0.023227954283356667
+              },
+              "rotation": {
+                "x": 0.1641397327184677,
+                "y": 0.5488811731338501,
+                "z": 0.6585500240325928,
+                "w": -0.4879542887210846
+              },
+              "velocityMS": {
+                "x": -0.44121673703193665,
+                "y": -1.7824062581439648e-7,
+                "z": -0.20694731175899506
+              },
+              "displacementM": 0.14125678023724905,
+              "speedMS": 0.48733910050540336
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.001264566439203918,
+                "normalLoadN": 0.3034959454089403,
+                "pointsWorldM": [
+                  {
+                    "x": -0.083165742456913,
+                    "y": 0.011028135195374489,
+                    "z": -0.022366618737578392
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 2,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05394737231079489,
+              "y": -0.0001601022444665432,
+              "z": 0.043755801218561825
+            },
+            "startWorldM": {
+              "x": 0.05394737231079488,
+              "y": 0.04375580121856182,
+              "z": 0.00016010224446654994
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 301,
+            "timeSeconds": 1.2541666666666667,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08119519799947739,
+                "y": 0.03585098311305046,
+                "z": -0.03872860595583916
+              },
+              "rotation": {
+                "x": 0.10381714999675751,
+                "y": 0.7475059032440186,
+                "z": 0.46949899196624756,
+                "w": -0.45828768610954285
+              },
+              "velocityMS": {
+                "x": -0.3825663924217224,
+                "y": -1.635920199305474e-7,
+                "z": -0.3281613290309906
+              },
+              "displacementM": 0.14084861406785879,
+              "speedMS": 0.5040306562918412
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.001264568418264389,
+                "normalLoadN": 0.30349642038345337,
+                "pointsWorldM": [
+                  {
+                    "x": -0.07959982752799988,
+                    "y": 0.010976703837513924,
+                    "z": -0.037362925708293915
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 3,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.0539489225205034,
+              "y": 0.00020271281618624925,
+              "z": 0.04649463430792093
+            },
+            "startWorldM": {
+              "x": 0.0539489225205034,
+              "y": 0.04649463430792093,
+              "z": -0.00020271281618624085
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 298,
+            "timeSeconds": 1.2416666666666667,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08294595777988434,
+                "y": 0.035882171243429184,
+                "z": -0.03060516156256199
+              },
+              "rotation": {
+                "x": 0.23629282414913177,
+                "y": 0.6307573914527893,
+                "z": 0.501170814037323,
+                "w": -0.5432665944099426
+              },
+              "velocityMS": {
+                "x": -0.4356432855129242,
+                "y": -1.500175983437657e-7,
+                "z": -0.26210007071495056
+              },
+              "displacementM": 0.14063122524719998,
+              "speedMS": 0.5084107780931673
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.0012645676033571362,
+                "normalLoadN": 0.3034962248057127,
+                "pointsWorldM": [
+                  {
+                    "x": -0.08112990856170654,
+                    "y": 0.010992545634508133,
+                    "z": -0.029514621943235397
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 4,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395047273021191,
+              "y": 0.0005655278768390417,
+              "z": 0.045233467397280035
+            },
+            "startWorldM": {
+              "x": 0.053950472730211904,
+              "y": 0.045233467397280035,
+              "z": -0.0005655278768390282
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 297,
+            "timeSeconds": 1.2375,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08351995795965195,
+                "y": 0.035936057567596436,
+                "z": -0.027197739109396935
+              },
+              "rotation": {
+                "x": 0.22190311551094055,
+                "y": 0.553249180316925,
+                "z": 0.5522905588150024,
+                "w": -0.5827946066856384
+              },
+              "velocityMS": {
+                "x": -0.4625228941440582,
+                "y": -1.917455421107661e-7,
+                "z": -0.23868440091609955
+              },
+              "displacementM": 0.1403347277716152,
+              "speedMS": 0.52047830968073
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.0012645699316635728,
+                "normalLoadN": 0.30349678359925747,
+                "pointsWorldM": [
+                  {
+                    "x": -0.08159224689006805,
+                    "y": 0.011019906029105186,
+                    "z": -0.026204273104667664
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 5,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395202293992043,
+              "y": 0.0009283429374918341,
+              "z": 0.04397230048663914
+            },
+            "startWorldM": {
+              "x": 0.05395202293992042,
+              "y": 0.04397230048663914,
+              "z": -0.0009283429374918259
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 300,
+            "timeSeconds": 1.25,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08169414848089218,
+                "y": 0.03586722910404205,
+                "z": -0.03880945220589638
+              },
+              "rotation": {
+                "x": 0.0961516797542572,
+                "y": 0.7318563461303711,
+                "z": 0.49536049365997314,
+                "w": -0.4579946994781494
+              },
+              "velocityMS": {
+                "x": -0.39976784586906433,
+                "y": -1.483364400201026e-7,
+                "z": -0.329569011926651
+              },
+              "displacementM": 0.1410693249528269,
+              "speedMS": 0.5181023684689378
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.0012645740061998367,
+                "normalLoadN": 0.3034977614879608,
+                "pointsWorldM": [
+                  {
+                    "x": -0.0800272673368454,
+                    "y": 0.010984962806105614,
+                    "z": -0.03743777424097061
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 6,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395357314962894,
+              "y": 0.0012911579981446267,
+              "z": 0.046711133575998244
+            },
+            "startWorldM": {
+              "x": 0.05395357314962894,
+              "y": 0.04671113357599825,
+              "z": -0.0012911579981446202
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 293,
+            "timeSeconds": 1.2208333333333332,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08631163835525513,
+                "y": 0.0359315425157547,
+                "z": -0.015092238783836365
+              },
+              "rotation": {
+                "x": 0.1435144692659378,
+                "y": 0.31712764501571655,
+                "z": 0.6312416791915894,
+                "w": -0.6930855512619019
+              },
+              "velocityMS": {
+                "x": -0.5857452154159546,
+                "y": -1.9278732565908285e-7,
+                "z": -0.1575414389371872
+              },
+              "displacementM": 0.14135416149795216,
+              "speedMS": 0.6065614250553027
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.0012645756360143423,
+                "normalLoadN": 0.30349815264344215,
+                "pointsWorldM": [
+                  {
+                    "x": -0.08387080579996109,
+                    "y": 0.011017659679055214,
+                    "z": -0.014436926692724228
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 7,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395512335933745,
+              "y": 0.0016539730587974192,
+              "z": 0.04544996666535735
+            },
+            "startWorldM": {
+              "x": 0.05395512335933745,
+              "y": 0.04544996666535734,
+              "z": -0.0016539730587974144
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 293,
+            "timeSeconds": 1.2208333333333332,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08621373027563095,
+                "y": 0.035936255007982254,
+                "z": -0.01590832509100437
+              },
+              "rotation": {
+                "x": 0.14856921136379242,
+                "y": 0.31474950909614563,
+                "z": 0.6192814111709595,
+                "w": -0.7038114070892334
+              },
+              "velocityMS": {
+                "x": -0.5843983292579651,
+                "y": -1.9884100765921175e-7,
+                "z": -0.16107971966266632
+              },
+              "displacementM": 0.1412126226323233,
+              "speedMS": 0.6061914576486076
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.0012645699316635728,
+                "normalLoadN": 0.30349678359925747,
+                "pointsWorldM": [
+                  {
+                    "x": -0.08377847820520401,
+                    "y": 0.011020040139555931,
+                    "z": -0.015238236635923386
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 8,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395667356904596,
+              "y": -0.0019832118805497884,
+              "z": 0.04418879975471646
+            },
+            "startWorldM": {
+              "x": 0.05395667356904596,
+              "y": 0.04418879975471646,
+              "z": 0.0019832118805497984
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 306,
+            "timeSeconds": 1.275,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.07760333269834518,
+                "y": 0.0359325185418129,
+                "z": -0.04551505297422409
+              },
+              "rotation": {
+                "x": 0.009696867316961288,
+                "y": 0.8158762454986572,
+                "z": 0.3547644019126892,
+                "w": -0.45650210976600647
+              },
+              "velocityMS": {
+                "x": -0.30984532833099365,
+                "y": -1.428583118467941e-7,
+                "z": -0.3362550139427185
+              },
+              "displacementM": 0.1401152618123978,
+              "speedMS": 0.4572434383238096
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.00126456911675632,
+                "normalLoadN": 0.3034965880215168,
+                "pointsWorldM": [
+                  {
+                    "x": -0.076311394572258,
+                    "y": 0.011018069460988045,
+                    "z": -0.0441148579120636
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 9,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395822377875447,
+              "y": -0.001620396819896996,
+              "z": 0.046927632844075556
+            },
+            "startWorldM": {
+              "x": 0.05395822377875448,
+              "y": 0.046927632844075556,
+              "z": 0.0016203968198969972
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 299,
+            "timeSeconds": 1.2458333333333333,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08432529121637344,
+                "y": 0.03586962819099426,
+                "z": -0.025663621723651886
+              },
+              "rotation": {
+                "x": 0.23104320466518402,
+                "y": 0.5726562142372131,
+                "z": 0.5157929062843323,
+                "w": -0.5938364267349243
+              },
+              "velocityMS": {
+                "x": -0.43828052282333374,
+                "y": -5.217112075683872e-8,
+                "z": -0.2316729873418808
+              },
+              "displacementM": 0.14138255781460474,
+              "speedMS": 0.4957440768685076
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.0012645748211070895,
+                "normalLoadN": 0.3034979570657015,
+                "pointsWorldM": [
+                  {
+                    "x": -0.08249828219413757,
+                    "y": 0.01098615676164627,
+                    "z": -0.024700038135051727
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "schema": "coachsim-manipulation-episode-1",
+          "protocol": {
+            "id": "sphere-retention-v1",
+            "horizonSteps": 840,
+            "releaseStep": 240,
+            "impulseStep": 480,
+            "holdSteps": 240,
+            "radiusM": 0.025,
+            "massKg": 0.03,
+            "friction": 0.8,
+            "jitterM": 0.002,
+            "maxHoldDistanceM": 0.08,
+            "maxHoldSpeedMS": 0.15,
+            "dropHeightM": 0.1,
+            "dropDistanceM": 0.14,
+            "impulseNs": {
+              "x": 0.002,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "model": "allegro-v3-right-menagerie",
+          "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+          "solver": "Rapier 0.19.3",
+          "physicsHz": 240,
+          "seed": 10,
+          "controller": "fixed-close-v1",
+          "configuration": {
+            "drive": {
+              "kp": 1,
+              "kd": 0.02,
+              "maxTorqueNm": 0.15,
+              "commandRateRadS": 2
+            },
+            "orientation": {
+              "x": -0.7071067811865475,
+              "y": 0,
+              "z": 0,
+              "w": 0.7071067811865476
+            },
+            "nativeStart": {
+              "x": 0.05395977398846299,
+              "y": -0.0012575817592442036,
+              "z": 0.045666465933434666
+            },
+            "startWorldM": {
+              "x": 0.05395977398846298,
+              "y": 0.045666465933434666,
+              "z": 0.0012575817592442098
+            },
+            "targetsRad": [
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              0,
+              0.9,
+              0.8,
+              0.6,
+              1,
+              0.5,
+              0.6,
+              0.7
+            ]
+          },
+          "provenance": "synthetic retention test; ideal contacts; no physical calibration",
+          "complete": true,
+          "outcome": "dropped",
+          "heldSteps": 0,
+          "events": [
+            {
+              "type": "release",
+              "step": 240,
+              "timeSeconds": 1
+            }
+          ],
+          "final": {
+            "step": 299,
+            "timeSeconds": 1.2458333333333333,
+            "phase": "released",
+            "released": true,
+            "heldSteps": 0,
+            "eligible": false,
+            "outcome": "dropped",
+            "object": {
+              "positionM": {
+                "x": -0.08412382751703262,
+                "y": 0.0359443798661232,
+                "z": -0.026624323800206184
+              },
+              "rotation": {
+                "x": 0.24062304198741913,
+                "y": 0.573777973651886,
+                "z": 0.5050067901611328,
+                "w": -0.5982036590576172
+              },
+              "velocityMS": {
+                "x": -0.4367341101169586,
+                "y": -3.528387892970386e-8,
+                "z": -0.23536568880081177
+              },
+              "displacementM": 0.14120552616613427,
+              "speedMS": 0.4961186253350438
+            },
+            "contacts": [
+              {
+                "body": "palm",
+                "kind": "hand",
+                "digit": "pa",
+                "normalImpulseNs": 0.001264576450921595,
+                "normalLoadN": 0.3034983482211828,
+                "pointsWorldM": [
+                  {
+                    "x": -0.08230361342430115,
+                    "y": 0.011024106293916702,
+                    "z": -0.02564462460577488
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

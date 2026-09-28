@@ -8,6 +8,8 @@ Software gates: all 21 body poses match three independently compiled MuJoCo fixt
 
 Physical calibration is **pending**. No manufacturer torque/speed specification or measured link response is inferred from visual similarity.
 
+Milestone 3 corrects a contact-filter solver flag that previously disabled Allegro contact impulses. Fixed fingertips now share their welded parent's collision-exclusion family. The 64 response trials were rerun; their stored results and aggregate bounds are unchanged, but earlier contact behavior was not valid. See the [contact regression and manipulation evidence](MANIPULATION_BENCH.md). Object retention now has a separate lab; it is not part of the actuator-response protocol described here.
+
 ## Source and derivation
 
 - [MuJoCo Menagerie Allegro V3](https://github.com/google-deepmind/mujoco_menagerie/tree/71f066ad0be9cd271f7ed58c030243ef157af9f4/wonik_allegro), commit `71f066ad0be9cd271f7ed58c030243ef157af9f4`. Its README describes the source URDF conversion, position actuators, collision simplification and density scaling. Read the model XML and complete README/license.
