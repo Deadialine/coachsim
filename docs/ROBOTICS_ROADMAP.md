@@ -41,6 +41,8 @@ These are source-level comparisons, not experiments against those platforms. Pre
 
 ## Subsequent work packages
 
+Milestone 2 software delivery: [Allegro model package](ALLEGRO_MODEL.md). The pinned BSD-licensed reference model has a separate browser lab, resolved manifest, MuJoCo pose/mass-matrix fixtures, bounded simulation drives and 64 response checks. Hardware calibration and certified actuator limits remain open; this does not close the physical validation gate below.
+
 - **Model package:** agree a physical robot/asset license; publish a manifest of joint frames, inertias, collision geometry and actuation. Measure calibration data before fitting parameters. Keep the present illustrative hand as its own named model.
 - **Manipulation package:** add controlled object starts, grasp-retention without floor support, perturbations and reference controllers. Record success over at least 100 prespecified test seeds per condition with Wilson intervals; track dropped objects and timeout failures separately.
 - **Backend package:** prototype MuJoCo offline before engine replacement. Match units, actuator semantics and observations; run gravity, free-fall, resting-contact, friction-slide, restitution, joint-limit and trajectory tests at multiple timesteps. Report discrepancies and runtime on named hardware.

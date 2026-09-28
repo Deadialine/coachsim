@@ -1,0 +1,6 @@
+coach_sim/public/models/allegro/*.xml text eol=lf
+coach_sim/public/models/allegro/*.json text eol=lf
+coach_sim/public/models/allegro/*.md text eol=lf
+coach_sim/public/models/allegro/LICENSE text eol=lf
+coach_sim/public/models/allegro/assets/*.stl binary
+evidence/*.json.gz binary

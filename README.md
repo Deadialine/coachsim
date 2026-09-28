@@ -1,5 +1,7 @@
 # CoachSim
 
+[Allegro V3 robot model](docs/ALLEGRO_MODEL.md) · open `?view=hand&model=allegro`: licensed CAD geometry, 16 bounded actuators, independently checked body frames and inertia, four mount orientations and reproducible response exports. Physical calibration remains pending.
+
 [Robotics research roadmap](docs/ROBOTICS_ROADMAP.md) · [Robotics laboratory and controller API](docs/ROBOTICS_LAB.md): direct joint targets, configurable contact sphere, ideal contact telemetry, seeded headless episodes and reproducible baselines.
 
 [Run CoachSim](coach_sim/README.md). One shared session spans **Overview, Sensor Layout, Signals, Coaching Logic, Data Logs, and 3D Model**. Switching tabs preserves recording, replay, notes, and the hand pose. Open `?view=hand` directly for the articulated model, or enable the posture illustration in Overview.
