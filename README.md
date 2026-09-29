@@ -1,5 +1,7 @@
 # CoachSim
 
+[Offline reference backend](docs/REFERENCE_BACKEND.md) · MuJoCo adapter, matched actuator semantics and 48 comparison runs across three timesteps. [Results](evidence/REFERENCE_BACKEND.md) include failed drift/limit checks; engine interchangeability and physical calibration remain unproven.
+
 [Manipulation benchmark](docs/MANIPULATION_BENCH.md) · open `?view=hand&model=manipulation`: seeded sphere release, contact evidence, disturbance schedule and full trial exports. Both initial controllers scored 0/100 retention successes; this measures failures honestly and does not claim a solved grasp controller.
 
 [Allegro V3 robot model](docs/ALLEGRO_MODEL.md) · open `?view=hand&model=allegro`: licensed CAD geometry, 16 bounded actuators, independently checked body frames and inertia, four mount orientations and reproducible response exports. Physical calibration remains pending.

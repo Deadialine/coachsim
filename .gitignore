@@ -5,3 +5,5 @@ evidence/generated/
 .verification-build/
 .model-venv/
 .model-tools/
+__pycache__/
+.reference-venv/

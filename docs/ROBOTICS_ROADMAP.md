@@ -41,6 +41,8 @@ These are source-level comparisons, not experiments against those platforms. Pre
 
 ## Subsequent work packages
 
+Milestone 4 software delivery: [offline reference backend](REFERENCE_BACKEND.md). Python MuJoCo adapter and 48 cross-engine fixtures at 120/240/480 Hz, full trajectories, timestep sensitivity and explicit failed qualification checks. Keep Rapier in the browser; address limit compliance and drift before backend interchangeability or learned-policy transfer claims.
+
 Milestone 3 software delivery: [grasp-retention benchmark](MANIPULATION_BENCH.md), with seeded starts, fixture release, scheduled disturbance, contact eligibility and 100 held-out trials per baseline. Both baselines dropped all test objects. Reliable grasp control, lift and reorientation remain open research work.
 
 Milestone 2 software delivery: [Allegro model package](ALLEGRO_MODEL.md). The pinned BSD-licensed reference model has a separate browser lab, resolved manifest, MuJoCo pose/mass-matrix fixtures, bounded simulation drives and 64 response checks. Hardware calibration and certified actuator limits remain open; this does not close the physical validation gate below.
