@@ -63,6 +63,18 @@ export async function createRobotScene(host, model, assetRoot, signal) {
     0.004,
   );
   scene.add(arrow);
+  let objectMesh;
+  if (model.testObject) {
+    const geometry = new THREE.SphereGeometry(model.testObject.radius, 32, 24);
+    geometries.add(geometry);
+    materials.object = new THREE.MeshStandardMaterial({
+      color: "#efb562",
+      metalness: 0.1,
+      roughness: 0.4,
+    });
+    objectMesh = new THREE.Mesh(geometry, materials.object);
+    scene.add(objectMesh);
+  }
   const resize = new ResizeObserver(() => {
     const w = host.clientWidth,
       h = host.clientHeight;
@@ -157,6 +169,10 @@ export async function createRobotScene(host, model, assetRoot, signal) {
       );
     return {
       draw({ colliders = false, selected = 0 } = {}) {
+        if (objectMesh) {
+          objectMesh.position.copy(model.testObject.body.translation());
+          objectMesh.quaternion.copy(model.testObject.body.rotation());
+        }
         for (const g of groups) {
           g.group.position.copy(g.body.translation());
           g.group.quaternion.copy(g.body.rotation());

@@ -1,5 +1,7 @@
 # CoachSim
 
+[Manipulation benchmark](docs/MANIPULATION_BENCH.md) · open `?view=hand&model=manipulation`: seeded sphere release, contact evidence, disturbance schedule and full trial exports. Both initial controllers scored 0/100 retention successes; this measures failures honestly and does not claim a solved grasp controller.
+
 [Allegro V3 robot model](docs/ALLEGRO_MODEL.md) · open `?view=hand&model=allegro`: licensed CAD geometry, 16 bounded actuators, independently checked body frames and inertia, four mount orientations and reproducible response exports. Physical calibration remains pending.
 
 [Robotics research roadmap](docs/ROBOTICS_ROADMAP.md) · [Robotics laboratory and controller API](docs/ROBOTICS_LAB.md): direct joint targets, configurable contact sphere, ideal contact telemetry, seeded headless episodes and reproducible baselines.
