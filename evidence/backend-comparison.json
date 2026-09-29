@@ -1,0 +1,2025 @@
+{
+  "schema": "coachsim-reference-comparison-1",
+  "protocol": {
+    "id": "reference-backend-v1",
+    "ratesHz": [
+      120,
+      240,
+      480
+    ],
+    "primitives": [
+      {
+        "id": "free-fall",
+        "seconds": 0.2,
+        "heightM": 0.5,
+        "floor": false,
+        "box": false,
+        "vx": 0
+      },
+      {
+        "id": "rest",
+        "seconds": 2,
+        "heightM": 0.025,
+        "floor": true,
+        "box": false,
+        "vx": 0
+      },
+      {
+        "id": "slide",
+        "seconds": 1,
+        "heightM": 0.025,
+        "floor": true,
+        "box": true,
+        "vx": 1
+      },
+      {
+        "id": "bounce",
+        "seconds": 1,
+        "heightM": 0.25,
+        "floor": true,
+        "box": false,
+        "vx": 0
+      }
+    ],
+    "robotCases": [
+      "passive-zero",
+      "passive-gravity",
+      "step",
+      "limit"
+    ],
+    "robotSeconds": 2,
+    "gravityMS2": 9.81,
+    "massKg": 0.03,
+    "radiusM": 0.025,
+    "friction": 0.5
+  },
+  "sourceSha256": {
+    "scripts/backend-protocol.json": "30363243a6b47a518cf41baaad8a84280922766426f477a6db08ea2074e23605",
+    "scripts/reference_backend.py": "ac0184f1e7d38cece209249edf4c74a261974b83c08af013410f98be6662fbd3",
+    "scripts/benchmark_backend_mujoco.py": "e2ac393fe48fc7b36b7e47fa6f2f76f20db35b34040734aa2d62319781560a80",
+    "scripts/benchmark-backend-rapier.mjs": "735270bff9be4beabdb6e180cd03b20a42f7b1b67dee688e1529d7a3ee07f690",
+    "scripts/compare-backends.mjs": "b4d49ec2cdfb86ac181e7fc53629c29c1ff2bd07561dfb7344393edc89d23bba",
+    "coach_sim/src/robot/physics.mjs": "3e87bccefd38ad9094dd882ba3beba111c5f21c79194314321d4550e68fa551d",
+    "coach_sim/src/robot/model.mjs": "3fdc4cec901d3bda1dc5b9d4d251a097e4fbf7c10911d5c3db068517f210b2e6",
+    "coach_sim/public/models/allegro/manifest.json": "f8fec89730618e8ffa102f4b9c7885ee8d7178055cdf61670eb8eeb9fa5b1b5c"
+  },
+  "sourceCommit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+  "engines": [
+    {
+      "engine": "Rapier 0.19.3",
+      "hardware": {
+        "cpu": "Intel(R) Core(TM) i9-10900F CPU @ 2.80GHz",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": "v24.11.0"
+      },
+      "cases": [
+        {
+          "id": "free-fall",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.008839499999999986,
+          "simulatedSeconds": 0.2,
+          "simulationPerWallSecond": 22.62571412410208,
+          "finalPositionM": [
+            0,
+            0,
+            0.3035445213317871
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -1.9619927406311035
+          ],
+          "analyticPositionErrorM": 0.0002554786682128496,
+          "gates": {
+            "finite": true,
+            "freeFallPosition": true
+          },
+          "passed": true
+        },
+        {
+          "id": "rest",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.010384000000000001,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 192.6040061633282,
+          "finalPositionM": [
+            0,
+            0,
+            0.024624478071928024
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "heightErrorM": 0.0003755219280719771,
+          "gates": {
+            "finite": true,
+            "restHeight": true,
+            "restSpeed": true
+          },
+          "passed": true
+        },
+        {
+          "id": "slide",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.004902699999999996,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 203.96924143839126,
+          "finalPositionM": [
+            0.10187511891126633,
+            0,
+            0.024831263348460197
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "slideDistanceM": 0.10187511891126633,
+          "idealCoulombStopDistanceM": 0.1019367991845056,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "bounce",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.0024065999999999975,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 415.5239757334003,
+          "finalPositionM": [
+            0,
+            0,
+            0.0246827881783247
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "firstReboundTimeSeconds": 0.225,
+          "postReboundPeakHeightM": 0.0824800655245781,
+          "parametersEquivalent": false,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-zero",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.23430230000000002,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 8.535981080851531,
+          "finalAnglesRad": [
+            3.3782162505429964e-7,
+            3.809343882975202e-8,
+            -8.40227228213931e-8,
+            -2.855640398489547e-7,
+            2.4438243428903654e-8,
+            -8.086956614008829e-7,
+            0.000001412517691423491,
+            0.000007728367733513258,
+            -2.4885391615014736e-7,
+            -3.406984667812192e-7,
+            7.181991010227147e-7,
+            0.0000024226626742937464,
+            0.26302227018351776,
+            0.0000036849890844378687,
+            -6.783335269954044e-7,
+            -2.684279602492011e-7
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0,
+          "maxDriftRad": 0.000022328726723697123,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true,
+            "zeroGravityDrift": false
+          },
+          "passed": false
+        },
+        {
+          "id": "passive-gravity",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.21344,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 9.370314842578711,
+          "finalAnglesRad": [
+            -0.47015923554224803,
+            -0.19601289427294705,
+            -0.17400771328005346,
+            -0.2270185812752905,
+            -0.4701597445774381,
+            -0.19601377111226967,
+            -0.174008670976238,
+            -0.22702122518270124,
+            -0.47015923444393487,
+            -0.19601460874206986,
+            -0.17400945406350807,
+            -0.2270239505238232,
+            0.26298263782513603,
+            -0.10502855407773885,
+            0.15379394657715198,
+            0.031217136682663692
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0.000364080747402018,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "step",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.20686759999999993,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 9.668019544868315,
+          "finalAnglesRad": [
+            0.07649304511586634,
+            0.403020466227003,
+            -0.0015516056955931306,
+            0.0007876971490812179,
+            -0.005969307853340464,
+            -0.0005159834933974005,
+            0.0002900094393742907,
+            -0.00010314355983714759,
+            -0.005960584133145434,
+            -0.0005069802576214885,
+            0.00026548487988673034,
+            -0.00028187446296520116,
+            0.2629821323834036,
+            -0.00022398985222292657,
+            0.00615166925305088,
+            -0.004712438355533903
+          ],
+          "peakTorqueNm": 0.01638445221773227,
+          "maxLimitPenetrationRad": 0.00003102006584337902,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "limit",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.1978787,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 10.107202038420507,
+          "finalAnglesRad": [
+            0.06305880785410718,
+            1.602255212770346,
+            0.004560775212365968,
+            -0.0013605799742687282,
+            -0.005969307853340464,
+            -0.0005159834933974005,
+            0.0002900094393742907,
+            -0.00010314355983714759,
+            -0.005960584133145434,
+            -0.0005069802576214885,
+            0.00026548487988673034,
+            -0.00028187446296520116,
+            0.2629821323834036,
+            -0.00022398985222292657,
+            0.00615166925305088,
+            -0.004712438355533903
+          ],
+          "peakTorqueNm": 0.03610196546243721,
+          "maxLimitPenetrationRad": 0.00003102006584337902,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "free-fall",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.0003386999999999034,
+          "simulatedSeconds": 0.2,
+          "simulationPerWallSecond": 590.4930617066934,
+          "finalPositionM": [
+            0,
+            0,
+            0.30367326736450195
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -1.9619839191436768
+          ],
+          "analyticPositionErrorM": 0.00012673263549800584,
+          "gates": {
+            "finite": true,
+            "freeFallPosition": true
+          },
+          "passed": true
+        },
+        {
+          "id": "rest",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.008413900000000012,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 237.70189804965557,
+          "finalPositionM": [
+            0,
+            0,
+            0.024625826627016068
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "heightErrorM": 0.0003741733729839339,
+          "gates": {
+            "finite": true,
+            "restHeight": true,
+            "restSpeed": true
+          },
+          "passed": true
+        },
+        {
+          "id": "slide",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.007332200000000057,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 136.38471400125368,
+          "finalPositionM": [
+            0.10193534940481186,
+            -3.3740656210819175e-14,
+            0.0248317401856184
+          ],
+          "finalVelocityMS": [
+            -1.1040399382200843e-14,
+            -8.480022239965024e-14,
+            -2.7284841053187847e-12
+          ],
+          "slideDistanceM": 0.10193534940481186,
+          "idealCoulombStopDistanceM": 0.1019367991845056,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "bounce",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.0022533000000000813,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 443.7935472418071,
+          "finalPositionM": [
+            0,
+            0,
+            0.024735303595662117
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "firstReboundTimeSeconds": 0.22083333333333333,
+          "postReboundPeakHeightM": 0.08124089241027832,
+          "parametersEquivalent": false,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-zero",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.394986,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 5.063470604021409,
+          "finalAnglesRad": [
+            -4.069678078211729e-7,
+            6.133120285200037e-8,
+            -1.4023930128863476e-7,
+            -5.735654767752268e-7,
+            4.533791297944843e-8,
+            -0.0000016347699244739435,
+            0.000002902200209388645,
+            0.000015339217952589922,
+            -0.000001722036733646728,
+            -6.739994251860247e-7,
+            0.0000014127141068886136,
+            0.0000048173282715061125,
+            0.26303509265934577,
+            0.000005769950059629609,
+            -5.087599407115708e-7,
+            -0.000001923972000980017
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0,
+          "maxDriftRad": 0.000035092659345759,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true,
+            "zeroGravityDrift": false
+          },
+          "passed": false
+        },
+        {
+          "id": "passive-gravity",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.38690920000000006,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 5.169171474857666,
+          "finalAnglesRad": [
+            -0.47003963206938737,
+            -0.19600315421949452,
+            -0.1740019013534581,
+            -0.22700472392022636,
+            -0.47004001455263844,
+            -0.1960034391666371,
+            -0.17400213143564358,
+            -0.2270052180062702,
+            -0.47003992541485035,
+            -0.19600365654998292,
+            -0.17400235823236793,
+            -0.22700596014573096,
+            0.2629957220971726,
+            -0.1050071467618999,
+            0.15388400553937986,
+            0.031183812490964663
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0.0003402179183788212,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "step",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.3840476000000001,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 5.207687797033492,
+          "finalAnglesRad": [
+            0.040784665452040625,
+            0.4001511807432144,
+            0.000055108603081355574,
+            0.0001120099027984479,
+            -0.002427183491436792,
+            -0.00013632874276810675,
+            0.000028990712497744583,
+            -0.000021165686323598287,
+            -0.002424764550932573,
+            -0.0001367937724951399,
+            0.000012423212932694818,
+            -0.00009755377961385709,
+            0.2629955956563844,
+            0.00012094539395588369,
+            0.0037823948463630856,
+            -0.002027463820045861
+          ],
+          "peakTorqueNm": 0.016301898423662718,
+          "maxLimitPenetrationRad": 0.000007808682833843061,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "limit",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.3820591999999997,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 5.234790838697253,
+          "finalAnglesRad": [
+            0.04762199218514055,
+            1.6048538428289192,
+            0.0013605400515572681,
+            -0.0007268105367981603,
+            -0.002427183491436792,
+            -0.00013632874276810675,
+            0.000028990712497744583,
+            -0.000021165686323598287,
+            -0.002424764550932573,
+            -0.0001367937724951399,
+            0.000012423212932694818,
+            -0.00009755377961385709,
+            0.2629955956563844,
+            0.00012094539395588369,
+            0.0037823948463630856,
+            -0.002027463820045861
+          ],
+          "peakTorqueNm": 0.036153327389297274,
+          "maxLimitPenetrationRad": 0.000007808682833843061,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "free-fall",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.000530999999999949,
+          "simulatedSeconds": 0.2,
+          "simulationPerWallSecond": 376.64783427498907,
+          "finalPositionM": [
+            0,
+            0,
+            0.3037334084510803
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -1.9620692729949951
+          ],
+          "analyticPositionErrorM": 0.0000665915489196367,
+          "gates": {
+            "finite": true,
+            "freeFallPosition": true
+          },
+          "passed": true
+        },
+        {
+          "id": "rest",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.016198799999999666,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 123.46593574832958,
+          "finalPositionM": [
+            0,
+            0,
+            0.024630840867757797
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "heightErrorM": 0.00036915913224220415,
+          "gates": {
+            "finite": true,
+            "restHeight": true,
+            "restSpeed": true
+          },
+          "passed": true
+        },
+        {
+          "id": "slide",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.012540300000000115,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 79.74290886182872,
+          "finalPositionM": [
+            0.10194201022386551,
+            0,
+            0.024833278730511665
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "slideDistanceM": 0.10194201022386551,
+          "idealCoulombStopDistanceM": 0.1019367991845056,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "bounce",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.0043867000000000185,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 227.9617936033911,
+          "finalPositionM": [
+            0,
+            0,
+            0.024813780561089516
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0
+          ],
+          "firstReboundTimeSeconds": 0.21666666666666667,
+          "postReboundPeakHeightM": 0.08148842304944992,
+          "parametersEquivalent": false,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-zero",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 0.8996821999999998,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 2.2230071907613604,
+          "finalAnglesRad": [
+            -4.174228314030044e-7,
+            1.1955190443954335e-7,
+            -2.635219570406994e-7,
+            -0.0000010656674865866434,
+            9.912253773336477e-8,
+            -0.0000032359725915786665,
+            0.000005894674359203261,
+            0.000030376419310902066,
+            -0.0000018141505503120416,
+            -0.0000014863420369943295,
+            0.0000030441413449239574,
+            0.000010385151199130938,
+            0.2630952319846129,
+            0.000014203538354542607,
+            -0.000001399408771246054,
+            -0.000004925272194324581
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0,
+          "maxDriftRad": 0.00009523198461286464,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true,
+            "zeroGravityDrift": false
+          },
+          "passed": false
+        },
+        {
+          "id": "passive-gravity",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 1.1093755,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 1.8028160888716218,
+          "finalAnglesRad": [
+            -0.47000996172454695,
+            -0.19600078544624464,
+            -0.17400046658783308,
+            -0.22700128120103477,
+            -0.47001003133075453,
+            -0.1960008779117585,
+            -0.17400053362611428,
+            -0.22700141517023784,
+            -0.4700099761888352,
+            -0.19600081664206623,
+            -0.17400060530736558,
+            -0.22700148097073486,
+            0.262998883250142,
+            -0.10500181252025498,
+            0.1539403548358993,
+            0.031127984791464544
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0.0007961733157146877,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "step",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 1.1487196999999996,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 1.7410687742188113,
+          "finalAnglesRad": [
+            0.026229577500263994,
+            0.3995167403790882,
+            0.00006049365051653142,
+            -0.00001557358054477407,
+            -0.0011564516552136927,
+            -0.000050186932219428676,
+            -0.000003173692879367692,
+            -0.0000037158254939873864,
+            -0.0011548228647050615,
+            -0.000052157676851563074,
+            -0.000013135845615817952,
+            -0.000042905696251471364,
+            0.26299884383921596,
+            0.00010395249474043049,
+            0.0027884115517377104,
+            -0.0007642211314483879
+          ],
+          "peakTorqueNm": 0.016865108008611993,
+          "maxLimitPenetrationRad": 0.000001877671399530545,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "limit",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 0.984768,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 2.0309352050432183,
+          "finalAnglesRad": [
+            0.04137771570508662,
+            1.6059104463046394,
+            0.000059026092159729284,
+            -0.00044464194559171497,
+            -0.0011564516552136927,
+            -0.000050186932219428676,
+            -0.000003173692879367692,
+            -0.0000037158254939873864,
+            -0.0011548228647050615,
+            -0.000052157676851563074,
+            -0.000013135845615817952,
+            -0.000042905696251471364,
+            0.26299884383921596,
+            0.00010395249474043049,
+            0.0027884115517377104,
+            -0.0007642211314483879
+          ],
+          "peakTorqueNm": 0.03619008930517027,
+          "maxLimitPenetrationRad": 0.000001877671399530545,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        }
+      ]
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "hardware": {
+        "cpu": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel",
+        "platform": "Windows",
+        "arch": "AMD64",
+        "runtime": "3.12.14",
+        "numpy": "2.5.3"
+      },
+      "cases": [
+        {
+          "id": "free-fall",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.0001848999527283013,
+          "simulatedSeconds": 0.2,
+          "simulationPerWallSecond": 1081.6660418182328,
+          "finalPositionM": [
+            0,
+            0,
+            0.295625
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -1.962
+          ],
+          "analyticPositionErrorM": 0.008174999999999988,
+          "gates": {
+            "finite": true,
+            "freeFallPosition": true
+          },
+          "passed": true
+        },
+        {
+          "id": "rest",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.002156200003810227,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 927.5577388302544,
+          "finalPositionM": [
+            0,
+            0,
+            0.024632818157539833
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            7.405436554330977e-17
+          ],
+          "heightErrorM": 0.00036718184246016874,
+          "gates": {
+            "finite": true,
+            "restHeight": true,
+            "restSpeed": true
+          },
+          "passed": true
+        },
+        {
+          "id": "slide",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.0012339000240899622,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 810.4384313773959,
+          "finalPositionM": [
+            0.09805292820405785,
+            0,
+            0.024892244579752528
+          ],
+          "finalVelocityMS": [
+            7.189640729501742e-83,
+            0,
+            1.0177597549582124e-12
+          ],
+          "slideDistanceM": 0.09805292820405785,
+          "idealCoulombStopDistanceM": 0.1019367991845056,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "bounce",
+          "hz": 120,
+          "kind": "primitive",
+          "wallSeconds": 0.0007384999771602452,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 1354.0961827044343,
+          "finalPositionM": [
+            0,
+            0,
+            2.5126936979166454
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -0.6075718750000304
+          ],
+          "firstReboundTimeSeconds": 0.22499999999999998,
+          "postReboundPeakHeightM": 2.5341234895833136,
+          "parametersEquivalent": false,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-zero",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.026901799952611327,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 74.3444677874003,
+          "finalAnglesRad": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.263,
+            0,
+            0,
+            0
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0,
+          "maxDriftRad": 0,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true,
+            "zeroGravityDrift": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-gravity",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.031652500038035214,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 63.1861621545439,
+          "finalAnglesRad": [
+            -0.5001020495293755,
+            -0.20272418787246618,
+            -0.19187121720190414,
+            -0.23542635280467036,
+            -0.5003182138618695,
+            -0.20312443303373676,
+            -0.19363568358014033,
+            -0.23678902231359739,
+            -0.5002970181786534,
+            -0.20347011339108556,
+            -0.19526045035461218,
+            -0.23808684624268941,
+            0.26224608034523045,
+            -0.10923280946685741,
+            0.1525953883734597,
+            0.035663771360303874
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0.1646528069245591,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": false
+          },
+          "passed": false
+        },
+        {
+          "id": "step",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.03060569998342544,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 65.34730462244298,
+          "finalAnglesRad": [
+            0.07650448336297579,
+            0.40298261054082773,
+            -0.0015545479955167937,
+            0.0007882571430130046,
+            -0.005953400093312615,
+            -0.0005072042873259574,
+            0.00028692341001913476,
+            -0.0001042588445429767,
+            -0.005943716968366056,
+            -0.0004966482916081201,
+            0.00026234142492317415,
+            -0.0002831723305029372,
+            0.26225282205555456,
+            -0.0001903469277242372,
+            0.006160637929309902,
+            -0.004717461322100039
+          ],
+          "peakTorqueNm": 0.01555832173316782,
+          "maxLimitPenetrationRad": 0.002393259515289292,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "limit",
+          "hz": 120,
+          "kind": "robot",
+          "wallSeconds": 0.031419700011610985,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 63.654331494600854,
+          "finalAnglesRad": [
+            0.06305934931390361,
+            1.6022455112499716,
+            0.004554797015403672,
+            -0.0013602801780393213,
+            -0.0059534000933125965,
+            -0.0005072042873259601,
+            0.00028692341001914805,
+            -0.00010425884454299256,
+            -0.005943716968366067,
+            -0.000496648291608087,
+            0.0002623414249230702,
+            -0.000283172330502838,
+            0.26225282205555456,
+            -0.00019034692772429797,
+            0.006160637929309958,
+            -0.0047174613221002025
+          ],
+          "peakTorqueNm": 0.036100843573419916,
+          "maxLimitPenetrationRad": 0.002393259515289292,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "free-fall",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.0002978999982587993,
+          "simulatedSeconds": 0.2,
+          "simulationPerWallSecond": 671.3662342026968,
+          "finalPositionM": [
+            0,
+            0,
+            0.2997125
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -1.962
+          ],
+          "analyticPositionErrorM": 0.004087499999999578,
+          "gates": {
+            "finite": true,
+            "freeFallPosition": true
+          },
+          "passed": true
+        },
+        {
+          "id": "rest",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.004155000031460077,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 481.34777012196446,
+          "finalPositionM": [
+            0,
+            0,
+            0.024632818157539833
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            6.696831590155369e-17
+          ],
+          "heightErrorM": 0.00036718184246016874,
+          "gates": {
+            "finite": true,
+            "restHeight": true,
+            "restSpeed": true
+          },
+          "passed": true
+        },
+        {
+          "id": "slide",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.0023370999842882156,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 427.8807097354711,
+          "finalPositionM": [
+            0.10003811296087381,
+            0,
+            0.024892244579784128
+          ],
+          "finalVelocityMS": [
+            7.940383250437814e-49,
+            0,
+            -1.0229356683863151e-14
+          ],
+          "slideDistanceM": 0.10003811296087381,
+          "idealCoulombStopDistanceM": 0.1019367991845056,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "bounce",
+          "hz": 240,
+          "kind": "primitive",
+          "wallSeconds": 0.0016694999649189413,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 598.9817436435542,
+          "finalPositionM": [
+            0,
+            0,
+            0.02498168250016832
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0.018163544970869562
+          ],
+          "firstReboundTimeSeconds": 0.2208333333333336,
+          "postReboundPeakHeightM": 0.07041675768901057,
+          "parametersEquivalent": false,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-zero",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.05255209997994825,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 38.057470600853605,
+          "finalAnglesRad": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.263,
+            0,
+            0,
+            0
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0,
+          "maxDriftRad": 0,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true,
+            "zeroGravityDrift": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-gravity",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.06318609998561442,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 31.652531180992973,
+          "finalAnglesRad": [
+            -0.5001020495293758,
+            -0.2027241878724662,
+            -0.1918712172019041,
+            -0.23542635280467025,
+            -0.5003182138618697,
+            -0.20312443303373678,
+            -0.19363568358014027,
+            -0.23678902231359727,
+            -0.5002970181786535,
+            -0.20347011339108553,
+            -0.19526045035461212,
+            -0.23808684624268933,
+            0.26224594368379284,
+            -0.10931681504621202,
+            0.15690636084460705,
+            0.03285504421607274
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0.23809721685528543,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": false
+          },
+          "passed": false
+        },
+        {
+          "id": "step",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.0627921000123024,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 31.851140503473438,
+          "finalAnglesRad": [
+            0.04078086130748374,
+            0.40014878853191577,
+            0.00005659221052572436,
+            0.00011325595668849803,
+            -0.002427136705918818,
+            -0.00013620463778567192,
+            0.000028804193605656806,
+            -0.0000213305187959582,
+            -0.002423528819882789,
+            -0.00013427781573147448,
+            0.000011517493320671519,
+            -0.00009597736787361313,
+            0.2622551243816442,
+            0.00012701353728876075,
+            0.0037786365411989747,
+            -0.0020232850307979077
+          ],
+          "peakTorqueNm": 0.01562742607845673,
+          "maxLimitPenetrationRad": 0.0012431233010639087,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "limit",
+          "hz": 240,
+          "kind": "robot",
+          "wallSeconds": 0.06317669997224584,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 31.657240737148665,
+          "finalAnglesRad": [
+            0.04761891856501424,
+            1.6048537947610242,
+            0.0013615767513371411,
+            -0.0007275668430401463,
+            -0.0024271367059188146,
+            -0.0001362046377856723,
+            0.00002880419360565932,
+            -0.000021330518795964034,
+            -0.0024235288198827683,
+            -0.000134277815731479,
+            0.000011517493320691028,
+            -0.00009597736787364002,
+            0.2622551243816442,
+            0.0001270135372887199,
+            0.003778636541198977,
+            -0.0020232850307979238
+          ],
+          "peakTorqueNm": 0.0361502787703808,
+          "maxLimitPenetrationRad": 0.0012431233010639087,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "free-fall",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.0006101999897509813,
+          "simulatedSeconds": 0.2,
+          "simulationPerWallSecond": 327.7613952134262,
+          "finalPositionM": [
+            0,
+            0,
+            0.3017562499999996
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            -1.962000000000005
+          ],
+          "analyticPositionErrorM": 0.002043750000000566,
+          "gates": {
+            "finite": true,
+            "freeFallPosition": true
+          },
+          "passed": true
+        },
+        {
+          "id": "rest",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.009224599984008819,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 216.8115694411761,
+          "finalPositionM": [
+            0,
+            0,
+            0.024632818157539826
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            3.0699463581324384e-16
+          ],
+          "heightErrorM": 0.0003671818424601757,
+          "gates": {
+            "finite": true,
+            "restHeight": true,
+            "restSpeed": true
+          },
+          "passed": true
+        },
+        {
+          "id": "slide",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.004865799972321838,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 205.51605197260605,
+          "finalPositionM": [
+            0.10114854753060191,
+            0,
+            0.024892244579783805
+          ],
+          "finalVelocityMS": [
+            1.5387725444913087e-42,
+            0,
+            1.0140081245505528e-15
+          ],
+          "slideDistanceM": 0.10114854753060191,
+          "idealCoulombStopDistanceM": 0.1019367991845056,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "bounce",
+          "hz": 480,
+          "kind": "primitive",
+          "wallSeconds": 0.0032999999821186066,
+          "simulatedSeconds": 1,
+          "simulationPerWallSecond": 303.0303046723043,
+          "finalPositionM": [
+            0,
+            0,
+            0.02499670848458038
+          ],
+          "finalVelocityMS": [
+            0,
+            0,
+            0.005442381815163228
+          ],
+          "firstReboundTimeSeconds": 0.22083333333333316,
+          "postReboundPeakHeightM": 0.10139950949171882,
+          "parametersEquivalent": false,
+          "gates": {
+            "finite": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-zero",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 0.10825349995866418,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 18.475153235356693,
+          "finalAnglesRad": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.263,
+            0,
+            0,
+            0
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0,
+          "maxDriftRad": 0,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true,
+            "zeroGravityDrift": true
+          },
+          "passed": true
+        },
+        {
+          "id": "passive-gravity",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 0.12137860001530498,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 16.477369155253186,
+          "finalAnglesRad": [
+            -0.5001020495293765,
+            -0.20272418787246604,
+            -0.19187121720190417,
+            -0.23542635280467028,
+            -0.5003182138618706,
+            -0.2031244330337366,
+            -0.19363568358014036,
+            -0.2367890223135973,
+            -0.5002970181786545,
+            -0.2034701133910853,
+            -0.19526045035461218,
+            -0.23808684624268933,
+            0.2622458894817549,
+            -0.10935585767919799,
+            0.15874922074714637,
+            0.031937597513830726
+          ],
+          "peakTorqueNm": 0,
+          "maxLimitPenetrationRad": 0.26517380540332136,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": false
+          },
+          "passed": false
+        },
+        {
+          "id": "step",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 0.12411820003762841,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 16.113672284916056,
+          "finalAnglesRad": [
+            0.026227904964913458,
+            0.3995251807077094,
+            0.0000594293300673648,
+            -0.00001301582033937571,
+            -0.0011568905095763363,
+            -0.00005144185546338073,
+            -0.0000030486678056365776,
+            -0.000006087356252055226,
+            -0.0011552915989200038,
+            -0.00005398545898486095,
+            -0.000014591831641895721,
+            -0.000041725632671532566,
+            0.26225633547346366,
+            0.00010302787509999335,
+            0.0027470955462175458,
+            -0.0007534076295569028
+          ],
+          "peakTorqueNm": 0.01648977297086334,
+          "maxLimitPenetrationRad": 0.0008618826506485155,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        },
+        {
+          "id": "limit",
+          "hz": 480,
+          "kind": "robot",
+          "wallSeconds": 0.12467920000199229,
+          "simulatedSeconds": 2,
+          "simulationPerWallSecond": 16.04116805343667,
+          "finalAnglesRad": [
+            0.041372848083018936,
+            1.605906204493534,
+            0.00006064118932131906,
+            -0.00044416144947525513,
+            -0.0011568905095763326,
+            -0.00005144185546338073,
+            -0.000003048667805636039,
+            -0.0000060873562520562824,
+            -0.001155291598920019,
+            -0.00005398545898486102,
+            -0.000014591831641899284,
+            -0.00004172563267152584,
+            0.26225633547346366,
+            0.00010302787510000424,
+            0.002747095546217539,
+            -0.0007534076295568743
+          ],
+          "peakTorqueNm": 0.036167740925212154,
+          "maxLimitPenetrationRad": 0.0029391895428187986,
+          "gates": {
+            "finite": true,
+            "torqueBound": true,
+            "jointLimits": true
+          },
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "free-fall",
+      "hz": 120,
+      "rmse": 0.002722134398814229,
+      "maxAbsolute": 0.007919521331787083,
+      "units": "m",
+      "samples": 72
+    },
+    {
+      "id": "rest",
+      "hz": 120,
+      "rmse": 0.00006113983577055067,
+      "maxAbsolute": 0.0006975967140973142,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "id": "slide",
+      "hz": 120,
+      "rmse": 0.0022379706198974326,
+      "maxAbsolute": 0.005744449412464124,
+      "units": "m",
+      "samples": 360
+    },
+    {
+      "id": "bounce",
+      "hz": 120,
+      "rmse": 0.9705523164731136,
+      "maxAbsolute": 2.5094105526306034,
+      "units": "m",
+      "samples": 360
+    },
+    {
+      "id": "passive-zero",
+      "hz": 120,
+      "rmse": 0.0000037211439189489112,
+      "maxAbsolute": 0.000022328726723697123,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "id": "passive-gravity",
+      "hz": 120,
+      "rmse": 0.0248786500049434,
+      "maxAbsolute": 0.2538701757692495,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "id": "step",
+      "hz": 120,
+      "rmse": 0.00043823255273300605,
+      "maxAbsolute": 0.00647926575002461,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "id": "limit",
+      "hz": 120,
+      "rmse": 0.00047983569999631034,
+      "maxAbsolute": 0.006875142368868343,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "id": "free-fall",
+      "hz": 240,
+      "rmse": 0.0013407106349891953,
+      "maxAbsolute": 0.00396076736450196,
+      "units": "m",
+      "samples": 144
+    },
+    {
+      "id": "rest",
+      "hz": 240,
+      "rmse": 0.000057694930344114166,
+      "maxAbsolute": 0.00040953708566793603,
+      "units": "m",
+      "samples": 1440
+    },
+    {
+      "id": "slide",
+      "hz": 240,
+      "rmse": 0.0010541810370379128,
+      "maxAbsolute": 0.001977294816485578,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "id": "bounce",
+      "hz": 240,
+      "rmse": 0.0035478151546423633,
+      "maxAbsolute": 0.019804932795827228,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "id": "passive-zero",
+      "hz": 240,
+      "rmse": 0.000005381046037251197,
+      "maxAbsolute": 0.000035092659345759,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "id": "passive-gravity",
+      "hz": 240,
+      "rmse": 0.030964187203312694,
+      "maxAbsolute": 0.28761669618577357,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "id": "step",
+      "hz": 240,
+      "rmse": 0.00023192064081532847,
+      "maxAbsolute": 0.0022598528036442203,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "id": "limit",
+      "hz": 240,
+      "rmse": 0.000329139014261654,
+      "maxAbsolute": 0.007829996790150012,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "id": "free-fall",
+      "hz": 480,
+      "rmse": 0.00066481953719306,
+      "maxAbsolute": 0.001977158451080707,
+      "units": "m",
+      "samples": 288
+    },
+    {
+      "id": "rest",
+      "hz": 480,
+      "rmse": 0.00007215793023549796,
+      "maxAbsolute": 0.000332857206035448,
+      "units": "m",
+      "samples": 2880
+    },
+    {
+      "id": "slide",
+      "hz": 480,
+      "rmse": 0.000445059211972417,
+      "maxAbsolute": 0.0009457181989055152,
+      "units": "m",
+      "samples": 1440
+    },
+    {
+      "id": "bounce",
+      "hz": 480,
+      "rmse": 0.007320817794737228,
+      "maxAbsolute": 0.04494755910068268,
+      "units": "m",
+      "samples": 1440
+    },
+    {
+      "id": "passive-zero",
+      "hz": 480,
+      "rmse": 0.00001480439226231969,
+      "maxAbsolute": 0.00009523198461286464,
+      "units": "rad",
+      "samples": 15360
+    },
+    {
+      "id": "passive-gravity",
+      "hz": 480,
+      "rmse": 0.03498000415729485,
+      "maxAbsolute": 0.3298246073723992,
+      "units": "rad",
+      "samples": 15360
+    },
+    {
+      "id": "step",
+      "hz": 480,
+      "rmse": 0.00019545131034487244,
+      "maxAbsolute": 0.0011267235629510153,
+      "units": "rad",
+      "samples": 15360
+    },
+    {
+      "id": "limit",
+      "hz": 480,
+      "rmse": 0.00029834351802292296,
+      "maxAbsolute": 0.006999682022671534,
+      "units": "rad",
+      "samples": 15360
+    }
+  ],
+  "timestepSensitivity": [
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "free-fall",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.0000655986611122841,
+      "maxAbsolute": 0.0001888871192932129,
+      "units": "m",
+      "samples": 72
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "rest",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.000045804995556927855,
+      "maxAbsolute": 0.00015249103307724,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "slide",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.000038900835653582936,
+      "maxAbsolute": 0.00006689131259918213,
+      "units": "m",
+      "samples": 360
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "bounce",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.0016087791498876993,
+      "maxAbsolute": 0.008393874391913414,
+      "units": "m",
+      "samples": 360
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "passive-zero",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.00001114562496611374,
+      "maxAbsolute": 0.00007296180109511718,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "passive-gravity",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.007791251792051997,
+      "maxAbsolute": 0.1706442412533128,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "step",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.011360931763187582,
+      "maxAbsolute": 0.0763187213007845,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "limit",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.007531969218822026,
+      "maxAbsolute": 0.0763187213007845,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "free-fall",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.000021135525111517335,
+      "maxAbsolute": 0.00006014108657836914,
+      "units": "m",
+      "samples": 144
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "rest",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.000028285877960536673,
+      "maxAbsolute": 0.0000845193862915039,
+      "units": "m",
+      "samples": 1440
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "slide",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.000010738015909180473,
+      "maxAbsolute": 0.00003769434988498688,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "bounce",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.00112560801419958,
+      "maxAbsolute": 0.006592169404029846,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "passive-zero",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.000009606560789132822,
+      "maxAbsolute": 0.00006013932526710564,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "passive-gravity",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.004321984778671071,
+      "maxAbsolute": 0.10697692395399153,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "step",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.0032756500014468008,
+      "maxAbsolute": 0.02184810661317331,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "Rapier 0.19.3",
+      "id": "limit",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.00215997385246708,
+      "maxAbsolute": 0.02184810661317331,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "free-fall",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.0021075096642395024,
+      "maxAbsolute": 0.006131249999999588,
+      "units": "m",
+      "samples": 72
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "rest",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.000032309796182898024,
+      "maxAbsolute": 0.0005363992217645615,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "slide",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.0018508433291869668,
+      "maxAbsolute": 0.005614424997864159,
+      "units": "m",
+      "samples": 360
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "bounce",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.9685850269843242,
+      "maxAbsolute": 2.5091580858312,
+      "units": "m",
+      "samples": 360
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "passive-zero",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0,
+      "maxAbsolute": 0,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "passive-gravity",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.013024891302988043,
+      "maxAbsolute": 0.194477931098641,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "step",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.01126939827235151,
+      "maxAbsolute": 0.07108616970788481,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "limit",
+      "hz": 120,
+      "referenceHz": 480,
+      "rmse": 0.0073640453452723,
+      "maxAbsolute": 0.07108616970788481,
+      "units": "rad",
+      "samples": 3840
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "free-fall",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.000691885433300145,
+      "maxAbsolute": 0.0020437499999996223,
+      "units": "m",
+      "samples": 144
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "rest",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.00001097066140768098,
+      "maxAbsolute": 0.0001625141536765913,
+      "units": "m",
+      "samples": 1440
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "slide",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.0006265401011031971,
+      "maxAbsolute": 0.0014933792129466807,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "bounce",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.009575999950018791,
+      "maxAbsolute": 0.05568400348742152,
+      "units": "m",
+      "samples": 720
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "passive-zero",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0,
+      "maxAbsolute": 0,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "passive-gravity",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.004167558460391221,
+      "maxAbsolute": 0.048298676925270234,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "step",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.003258778654043011,
+      "maxAbsolute": 0.020967302030907846,
+      "units": "rad",
+      "samples": 7680
+    },
+    {
+      "engine": "MuJoCo 3.6.0",
+      "id": "limit",
+      "hz": 240,
+      "referenceHz": 480,
+      "rmse": 0.0021269847354982545,
+      "maxAbsolute": 0.020967302030907846,
+      "units": "rad",
+      "samples": 7680
+    }
+  ],
+  "note": "Synthetic diagnostics, not hardware validation. Bounce parameters are not equivalent. Runtime includes observation and controller work; no fair engine speed ranking is implied."
+}

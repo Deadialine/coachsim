@@ -1,0 +1,44 @@
+{
+  "id": "reference-backend-v1",
+  "ratesHz": [120, 240, 480],
+  "primitives": [
+    {
+      "id": "free-fall",
+      "seconds": 0.2,
+      "heightM": 0.5,
+      "floor": false,
+      "box": false,
+      "vx": 0
+    },
+    {
+      "id": "rest",
+      "seconds": 2,
+      "heightM": 0.025,
+      "floor": true,
+      "box": false,
+      "vx": 0
+    },
+    {
+      "id": "slide",
+      "seconds": 1,
+      "heightM": 0.025,
+      "floor": true,
+      "box": true,
+      "vx": 1
+    },
+    {
+      "id": "bounce",
+      "seconds": 1,
+      "heightM": 0.25,
+      "floor": true,
+      "box": false,
+      "vx": 0
+    }
+  ],
+  "robotCases": ["passive-zero", "passive-gravity", "step", "limit"],
+  "robotSeconds": 2,
+  "gravityMS2": 9.81,
+  "massKg": 0.03,
+  "radiusM": 0.025,
+  "friction": 0.5
+}

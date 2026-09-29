@@ -39,6 +39,9 @@ export function driveConfiguration(input = {}) {
 }
 export function createRobot(manifest, options = {}) {
   validateManifest(manifest);
+  const dt = options.timestepSeconds ?? ROBOT_DT;
+  if (![1 / 120, 1 / 240, 1 / 480].includes(dt))
+    throw Error("Unsupported robot timestep");
   const drive = driveConfiguration(options.drive),
     placement = normalize(options.orientation ?? IDENTITY);
   const initial = options.targets ?? homeTargets(manifest);
@@ -49,7 +52,7 @@ export function createRobot(manifest, options = {}) {
     y: options.gravity === false ? 0 : -9.81,
     z: 0,
   });
-  world.timestep = ROBOT_DT;
+  world.timestep = dt;
   world.numSolverIterations = 32;
   world.numInternalPgsIterations = 4;
   world.integrationParameters.lengthUnit = 0.1;
@@ -255,17 +258,15 @@ export function createRobot(manifest, options = {}) {
         vel = velocity(j, axis);
       j.command += clamp(
         targets[i] - j.command,
-        -drive.commandRateRadS * ROBOT_DT,
-        drive.commandRateRadS * ROBOT_DT,
+        -drive.commandRateRadS * dt,
+        drive.commandRateRadS * dt,
       );
-      requested.push(
-        drive.kp * (j.command - q - ROBOT_DT * vel) - drive.kd * vel,
-      );
+      requested.push(drive.kp * (j.command - q - dt * vel) - drive.kd * vel);
     }
     // Implicit PD using the articulated mass matrix from link Jacobians.
     // Contact and velocity-dependent bias forces are not predicted in this controller.
     const M = massMatrix(axes),
-      gain = ROBOT_DT * drive.kd + ROBOT_DT ** 2 * drive.kp;
+      gain = dt * drive.kd + dt ** 2 * drive.kp;
     M.forEach((row, i) => (row[i] += gain));
     const acceleration = solve(M, requested);
     for (let i = 0; i < joints.length; i++) {
@@ -288,8 +289,8 @@ export function createRobot(manifest, options = {}) {
       model: manifest.id,
       sourceCommit: manifest.sourceCommit,
       solver: "Rapier 0.19.3",
-      timestepSeconds: ROBOT_DT,
-      simulationSeconds: steps * ROBOT_DT,
+      timestepSeconds: dt,
+      simulationSeconds: steps * dt,
       drive: { ...drive },
       orientation: { ...placement },
       gravity: options.gravity !== false,
