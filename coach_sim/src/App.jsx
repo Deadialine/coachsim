@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
 import "./robot/robot.css";
 const RobotLab = lazy(() => import("./robot/RobotLab"));
 const ManipulationLab = lazy(() => import("./robot/ManipulationLab"));
@@ -108,6 +108,29 @@ const HAND_TOOLS = [
   ["study", "Study"],
 ];
 function HumanHandApp({ active = true, sensorLayout }) {
+  const workspaceRef = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  const [displayMessage, setDisplayMessage] = useState("");
+  useEffect(() => {
+    const syncFullscreen = () =>
+      setExpanded(document.fullscreenElement === workspaceRef.current);
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, []);
+  const toggleExpanded = async () => {
+    setDisplayMessage("");
+    try {
+      if (document.fullscreenElement === workspaceRef.current) {
+        await document.exitFullscreen();
+      } else if (workspaceRef.current?.requestFullscreen) {
+        await workspaceRef.current.requestFullscreen();
+      } else {
+        setDisplayMessage("Expanded view is unavailable in this browser.");
+      }
+    } catch {
+      setDisplayMessage("Expanded view could not open. Your hand and controls are still available here.");
+    }
+  };
   const [tool, setTool] = useState("move");
   const [jointCatalog, setJointCatalog] = useState([]);
   const [controls, setControls] = useState({ ...DEFAULT_CONTROLS }),
@@ -185,7 +208,7 @@ function HumanHandApp({ active = true, sensorLayout }) {
     setReset((n) => n + 1);
   }
   return (
-    <section className="hand-app" aria-label="Hand mechanics lab">
+    <section ref={workspaceRef} className="hand-app" aria-label="Hand mechanics lab">
       <div className="lab-toolbar">
         <div>
           <p className="eyebrow">THESIS HAND / 25 AXES</p>
@@ -207,14 +230,18 @@ function HumanHandApp({ active = true, sensorLayout }) {
           <button disabled={!!observation || !!trial} onClick={resetAll}>
             Reset
           </button>
+          {trial && <button onClick={stopTrial}>End trial</button>}
+          <button className="expand-workspace" aria-pressed={expanded} onClick={toggleExpanded}>
+            {expanded ? "Exit expanded view" : "Expand workspace"}
+          </button>
         </div>
       </div>
+      {displayMessage && <p className="display-message" role="status">{displayMessage}</p>}
       <section
         className="hand-workspace compact-workspace"
         aria-label="Hand mechanics controls"
       >
         <div className="stage-column">
-          {" "}
           <div className="stage">
             <div className="stage-top">
               <span>

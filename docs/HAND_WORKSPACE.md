@@ -12,4 +12,6 @@ The hand remains in one persistent viewport. A separate scrolling toolbox groups
 
 Pause/resume, reset, camera views and live physics diagnostics stay beside the hand. Trial/observation locks remain in force. The experiment session is an expandable bar in the 3D workspace; the six main workspaces and session controls remain available. Alerts remain outside the collapsed session bar.
 
+**Expand workspace** opens the same hand and toolbox in native browser fullscreen. Exit with the toolbar button or Escape; pose and panel state are retained. Browsers that decline fullscreen show a status message. An **End trial** toolbar action returns to manual control without navigating away from the current tool. Narrow-screen diagnostics put units on separate lines to avoid collisions.
+
 Desktop uses a viewport-sized horizontal split. Narrow screens use a vertical stage/toolbox split with independent panel scrolling. Arrow keys, Home and End navigate the tool tabs; panels are keyboard-focusable. Existing 56 regression tests and production build pass. Browser checks cover all seven tools, posture preservation across tool/main-workspace changes, keyboard navigation, active-trial locks and pause, session access, and a 390 × 844 responsive viewport. No physics, acquisition schema or classifier behavior changes are included.
