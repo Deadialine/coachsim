@@ -1,0 +1,419 @@
+/* A persistent stage beside independently scrolling, mounted tool panels. */
+.view-hand > main > footer {
+  display: none;
+}
+.pose-select {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #35594e;
+}
+.pose-select select {
+  width: 100%;
+  padding: 9px;
+  background: #eef5f1;
+  border: 1px solid #cbddd3;
+  border-radius: 8px;
+  color: #215648;
+}
+.view-hand > header {
+  padding: 10px 3%;
+}
+.view-hand .brand strong {
+  font-size: 18px;
+}
+.view-hand .brand small {
+  font-size: 10px;
+}
+.view-hand .brand-icon {
+  font-size: 20px;
+  padding: 3px 10px;
+}
+.view-hand > main {
+  max-width: 1800px;
+  padding: 8px 2%;
+}
+.view-hand .intro {
+  display: none;
+}
+.experiment .session-drawer > summary {
+  display: none;
+}
+.experiment.view-hand .session-drawer {
+  margin: 0 0 6px;
+  border-bottom: 1px solid #d5e2df;
+  padding: 7px 4px;
+}
+.experiment.view-hand .session-drawer > summary {
+  display: list-item;
+  font-size: 11px;
+  color: #345b59;
+}
+.session-drawer > summary span {
+  font-weight: 400;
+  margin-left: 12px;
+}
+.view-hand .embedded-hand {
+  margin-top: 0;
+}
+.view-hand .model-switch {
+  margin: 0;
+  padding: 5px 0;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+}
+.view-hand .model-switch button {
+  padding: 6px 12px;
+  font-size: 11px;
+  border-radius: 7px;
+}
+.view-hand .model-switch span {
+  font-size: 10px;
+  margin-left: auto;
+}
+.view-hand .hand-app {
+  min-height: 0;
+}
+.lab-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0 12px;
+}
+.lab-toolbar .eyebrow {
+  margin: 0 0 3px;
+  font-size: 9px;
+  letter-spacing: 1.7px;
+}
+.lab-toolbar h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+}
+.lab-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lab-actions button {
+  padding: 7px 12px;
+  border-radius: 7px;
+  background: white;
+  border: 1px solid #c9dbd7;
+}
+.lab-mode {
+  color: #207564;
+  font-size: 11px;
+  margin-right: 8px;
+}
+.compact-workspace {
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: 14px;
+  height: max(340px, calc(100dvh - 286px));
+  align-items: stretch;
+}
+.compact-workspace .stage-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+.compact-workspace .stage {
+  flex: 1;
+  min-height: 0;
+  border-radius: 14px 14px 0 0;
+}
+.compact-workspace .hand-viewport {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+.compact-workspace .stage-top {
+  padding: 14px 16px;
+  font-size: 9px;
+}
+.compact-workspace .stage-bottom {
+  padding: 12px;
+  background: linear-gradient(transparent, #101f2c);
+  flex-wrap: wrap;
+}
+.compact-workspace .physics-strip {
+  margin: 0;
+  padding: 10px 12px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.compact-workspace .physics-strip strong {
+  font-size: 16px;
+}
+.compact-workspace .physics-strip span,
+.compact-workspace .physics-strip small {
+  font-size: 9px;
+}
+.stage-disclaimer {
+  font-size: 10px;
+  color: #667d7c;
+  margin: 7px 2px 0;
+}
+.hand-toolbox {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: #fff;
+  border: 1px solid #d3e1dd;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px #213e3810;
+}
+.toolbox-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px 10px;
+  color: #244d48;
+}
+.toolbox-heading strong {
+  font-size: 13px;
+}
+.toolbox-heading span {
+  font-size: 10px;
+  color: #718985;
+}
+.hand-tool-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 0 10px 10px;
+  border-bottom: 1px solid #e0e9e5;
+}
+.experiment .hand-tool-tabs button {
+  border: 0;
+  background: #f0f5f3;
+  color: #536e67;
+  border-radius: 6px;
+  padding: 8px 3px;
+  font-size: 11px;
+}
+.experiment .hand-tool-tabs button[aria-selected="true"] {
+  color: white;
+  background: #176c5c;
+  box-shadow: 0 2px 5px #164e3925;
+}
+.hand-tool-content {
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+.hand-tool-panel {
+  padding: 14px;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.hand-tool-panel[hidden],
+.compact-workspace [hidden] {
+  display: none !important;
+}
+.hand-tool-panel:focus-visible,
+.hand-tool-tabs button:focus-visible {
+  outline: 2px solid #238a75;
+  outline-offset: -2px;
+}
+.hand-tool-panel .control-card,
+.hand-tool-panel .orientation-panel,
+.hand-tool-panel .research-bench,
+.hand-tool-panel .motion-feedback,
+.hand-tool-panel .joint-inspector {
+  padding: 0;
+  margin: 0 0 18px;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  background: transparent;
+  color: #213e38;
+}
+.hand-tool-panel .eyebrow {
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+.hand-tool-panel h2 {
+  font-size: 17px;
+  margin: 0 0 12px;
+  line-height: 1.2;
+  color: #213e38;
+}
+.hand-tool-panel h3 {
+  font-size: 13px;
+  margin: 16px 0 8px;
+}
+.hand-tool-panel p,
+.hand-tool-panel .help,
+.hand-tool-panel .caption {
+  font-size: 11px;
+  line-height: 1.55;
+  color: #667b76;
+}
+.hand-tool-panel .joint-control {
+  margin: 12px 0;
+}
+.hand-tool-panel .joint-control > span {
+  font-size: 11px;
+}
+.hand-tool-panel .joint-control small {
+  font-size: 10px;
+}
+.hand-tool-panel .preset-grid {
+  gap: 5px;
+}
+.hand-tool-panel .preset-grid button {
+  padding: 8px 5px;
+  font-size: 10px;
+}
+.hand-tool-panel .orientation-grid,
+.hand-tool-panel .sensor-grid,
+.hand-tool-panel .model-notes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+.hand-tool-panel .section-title {
+  display: block;
+}
+.hand-tool-panel .view-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  margin: 0;
+}
+.hand-tool-panel .view-options strong {
+  flex-basis: 100%;
+}
+.hand-tool-panel .view-options label {
+  flex-basis: 45%;
+  font-size: 11px;
+}
+.hand-tool-panel .grip-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.hand-tool-panel button {
+  padding: 7px 9px;
+}
+.hand-tool-panel input[type="number"],
+.hand-tool-panel select {
+  min-width: 0;
+  max-width: 100%;
+}
+.hand-tool-panel .model-notes {
+  padding: 15px 0;
+  border-top: 1px solid #dde5e1;
+  margin: 12px 0 0;
+}
+.hand-tool-panel .model-notes h2 {
+  font-size: 18px;
+}
+.hand-tool-panel .joint-inspector select,
+.hand-tool-panel .joint-inspector input[type="number"] {
+  background: #f0f5f3;
+  color: #213e38;
+  border-color: #cedcd5;
+}
+.hand-tool-panel .joint-inspector .joint-chain {
+  color: #167660;
+}
+.hand-tool-panel .inspector-metrics > div {
+  background: #edf4f1;
+}
+.hand-tool-panel .inspector-metrics span {
+  color: #5b756d;
+}
+.hand-tool-panel .angle-cards,
+.hand-tool-panel .bench-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.hand-tool-panel .joint-readout {
+  overflow-x: auto;
+}
+.experiment .hand-tool-panel details.tool-disclosure {
+  border-top: 1px solid #dbe5df;
+  padding-top: 12px;
+  margin: 15px 0;
+}
+.tool-disclosure > summary {
+  font-size: 13px;
+  color: #25574b;
+  padding: 2px 0 9px;
+}
+@media (max-width: 1000px) {
+  .compact-workspace {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+  .compact-workspace .stage-bottom > span {
+    display: none;
+  }
+  .view-hand .model-switch span {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .view-hand > header {
+    padding: 8px 3%;
+  }
+  .view-hand .workspace-tabs {
+    padding: 6px 2%;
+  }
+  .view-hand .session-drawer > summary span {
+    display: block;
+    margin: 3px 0 0;
+    font-size: 9px;
+  }
+  .compact-workspace {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 76px);
+    min-height: 540px;
+    gap: 10px;
+  }
+  .compact-workspace .stage-column {
+    position: static;
+    background: #f4f7f8;
+    flex: none;
+  }
+  .compact-workspace .stage {
+    height: 29dvh;
+    min-height: 180px;
+    flex: none;
+  }
+  .compact-workspace .physics-strip {
+    padding: 7px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .compact-workspace .physics-strip strong {
+    font-size: 12px;
+  }
+  .stage-disclaimer {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+  .hand-toolbox {
+    height: auto;
+    min-height: 230px;
+    flex: 1;
+  }
+  .lab-toolbar h1 {
+    font-size: 19px;
+  }
+  .lab-mode {
+    display: none;
+  }
+}
