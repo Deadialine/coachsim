@@ -474,106 +474,117 @@ export default function Experiment() {
                 : "Ready to explore"}
           </div>
         </div>
-        <aside className="notice">
-          {b.session.provenance === "synthetic"
-            ? "Signals, confidence, and prediction latency are generated test values. They are not hardware measurements or classifier results."
-            : b.session.provenance === "legacy_unverified"
-              ? "Legacy IMU import: raw EMG and sensor validity are unavailable. Reserved v1 EMG is not treated as a recording."
-              : "Imported metadata describes this recording. Verify its provenance against the original acquisition record."}
-        </aside>
         {error && (
           <div role="alert" className="error">
             {error}
           </div>
         )}
-        <section className="controls panel">
-          <label>
-            Participant ID
-            <input
-              value={participant}
-              onChange={(e) => setParticipant(e.target.value)}
-              disabled={running}
-            />
-          </label>
-          <label>
-            Session ID
-            <input
-              value={session}
-              onChange={(e) => setSession(e.target.value)}
-              disabled={running}
-            />
-          </label>
-          <label>
-            Randomization seed
-            <input
-              type="number"
-              value={seed}
-              onChange={(e) => setSeed(Number(e.target.value))}
-              disabled={running}
-            />
-          </label>
-          <button
-            className="primary"
-            onClick={start}
-            disabled={running || busy}
-          >
-            {b.emg.length || b.imu.length
-              ? "New simulation"
-              : "Start simulation"}
-          </button>
-          <button onClick={stop} disabled={!running}>
-            Stop
-          </button>
-          <button
-            onClick={exportZip}
-            disabled={running || busy || !b.session.duration_us}
-          >
-            {busy ? "Working…" : "Export session ZIP"}
-          </button>
-          <label className={`file-button ${running || busy ? "disabled" : ""}`}>
-            Import ZIP / v1 CSV
-            <input
-              type="file"
-              accept=".zip,.csv"
-              onChange={importFile}
+        <details className="session-drawer" open={tab !== "hand"}>
+          <summary>
+            Experiment session{" "}
+            <span>
+              {running ? "Recording" : replay ? "Replay" : "Ready"} ·{" "}
+              {(t / 1e6).toFixed(1)} s · {provenance} · Setup & logs
+            </span>
+          </summary>
+          <aside className="notice">
+            {b.session.provenance === "synthetic"
+              ? "Signals, confidence, and prediction latency are generated test values. They are not hardware measurements or classifier results."
+              : b.session.provenance === "legacy_unverified"
+                ? "Legacy IMU import: raw EMG and sensor validity are unavailable. Reserved v1 EMG is not treated as a recording."
+                : "Imported metadata describes this recording. Verify its provenance against the original acquisition record."}
+          </aside>
+          <section className="controls panel">
+            <label>
+              Participant ID
+              <input
+                value={participant}
+                onChange={(e) => setParticipant(e.target.value)}
+                disabled={running}
+              />
+            </label>
+            <label>
+              Session ID
+              <input
+                value={session}
+                onChange={(e) => setSession(e.target.value)}
+                disabled={running}
+              />
+            </label>
+            <label>
+              Randomization seed
+              <input
+                type="number"
+                value={seed}
+                onChange={(e) => setSeed(Number(e.target.value))}
+                disabled={running}
+              />
+            </label>
+            <button
+              className="primary"
+              onClick={start}
               disabled={running || busy}
-            />
-          </label>
-          {download && (
-            <a
-              className="file-button"
-              href={download.url}
-              download={download.name}
             >
-              Download prepared ZIP
-            </a>
-          )}
-        </section>
-        <div className="metrics">
-          <div className="panel">
-            <small>SESSION TIME</small>
-            <strong>
-              {(t / 1e6).toFixed(1)} <em>s</em>
-            </strong>
+              {b.emg.length || b.imu.length
+                ? "New simulation"
+                : "Start simulation"}
+            </button>
+            <button onClick={stop} disabled={!running}>
+              Stop
+            </button>
+            <button
+              onClick={exportZip}
+              disabled={running || busy || !b.session.duration_us}
+            >
+              {busy ? "Working…" : "Export session ZIP"}
+            </button>
+            <label
+              className={`file-button ${running || busy ? "disabled" : ""}`}
+            >
+              Import ZIP / v1 CSV
+              <input
+                type="file"
+                accept=".zip,.csv"
+                onChange={importFile}
+                disabled={running || busy}
+              />
+            </label>
+            {download && (
+              <a
+                className="file-button"
+                href={download.url}
+                download={download.name}
+              >
+                Download prepared ZIP
+              </a>
+            )}
+          </section>
+          <div className="metrics">
+            <div className="panel">
+              <small>SESSION TIME</small>
+              <strong>
+                {(t / 1e6).toFixed(1)} <em>s</em>
+              </strong>
+            </div>
+            <div className="panel">
+              <small>EMG · 4 CHANNELS</small>
+              <strong>
+                {quality.received_hz.toFixed(0)} <em>samples/s</em>
+              </strong>
+            </div>
+            <div className="panel">
+              <small>IMU SAMPLES</small>
+              <strong>{imu.length.toLocaleString()}</strong>
+            </div>
+            <div className="panel">
+              <small>EMG MISSING / CLIPPED</small>
+              <strong>
+                {(quality.missing_fraction * 100).toFixed(2)} /{" "}
+                {(quality.clipped_fraction * 100).toFixed(2)} <em>%</em>
+              </strong>
+            </div>
           </div>
-          <div className="panel">
-            <small>EMG · 4 CHANNELS</small>
-            <strong>
-              {quality.received_hz.toFixed(0)} <em>samples/s</em>
-            </strong>
-          </div>
-          <div className="panel">
-            <small>IMU SAMPLES</small>
-            <strong>{imu.length.toLocaleString()}</strong>
-          </div>
-          <div className="panel">
-            <small>EMG MISSING / CLIPPED</small>
-            <strong>
-              {(quality.missing_fraction * 100).toFixed(2)} /{" "}
-              {(quality.clipped_fraction * 100).toFixed(2)} <em>%</em>
-            </strong>
-          </div>
-        </div>
+        </details>
         {tab === "layout" && (
           <SensorLayout
             layout={layout}

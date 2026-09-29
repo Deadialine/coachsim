@@ -183,6 +183,12 @@
   margin: 18px 0;
   font-size: 13px;
 }
+.experiment .session-drawer > summary {
+  display: none;
+}
+.experiment.view-hand .session-drawer > summary {
+  display: list-item;
+}
 .experiment summary {
   cursor: pointer;
   font-weight: 650;
